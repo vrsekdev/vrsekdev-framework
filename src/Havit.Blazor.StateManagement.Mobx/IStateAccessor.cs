@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Components;
+using Microsoft.AspNetCore.Components;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
@@ -8,5 +9,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         TState State { get; }
 
         void SetConsumer(BlazorMobxComponentBase<TState> consumer);
+
+        void SetConsumer(ComponentBase consumer);
     }
 }

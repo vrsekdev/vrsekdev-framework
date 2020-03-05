@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Components;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -21,7 +22,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         private readonly HashSet<(Type, string)> subscribedProperties = new HashSet<(Type, string)>();
 
         private IDisposable observerDisposer;
-        private BlazorMobxComponentBase<TState> consumer;
+        private IConsumerWrapper consumer;
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
 
         public DynamicStateAccessor(IStateHolder<TState> stateHolder)
@@ -45,7 +46,12 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void SetConsumer(BlazorMobxComponentBase<TState> consumer)
         {
-            this.consumer = consumer;
+            this.consumer = new MobxConsumerWrapper(consumer);
+        }
+
+        public void SetConsumer(ComponentBase consumer)
+        {
+            this.consumer = new ReflectionConsumerWrapper(consumer);
         }
 
         public void Dispose()
@@ -112,6 +118,65 @@ namespace Havit.Blazor.StateManagement.Mobx
             public void OnError(Exception error)
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        private interface IConsumerWrapper
+        {
+            Task ForceUpdate();
+        }
+
+        private class MobxConsumerWrapper : IConsumerWrapper
+        {
+            private readonly BlazorMobxComponentBase<TState> consumer;
+
+            public MobxConsumerWrapper(BlazorMobxComponentBase<TState> consumer)
+            {
+                this.consumer = consumer;
+            }
+
+            public Task ForceUpdate()
+            {
+                return consumer.ForceUpdate();
+            }
+        }
+
+        private class ReflectionConsumerWrapper : IConsumerWrapper
+        {
+            private static Func<ComponentBase, Action, Task> ComponentBaseInvokeAsync;
+            private static Action<ComponentBase> ComponentBaseStateHasChanged;
+            
+            static ReflectionConsumerWrapper()
+            {
+                MethodInfo invokeAsyncMethodInfo =
+				typeof(ComponentBase).GetMethod(
+					name: "InvokeAsync",
+					bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance,
+					binder: null,
+					types: new[] { typeof(Action) },
+					modifiers: null);
+			ComponentBaseInvokeAsync = (Func<ComponentBase, Action, Task>)
+				Delegate.CreateDelegate(typeof(Func<ComponentBase, Action, Task>), invokeAsyncMethodInfo);
+
+			MethodInfo stateHasChangedMethodInfo =
+				typeof(ComponentBase).GetMethod(
+					name: "StateHasChanged",
+					bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance);
+
+			ComponentBaseStateHasChanged = (Action<ComponentBase>)Delegate.CreateDelegate(typeof(Action<ComponentBase>), stateHasChangedMethodInfo);
+            }
+
+
+            private readonly ComponentBase consumer;
+
+            public ReflectionConsumerWrapper(ComponentBase consumer)
+            {
+                this.consumer = consumer;
+            }
+
+            public Task ForceUpdate()
+            {
+                return ComponentBaseInvokeAsync(consumer, () => ComponentBaseStateHasChanged(consumer));
             }
         }
     }
