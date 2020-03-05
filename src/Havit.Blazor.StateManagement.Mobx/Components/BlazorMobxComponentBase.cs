@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx.Components
 {
-    public class BlazorMobxComponentBase<TState> : ComponentBase
-        where TState : class
+    public class BlazorMobxComponentBase<TStore> : ComponentBase
+        where TStore : class
     {
-        protected TState State => StateAccessor.State;
+        protected TStore Store => StoreAccessor.Store;
 
         [Inject]
-        private IStateAccessor<TState> StateAccessor { get; set; }
+        private IStoreAccessor<TStore> StoreAccessor { get; set; }
 
         public Task ForceUpdate()
         {
@@ -21,14 +21,14 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 
         public override Task SetParametersAsync(ParameterView parameters)
         {
-            StateAccessor.SetConsumer(this);
+            StoreAccessor.SetConsumer(this);
 
             return base.SetParametersAsync(parameters);
         }
 
-        public void ResetState()
+        public void ResetStore()
         {
-            DynamicStateProperty.Unbox(State).ObservableProperty.ResetValues();
+            DynamicStateProperty.Unbox(Store).ObservableProperty.ResetValues();
         }
     }
 }

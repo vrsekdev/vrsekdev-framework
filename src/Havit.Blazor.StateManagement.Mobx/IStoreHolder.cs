@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public interface IStateHolder<TState>
-        where TState : class
+    public interface IStoreHolder<TStore>
+        where TStore : class
     {
         ObservableProperty RootObservableProperty { get; }
 

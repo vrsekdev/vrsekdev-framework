@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public static class StateBuilder
+    public static class StoreBuilder
     {
-        public static StateBuilder<TState> CopyFrom<TState>(TState state)
-            where TState : class
+        public static StoreBuilder<TStore> CopyFrom<TStore>(TStore store)
+            where TStore : class
         {
-            DynamicStateProperty dynamicState = DynamicStateProperty.Unbox(state);
+            DynamicStateProperty dynamicState = DynamicStateProperty.Unbox(store);
             if (dynamicState == null)
             {
-                throw new ArgumentException($"Invalid underlying type of {nameof(state)}", nameof(state));
+                throw new ArgumentException($"Invalid underlying type of {nameof(store)}", nameof(store));
             }
 
             ObservableProperty copy = ObservableProperty.CreateCopy(dynamicState.ObservableProperty);
 
-            return new StateBuilder<TState>(copy);
+            return new StoreBuilder<TStore>(copy);
         }
 
-        public static StateBuilder<TState> DefaultFrom<TState>(TState state)
+        public static StoreBuilder<TState> DefaultFrom<TState>(TState state)
             where TState : class
         {
             DynamicStateProperty dynamicState = DynamicStateProperty.Unbox(state);
@@ -31,23 +31,24 @@ namespace Havit.Blazor.StateManagement.Mobx
                 throw new ArgumentException($"Invalid underlying type of {nameof(state)}", nameof(state));
             }
 
+            // TODO: Use default state from service collection registration
             ObservableProperty copy = ObservableProperty.CreateEmptyCopy(dynamicState.ObservableProperty);
 
-            return new StateBuilder<TState>(copy);
+            return new StoreBuilder<TState>(copy);
         }
     }
 
-    public class StateBuilder<TState>
-        where TState : class
+    public class StoreBuilder<TStore>
+        where TStore : class
     {
         private readonly ObservableProperty observableProperty;
 
-        internal StateBuilder(ObservableProperty observableProperty)
+        internal StoreBuilder(ObservableProperty observableProperty)
         {
             this.observableProperty = observableProperty;
         }
 
-        public StateBuilder<TState> WithValue<TValue>(Expression<Func<TState, TValue>> expression, TValue value)
+        public StoreBuilder<TStore> WithValue<TValue>(Expression<Func<TStore, TValue>> expression, TValue value)
         {
             MemberExpression memberExpression = (MemberExpression)expression.Body;
 
@@ -60,10 +61,10 @@ namespace Havit.Blazor.StateManagement.Mobx
             return this;
         }
 
-        public TState Build()
+        public TStore Build()
         {
             var dynamicState = DynamicStateProperty.Create(observableProperty);
-            return DynamicStateProperty.Box<TState>(dynamicState);
+            return DynamicStateProperty.Box<TStore>(dynamicState);
         }
     }
 }

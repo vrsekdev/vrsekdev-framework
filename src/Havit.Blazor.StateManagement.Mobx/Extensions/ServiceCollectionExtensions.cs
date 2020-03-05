@@ -9,10 +9,10 @@ namespace Havit.Blazor.StateManagement.Mobx.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static MobxStateRegistration<TState> AddMobxState<TState>(this IServiceCollection services)
+        public static MobxStoreRegistration<TState> AddMobxStore<TState>(this IServiceCollection services)
             where TState : class
         {
-            return new MobxStateRegistration<TState>(services);
+            return new MobxStoreRegistration<TState>(services);
         }
 
     }

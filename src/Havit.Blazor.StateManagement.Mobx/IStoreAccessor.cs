@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Components;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public interface IStateAccessor<TState>
-        where TState : class
+    public interface IStoreAccessor<TStore>
+        where TStore : class
     {
-        TState State { get; }
+        TStore Store { get; }
 
-        void SetConsumer(BlazorMobxComponentBase<TState> consumer);
+        void SetConsumer(BlazorMobxComponentBase<TStore> consumer);
 
         void SetConsumer(ComponentBase consumer);
     }

@@ -29,8 +29,8 @@ namespace Havit.Blazor.StateManagement.Mobx
         public IEnumerable<object> ItemsRemoved { get; }
     }
 
-    public class StateHolder<TState> : IStateHolder<TState>
-        where TState : class
+    public class StoreHolder<TStore> : IStoreHolder<TStore>
+        where TStore : class
     {
         public ObservableProperty RootObservableProperty { get; }
 
@@ -38,10 +38,10 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public event EventHandler<CollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
 
-        public StateHolder()
+        public StoreHolder()
         {
             RootObservableProperty = new ObservableProperty(
-                typeof(TState),
+                typeof(TStore),
                 new EventHandler<StatePropertyChangedEventArgs>(OnStatePropertyChanged),
                 new EventHandler<CollectionItemsChangedEventArgs>(OnCollectionItemsChanged));
         }

@@ -6,37 +6,37 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
 {
-    public class MobxStateRegistration<TState>
-        where TState : class
+    public class MobxStoreRegistration<TStore>
+        where TStore : class
     {
         private readonly IServiceCollection services;
 
-        private TState defaultState;
+        private TStore defaultState;
 
-        public MobxStateRegistration(IServiceCollection services)
+        public MobxStoreRegistration(IServiceCollection services)
         {
             this.services = services;
         }
 
         public IServiceCollection AsSingleton()
         {
-            services.AddSingleton<IStateHolder<TState>>(GetStateHolder());
-            services.AddTransient<IStateAccessor<TState>, DynamicStateAccessor<TState>>();
+            services.AddSingleton<IStoreHolder<TStore>>(GetStoreHolder());
+            services.AddTransient<IStoreAccessor<TStore>, DynamicStoreAccessor<TStore>>();
 
             return services;
         }
 
         public IServiceCollection AsTransient()
         {
-            services.AddTransient<IStateHolder<TState>>(provider => GetStateHolder());
-            services.AddTransient<IStateAccessor<TState>, DynamicStateAccessor<TState>>();
+            services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder());
+            services.AddTransient<IStoreAccessor<TStore>, DynamicStoreAccessor<TStore>>();
 
             return services;
         }
 
-        private IStateHolder<TState> GetStateHolder()
+        private IStoreHolder<TStore> GetStoreHolder()
         {
-            var stateHolder = new StateHolder<TState>();
+            var stateHolder = new StoreHolder<TStore>();
             if (defaultState != null)
             {
                 stateHolder.RootObservableProperty.OverwriteFrom(defaultState);
@@ -45,8 +45,8 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
             return stateHolder;
         }
 
-        public MobxStateRegistration<TState> WithDefaultState<TStateImpl>(TStateImpl defaultState)
-            where TStateImpl : class, TState
+        public MobxStoreRegistration<TStore> WithDefaultState<TStoreImpl>(TStoreImpl defaultState)
+            where TStoreImpl : class, TStore
         {
             this.defaultState = defaultState;
 
