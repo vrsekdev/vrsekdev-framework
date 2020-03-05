@@ -11,6 +11,8 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
     {
         private readonly IServiceCollection services;
 
+        private TState defaultState;
+
         public MobxStateRegistration(IServiceCollection services)
         {
             this.services = services;
@@ -18,18 +20,37 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
 
         public IServiceCollection AsSingleton()
         {
+            services.AddSingleton<IStateHolder<TState>>(GetStateHolder());
             services.AddTransient<IStateAccessor<TState>, DynamicStateAccessor<TState>>();
-            services.AddSingleton<IStateHolder<TState>, StateHolder<TState>>();
 
             return services;
         }
 
         public IServiceCollection AsTransient()
         {
+            services.AddTransient<IStateHolder<TState>>(provider => GetStateHolder());
             services.AddTransient<IStateAccessor<TState>, DynamicStateAccessor<TState>>();
-            services.AddTransient<IStateHolder<TState>, StateHolder<TState>>();
 
             return services;
+        }
+
+        private IStateHolder<TState> GetStateHolder()
+        {
+            var stateHolder = new StateHolder<TState>();
+            if (defaultState != null)
+            {
+                stateHolder.RootObservableProperty.OverwriteFrom(defaultState);
+            }
+
+            return stateHolder;
+        }
+
+        public MobxStateRegistration<TState> WithDefaultState<TStateImpl>(TStateImpl defaultState)
+            where TStateImpl : class, TState
+        {
+            this.defaultState = defaultState;
+
+            return this;
         }
     }
 }
