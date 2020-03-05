@@ -20,7 +20,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         where TStore : class
     {
         private readonly HashSet<(Type, string)> subscribedProperties = new HashSet<(Type, string)>();
-
+        private readonly IStoreHolder<TStore> storeHolder;
         private IDisposable observerDisposer;
         private IConsumerWrapper consumer;
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
@@ -31,6 +31,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 throw new Exception("State type must be an interface");
             }
+            this.storeHolder = storeHolder;
 
             DynamicStateProperty dynamicState = DynamicStateProperty.Create(storeHolder.RootObservableProperty);
             Store = DynamicStateProperty.Box<TStore>(dynamicState);
@@ -60,6 +61,10 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 observerDisposer.Dispose();
             }
+
+            PropertyAccessedEvent -= DynamicStoreAccessor_PropertyAccessedEvent;
+            storeHolder.StatePropertyChangedEvent -= StoreHolder_StatePropertyChangedEvent;
+            storeHolder.CollectionItemsChangedEvent -= StoreHolder_CollectionItemsChangedEvent;
         }
 
         private void PlantListener(DynamicStateProperty dynamicState)

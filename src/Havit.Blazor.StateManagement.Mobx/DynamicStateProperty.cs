@@ -69,9 +69,9 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             observers.Add(observer);
 
-            foreach (var observedDynamicObject in observedDynamicProperties)
+            foreach (var observedDynamicObject in observedDynamicProperties.Values)
             {
-                DynamicStateProperty dynamicState = Unbox(observedDynamicObject.Value);
+                DynamicStateProperty dynamicState = Unbox(observedDynamicObject);
                 if (dynamicState != null)
                 {
                     dynamicState.Subscribe(observer);
