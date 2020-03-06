@@ -9,10 +9,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
     public class BlazorMobxComponentBase<TStore> : ComponentBase
         where TStore : class
     {
-        protected TStore Store => StoreAccessor.Store;
+        protected TStore Store { get; private set; }
 
         [Inject]
         private IStoreAccessor<TStore> StoreAccessor { get; set; }
+
+        [CascadingParameter(Name = MobxStoreHolder.CascadingParameterName)]
+        private TStore HierarchyStore { get; set; }
 
         public Task ForceUpdate()
         {
@@ -22,6 +25,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         public override Task SetParametersAsync(ParameterView parameters)
         {
             StoreAccessor.SetConsumer(this);
+            Store = HierarchyStore ?? StoreAccessor.Store;
 
             return base.SetParametersAsync(parameters);
         }

@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Components;
+using Havit.Linq;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,9 @@ namespace Havit.Blazor.StateManagement.Mobx
         private Dictionary<object, IDisposable> collectionItemObserverDisposables = new Dictionary<object, IDisposable>(); 
 
         private IConsumerWrapper consumer;
+
+        [CascadingParameter(Name = MobxStoreHolder.CascadingParameterName)]
+        public string Value { get; set; }
 
         public DynamicStoreAccessor(IStoreHolder<TStore> storeHolder)
         {
@@ -111,6 +115,15 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private async void StoreHolder_CollectionItemsChangedEvent(object sender, CollectionItemsChangedEventArgs e)
         {
+            foreach (object removedItem in e.ItemsRemoved)
+            {
+                if (collectionItemObserverDisposables.ContainsKey(removedItem))
+                {
+                    collectionItemObserverDisposables[removedItem].Dispose();
+                    collectionItemObserverDisposables.Remove(removedItem);
+                }
+            }
+
             foreach (object addedItem in e.ItemsAdded)
             {
                 if (DynamicStateProperty.Unbox(addedItem) is DynamicStateProperty dynamicState)
@@ -119,14 +132,6 @@ namespace Havit.Blazor.StateManagement.Mobx
                         PropertyAccessedEvent,
                         () => collectionItemObserverDisposables.Remove(addedItem)));
                     collectionItemObserverDisposables.Add(addedItem, disposable);
-                }
-            }
-
-            foreach (object removedItem in e.ItemsRemoved)
-            {
-                if (collectionItemObserverDisposables.ContainsKey(removedItem))
-                {
-                    collectionItemObserverDisposables[removedItem].Dispose();
                 }
             }
 

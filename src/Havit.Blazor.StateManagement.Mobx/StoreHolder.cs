@@ -12,21 +12,13 @@ namespace Havit.Blazor.StateManagement.Mobx
 
     internal class CollectionItemsChangedEventArgs
     {
-        public CollectionItemsChangedEventArgs(
-            IEnumerable<object> itemsAdded,
-            IEnumerable<object> itemsRemoved)
-        {
-            ItemsAdded = itemsAdded;
-            ItemsRemoved = itemsRemoved;
-        }
-
         public int OldCount { get; set; }
 
         public int NewCount { get; set; }
 
-        public IEnumerable<object> ItemsAdded { get; }
+        public IEnumerable<object> ItemsAdded { get; set; }
 
-        public IEnumerable<object> ItemsRemoved { get; }
+        public IEnumerable<object> ItemsRemoved { get; set; }
     }
 
     internal class StoreHolder<TStore> : IStoreHolder<TStore>

@@ -34,6 +34,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
             return services;
         }
 
+        public IServiceCollection PerHierarchy()
+        {
+            services.AddTransient<IStoreAccessor<TStore>, HierarchyStoreAccessor<TStore>>();
+
+            return services;
+        }
+
         private IStoreHolder<TStore> GetStoreHolder()
         {
             var stateHolder = new StoreHolder<TStore>();
