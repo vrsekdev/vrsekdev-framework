@@ -78,7 +78,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 foreach (object item in observedDynamicArrays[name])
                 {
-                    DynamicStateProperty dynamicState = DynamicStateProperty.Unbox(item);
+                    DynamicStateProperty dynamicState = Unbox(item);
                     if (dynamicState != null)
                     {
                         dynamicState.Dispose();

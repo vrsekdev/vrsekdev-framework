@@ -1,5 +1,6 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Extensions;
 using Havit.Blazor.StateManagement.Mobx.Models;
+using Havit.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,13 +117,29 @@ namespace Havit.Blazor.StateManagement.Mobx
                     throw new Exception("Unsupported type of array.");
                 }
 
-                var newArray = CreateObservableArray(observableArray);
+                var oldArray = observedArrays[name];
+                var items = oldArray.FullOuterJoin((IEnumerable<object>)observableArray, oldItem => oldItem, newItem => newItem, (oldItem, newItem) => new
+                {
+                    NewItem = newItem,
+                    OldItem = oldItem
+                });
+
+                if (!(observableArray is ObservableArrayInternal newArray))
+                {
+                    newArray = CreateObservableArray(observableArray, true);
+                }
+
                 observedArrays[name] = newArray;
 
-                collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs(Enumerable.Empty<object>(), Enumerable.Empty<object>())
+                IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
+                IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
+
+                collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
                 {
-                    OldCount = 0,
-                    NewCount = 1
+                    ItemsAdded = addedItems,
+                    ItemsRemoved = removedItems,
+                    OldCount = oldArray.Count,
+                    NewCount = newArray.Count
                 });
 
                 return true;
@@ -279,7 +296,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             return (ObservableArrayInternal)Activator.CreateInstance(observableArrayType, BindingFlags.NonPublic | BindingFlags.Instance, null, parameters, null);
         }
 
-        private ObservableArrayInternal CreateObservableArray(IObservableArray observableArray)
+        private ObservableArrayInternal CreateObservableArray(IObservableArray observableArray, bool suppressEvent)
         {
             if (observableArray is ObservableArrayInternal observableArrayInternal)
             {
@@ -297,10 +314,10 @@ namespace Havit.Blazor.StateManagement.Mobx
             return (ObservableArrayInternal)GetType()
                 .GetMethod(nameof(CreateObservableArrayGeneric), BindingFlags.NonPublic | BindingFlags.Instance)
                 .MakeGenericMethod(elementType)
-                .Invoke(this, new object[] { observableArray });
+                .Invoke(this, new object[] { observableArray, suppressEvent });
         }
 
-        private ObservableArrayInternal CreateObservableArrayGeneric<T>(IObservableArray<T> observableArray)
+        private ObservableArrayInternal CreateObservableArrayGeneric<T>(IObservableArray<T> observableArray, bool suppressEvent)
         {
             IEnumerable<T> elements = null;
             if (observableArray is ObservableArrayAdapter<T> adapter)
@@ -311,7 +328,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             ObservableArrayInternal<T> observableArrayInternal = new ObservableArrayInternal<T>(statePropertyChangedEvent, collectionItemsChangedEvent);
             if (elements != null)
             {
-                observableArrayInternal.AddRange(elements);
+                observableArrayInternal.AddRangeInternal(elements, suppressEvent);
             }
 
             return observableArrayInternal;
