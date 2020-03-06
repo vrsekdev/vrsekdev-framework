@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private Dictionary<string, ObservableProperty> observedProperties;
-        private Dictionary<string, ObservableArray> observedArrays;
+        private Dictionary<string, ObservableArrayInternal> observedArrays;
         private Dictionary<string, PropertyInfo> allPropertiesByName;
         private Dictionary<string, object> normalProperties;
 
@@ -39,7 +40,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             return newObservableProperty;
         }
 
-        public ObservableProperty(
+        internal ObservableProperty(
             Type interfaceType,
             EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
             EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent)
@@ -110,13 +111,12 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             if (observedArrays.ContainsKey(name))
             {
-                if (!(value is IEnumerable<object> valueArray))
+                if (!(value is IObservableArray observableArray))
                 {
-                    throw new Exception("Not an array");
+                    throw new Exception("Unsupported type of array.");
                 }
 
-                //var oldArray = observedArrays[name];
-                var newArray = CreateObservableArray(allPropertiesByName[name], valueArray);
+                var newArray = CreateObservableArray(observableArray);
                 observedArrays[name] = newArray;
 
                 collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs(Enumerable.Empty<object>(), Enumerable.Empty<object>())
@@ -153,7 +153,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             return observedProperties;
         }
 
-        public Dictionary<string, ObservableArray> GetObservedArrays()
+        public Dictionary<string, ObservableArrayInternal> GetObservedArrays()
         {
             return observedArrays;
         }
@@ -226,7 +226,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             allPropertiesByName = ObservedType.GetProperties().ToDictionary(x => x.Name);
             observedProperties = new Dictionary<string, ObservableProperty>();
-            observedArrays = new Dictionary<string, ObservableArray>();
+            observedArrays = new Dictionary<string, ObservableArrayInternal>();
             normalProperties = new Dictionary<string, object>();
 
             foreach (var propertyKvp in allPropertiesByName)
@@ -243,19 +243,9 @@ namespace Havit.Blazor.StateManagement.Mobx
 
                     observedProperties.Add(propertyName, CreateObservableProperty(propertyInfo));
                 }
-                else if (propertyInfo.HasObservableArrayAttribute())
+                else if (IsSupportedObservableArrayType(propertyInfo.PropertyType))
                 {
-                    if (!propertyInfo.PropertyType.IsInterface)
-                    {
-                        throw new Exception("Observables must be an interface.");
-                    }
-
-                    if (!IsSupportedArrayType(propertyInfo.PropertyType))
-                    {
-                        throw new Exception($"Type {propertyInfo.PropertyType} is not supported array type.");
-                    }
-
-                    observedArrays.Add(propertyName, CreateObservableArray(propertyInfo));
+                    observedArrays.Add(propertyName, CreateEmptyObservableArray(propertyInfo));
                 }
                 else
                 {
@@ -264,11 +254,10 @@ namespace Havit.Blazor.StateManagement.Mobx
             }
         }
 
-        private bool IsSupportedArrayType(Type type)
+        private bool IsSupportedObservableArrayType(Type type)
         {
-            return type.IsGenericType && (
-                type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-                || type.GetGenericTypeDefinition() == typeof(ICollection<>));
+            return type.IsGenericType && 
+                type.GetGenericTypeDefinition() == typeof(IObservableArray<>);
         }
 
         private ObservableProperty CreateObservableProperty(PropertyInfo property)
@@ -280,22 +269,52 @@ namespace Havit.Blazor.StateManagement.Mobx
                 collectionItemsChangedEvent);
         }
 
-        private ObservableArray CreateObservableArray(PropertyInfo property, IEnumerable<object> elements = null)
+        private ObservableArrayInternal CreateEmptyObservableArray(PropertyInfo property)
         {
             Type valueType = property.PropertyType;
-            Type observableArrayType = typeof(ObservableArray<>).MakeGenericType(valueType.GetGenericArguments()[0]);
+            Type observableArrayType = typeof(ObservableArrayInternal<>).MakeGenericType(valueType.GetGenericArguments()[0]);
 
-            object[] parameters;
+            object[] parameters = new object[] { statePropertyChangedEvent, collectionItemsChangedEvent };
+
+            return (ObservableArrayInternal)Activator.CreateInstance(observableArrayType, BindingFlags.NonPublic | BindingFlags.Instance, null, parameters, null);
+        }
+
+        private ObservableArrayInternal CreateObservableArray(IObservableArray observableArray)
+        {
+            if (observableArray is ObservableArrayInternal observableArrayInternal)
+            {
+                return observableArrayInternal;
+            }
+
+            Type observableArrayType = observableArray.GetType();
+            if (!observableArrayType.IsGenericType)
+            {
+                throw new Exception($"Unexpected implementation of {observableArrayType.Name}");
+            }
+
+            Type elementType = observableArrayType.GetGenericArguments()[0];
+
+            return (ObservableArrayInternal)GetType()
+                .GetMethod(nameof(CreateObservableArrayGeneric), BindingFlags.NonPublic | BindingFlags.Instance)
+                .MakeGenericMethod(elementType)
+                .Invoke(this, new object[] { observableArray });
+        }
+
+        private ObservableArrayInternal CreateObservableArrayGeneric<T>(IObservableArray<T> observableArray)
+        {
+            IEnumerable<T> elements = null;
+            if (observableArray is ObservableArrayAdapter<T> adapter)
+            {
+                elements = adapter;
+            }
+
+            ObservableArrayInternal<T> observableArrayInternal = new ObservableArrayInternal<T>(statePropertyChangedEvent, collectionItemsChangedEvent);
             if (elements != null)
             {
-                parameters = new object[] { elements, collectionItemsChangedEvent };
-            }
-            else
-            {
-                parameters = new object[] { collectionItemsChangedEvent };
+                observableArrayInternal.AddRange(elements);
             }
 
-            return (ObservableArray)Activator.CreateInstance(observableArrayType, parameters);
+            return observableArrayInternal;
         }
 
         private object GetDefault(Type t)

@@ -11,11 +11,11 @@ namespace Havit.Blazor.StateManagement.Mobx
         public string PropertyName { get; set; }
     }
 
-    public class DynamicStateProperty : DynamicObject, IObservable<PropertyAccessedArgs>
+    public class DynamicStateProperty : DynamicObject, IObservable<PropertyAccessedArgs>, IDisposable
     {
         private readonly List<IObserver<PropertyAccessedArgs>> observers = new List<IObserver<PropertyAccessedArgs>>();
 
-        private readonly Dictionary<string, ObservableArray> observedDynamicArrays = new Dictionary<string, ObservableArray>();
+        private readonly Dictionary<string, ObservableArrayInternal> observedDynamicArrays = new Dictionary<string, ObservableArrayInternal>();
         private readonly Dictionary<string, object> observedDynamicProperties = new Dictionary<string, object>();
 
         internal ObservableProperty ObservableProperty { get; }
@@ -31,10 +31,20 @@ namespace Havit.Blazor.StateManagement.Mobx
             return ImpromptuInterface.Impromptu.ActLike<TState>(dynamicState);
         }
 
-        public static DynamicStateProperty Unbox<TState>(TState state)
-            where TState : class
+        public static object Box(DynamicStateProperty dynamicState, Type type)
         {
-            return ImpromptuInterface.Impromptu.UndoActLike(state) as DynamicStateProperty;
+            return ImpromptuInterface.Impromptu.ActLike(dynamicState, type).Target;
+        }
+
+        public static DynamicStateProperty Unbox<TStore>(TStore store)
+            where TStore : class
+        {
+            return ImpromptuInterface.Impromptu.UndoActLike(store) as DynamicStateProperty;
+        }
+
+        public static bool IsObservable(object value)
+        {
+            return Unbox(value) != null;
         }
 
         private DynamicStateProperty(ObservableProperty observableProperty)
@@ -62,7 +72,21 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            return ObservableProperty.TrySetMember(binder.Name, value);
+            string name = binder.Name;
+
+            if (observedDynamicArrays.ContainsKey(name))
+            {
+                foreach (object item in observedDynamicArrays[name])
+                {
+                    DynamicStateProperty dynamicState = DynamicStateProperty.Unbox(item);
+                    if (dynamicState != null)
+                    {
+                        dynamicState.Dispose();
+                    }
+                }
+            }
+
+            return ObservableProperty.TrySetMember(name, value);
         }
 
         public IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer)
@@ -98,7 +122,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private object GetObserverProperty(ObservableProperty observableProperty)
         {
-            return ImpromptuInterface.Impromptu.ActLike(new DynamicStateProperty(observableProperty), observableProperty.ObservedType).Target;
+            DynamicStateProperty dynamicState = new DynamicStateProperty(observableProperty);
+            return Box(dynamicState, observableProperty.ObservedType);
         }
 
         private void OnPropertyAccessed(string name)
@@ -112,6 +137,20 @@ namespace Havit.Blazor.StateManagement.Mobx
             foreach (var observer in observers)
             {
                 observer.OnNext(args);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var observedDynamicProperty in observedDynamicProperties.Values)
+            {
+                DynamicStateProperty dynamicState = Unbox(observedDynamicProperty);
+                dynamicState.Dispose();
+            }
+
+            foreach (var observer in observers)
+            {
+                observer.OnCompleted();
             }
         }
 

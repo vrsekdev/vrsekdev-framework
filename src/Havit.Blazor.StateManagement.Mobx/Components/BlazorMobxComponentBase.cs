@@ -30,5 +30,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         {
             DynamicStateProperty.Unbox(Store).ObservableProperty.ResetValues();
         }
+
+        protected T CreateObservable<T>()
+            where T : class
+        {
+            return StoreAccessor.CreateObservable<T>();
+        }
     }
 }

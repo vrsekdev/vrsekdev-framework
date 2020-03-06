@@ -55,5 +55,13 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             CollectionItemsChangedEvent?.Invoke(sender, e);
         }
+
+        public ObservableProperty CreateObservableProperty(Type type)
+        {
+            return new ObservableProperty(
+                type,
+                new EventHandler<StatePropertyChangedEventArgs>(OnStatePropertyChanged),
+                new EventHandler<CollectionItemsChangedEventArgs>(OnCollectionItemsChanged));
+        }
     }
 }
