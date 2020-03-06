@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Havit.Blazor.StateManagement.Mobx.Components
 {
-    public class MobxStoreHolder
+    public class CascadeStoreHolder
     {
         public const string CascadingParameterName = "__StoreHolder";
     }
 
-    public class MobxStoreHolder<TStore> : ComponentBase
+    public class CascadeStoreHolder<TStore> : ComponentBase
         where TStore : class
     {
         private readonly IStoreHolder<TStore> storeHolder;
@@ -21,7 +21,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         [Parameter]
         public RenderFragment ChildContent { get; set; }
 
-        public MobxStoreHolder()
+        public CascadeStoreHolder()
         {
             storeHolder = new StoreHolder<TStore>();
         }
@@ -43,7 +43,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
             {
                 __builder.OpenComponent<CascadingValue<TValue>>(seq);
                 __builder.AddAttribute(__seq0, "Value", __arg0);
-                __builder.AddAttribute(__seq1, "Name", MobxStoreHolder.CascadingParameterName);
+                __builder.AddAttribute(__seq1, "Name", CascadeStoreHolder.CascadingParameterName);
                 __builder.AddAttribute(__seq2, "ChildContent", __arg2);
                 __builder.CloseComponent();
             }

@@ -34,22 +34,22 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
             return services;
         }
 
-        public IServiceCollection PerHierarchy()
+        public IServiceCollection Cascading()
         {
-            services.AddTransient<IStoreAccessor<TStore>, HierarchyStoreAccessor<TStore>>();
+            services.AddTransient<IStoreAccessor<TStore>, CascadeStoreAccessor<TStore>>();
 
             return services;
         }
 
         private IStoreHolder<TStore> GetStoreHolder()
         {
-            var stateHolder = new StoreHolder<TStore>();
+            var storeHolder = new StoreHolder<TStore>();
             if (defaultState != null)
             {
-                stateHolder.RootObservableProperty.OverwriteFrom(defaultState);
+                storeHolder.RootObservableProperty.OverwriteFrom(defaultState);
             }
 
-            return stateHolder;
+            return storeHolder;
         }
 
         public MobxStoreRegistration<TStore> WithDefaultState<TStoreImpl>(TStoreImpl defaultState)

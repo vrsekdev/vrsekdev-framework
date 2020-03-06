@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class HierarchyStoreAccessor<TStore> : IStoreAccessor<TStore>
+    public class CascadeStoreAccessor<TStore> : IStoreAccessor<TStore>
         where TStore : class
     {
         public TStore Store => throw CreateException();
@@ -31,6 +31,6 @@ namespace Havit.Blazor.StateManagement.Mobx
             // NOOP
         }
 
-        private Exception CreateException() => new InvalidOperationException("Store accessor is not available for hieararchy lifestyle");
+        private Exception CreateException() => new InvalidOperationException("Store accessor is not available for cascade lifestyle");
     }
 }

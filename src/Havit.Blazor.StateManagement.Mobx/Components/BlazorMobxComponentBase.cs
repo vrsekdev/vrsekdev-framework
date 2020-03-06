@@ -9,25 +9,27 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
     public class BlazorMobxComponentBase<TStore> : ComponentBase
         where TStore : class
     {
-        protected TStore Store { get; private set; }
+        protected TStore Store => storeAccessor.Store;
+
+        private IStoreAccessor<TStore> storeAccessor;
 
         [Inject]
-        private IStoreAccessor<TStore> StoreAccessor { get; set; }
+        private IStoreAccessor<TStore> InjectedStoreAccessor { get; set; }
 
-        [CascadingParameter(Name = MobxStoreHolder.CascadingParameterName)]
-        private TStore HierarchyStore { get; set; }
+        [CascadingParameter(Name = CascadeStoreHolder.CascadingParameterName)]
+        private IStoreAccessor<TStore> CascadeStoreAccessor { get; set; }
 
         public Task ForceUpdate()
         {
             return InvokeAsync(StateHasChanged);
         }
 
-        public override Task SetParametersAsync(ParameterView parameters)
+        protected override void OnParametersSet()
         {
-            StoreAccessor.SetConsumer(this);
-            Store = HierarchyStore ?? StoreAccessor.Store;
+            storeAccessor = CascadeStoreAccessor ?? InjectedStoreAccessor;
+            storeAccessor.SetConsumer(this);
 
-            return base.SetParametersAsync(parameters);
+            base.OnParametersSet();
         }
 
         public void ResetStore()
@@ -38,7 +40,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         protected T CreateObservable<T>()
             where T : class
         {
-            return StoreAccessor.CreateObservable<T>();
+            return InjectedStoreAccessor.CreateObservable<T>();
         }
     }
 }

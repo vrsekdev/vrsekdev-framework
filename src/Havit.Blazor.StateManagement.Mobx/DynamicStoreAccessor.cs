@@ -30,9 +30,6 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private IConsumerWrapper consumer;
 
-        [CascadingParameter(Name = MobxStoreHolder.CascadingParameterName)]
-        public string Value { get; set; }
-
         public DynamicStoreAccessor(IStoreHolder<TStore> storeHolder)
         {
             if (!typeof(TStore).IsInterface)
@@ -55,11 +52,15 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void SetConsumer(BlazorMobxComponentBase<TStore> consumer)
         {
+            Contract.Requires(consumer == null);
+
             this.consumer = new MobxConsumerWrapper(consumer);
         }
 
         public void SetConsumer(ComponentBase consumer)
         {
+            Contract.Requires(consumer == null);
+
             this.consumer = new ReflectionConsumerWrapper(consumer);
         }
 
