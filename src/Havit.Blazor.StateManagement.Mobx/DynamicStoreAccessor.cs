@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class PropertyAccessedEventArgs
+    internal class PropertyAccessedEventArgs
     {
         public Type ObservedType { get; set; }
 
         public string PropertyName { get; set; }
     }
 
-    public class DynamicStoreAccessor<TStore> : IStoreAccessor<TStore>, IDisposable
+    internal class DynamicStoreAccessor<TStore> : IStoreAccessor<TStore>, IDisposable
         where TStore : class
     {
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;

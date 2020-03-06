@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public enum ObservableType
+    internal enum ObservableType
     {
         Property,
         Array

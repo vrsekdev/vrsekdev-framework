@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class StatePropertyChangedEventArgs
+    internal class StatePropertyChangedEventArgs
     {
         public string PropertyName { get; set; }
     }
 
-    public class CollectionItemsChangedEventArgs
+    internal class CollectionItemsChangedEventArgs
     {
         public CollectionItemsChangedEventArgs(
             IEnumerable<object> itemsAdded,
@@ -29,7 +29,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         public IEnumerable<object> ItemsRemoved { get; }
     }
 
-    public class StoreHolder<TStore> : IStoreHolder<TStore>
+    internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
         public ObservableProperty RootObservableProperty { get; }

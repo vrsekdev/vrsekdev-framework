@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public interface IObservable
+    internal interface IObservable
     {
         ObservableType ObservableType { get; }
     }

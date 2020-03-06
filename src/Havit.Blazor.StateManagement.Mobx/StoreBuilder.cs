@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public static class StoreBuilder
+    internal static class StoreBuilder
     {
         public static StoreBuilder<TStore> CopyFrom<TStore>(TStore store)
             where TStore : class
@@ -38,7 +38,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         }
     }
 
-    public class StoreBuilder<TStore>
+    internal class StoreBuilder<TStore>
         where TStore : class
     {
         private readonly ObservableProperty observableProperty;

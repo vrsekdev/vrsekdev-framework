@@ -4,14 +4,14 @@ using System.Dynamic;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class PropertyAccessedArgs
+    internal class PropertyAccessedArgs
     {
         public ObservableProperty ObservableProperty { get; set; }
 
         public string PropertyName { get; set; }
     }
 
-    public class DynamicStateProperty : DynamicObject, IObservable<PropertyAccessedArgs>, IDisposable
+    internal class DynamicStateProperty : DynamicObject, IObservable<PropertyAccessedArgs>, IDisposable
     {
         private readonly List<IObserver<PropertyAccessedArgs>> observers = new List<IObserver<PropertyAccessedArgs>>();
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class ObservableProperty : IObservable
+    internal class ObservableProperty : IObservable
     {
         private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;

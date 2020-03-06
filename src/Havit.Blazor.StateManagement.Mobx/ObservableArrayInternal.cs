@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public abstract class ObservableArrayInternal : IEnumerable
+    internal abstract class ObservableArrayInternal : IEnumerable
     {
         public abstract IEnumerator GetEnumerator();
 
@@ -17,7 +17,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         public abstract void AddRange(IEnumerable<object> items);
     }
 
-    public class ObservableArrayInternal<T> : ObservableArrayInternal, IObservableArray<T>, IObservable
+    internal class ObservableArrayInternal<T> : ObservableArrayInternal, IObservableArray<T>, IObservable
     {
         private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
