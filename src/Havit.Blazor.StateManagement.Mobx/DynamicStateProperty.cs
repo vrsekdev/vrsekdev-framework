@@ -13,7 +13,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
     internal class DynamicStateProperty : DynamicObject, IObservable<PropertyAccessedArgs>, IDisposable
     {
-        private readonly List<IObserver<PropertyAccessedArgs>> observers = new List<IObserver<PropertyAccessedArgs>>();
+        private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
 
         private readonly Dictionary<string, ObservableArrayInternal> observedDynamicArrays = new Dictionary<string, ObservableArrayInternal>();
         private readonly Dictionary<string, object> observedDynamicProperties = new Dictionary<string, object>();
@@ -25,21 +25,33 @@ namespace Havit.Blazor.StateManagement.Mobx
             return new DynamicStateProperty(observableProperty);
         }
 
-        public static TState Box<TState>(DynamicStateProperty dynamicState)
-            where TState : class
+        public static DynamicStateProperty PlantObserversFrom(ObservableProperty observableProperty, DynamicStateProperty source)
         {
-            return ImpromptuInterface.Impromptu.ActLike<TState>(dynamicState);
+            var dynamicState = Create(observableProperty);
+            foreach (var sourceObserver in source.observers)
+            {
+                ObserverDisposer disposer = sourceObserver.Value;
+                disposer.AddDisposeAction(dynamicState.Subscribe(sourceObserver.Key));
+            }
+
+            return dynamicState;
         }
 
-        public static object Box(DynamicStateProperty dynamicState, Type type)
+        public static T Box<T>(DynamicStateProperty dynamicState)
+            where T : class
+        {
+            return ImpromptuInterface.Impromptu.ActLike<T>(dynamicState);
+        }
+
+        public static dynamic Box(DynamicStateProperty dynamicState, Type type)
         {
             return ImpromptuInterface.Impromptu.ActLike(dynamicState, type).Target;
         }
 
-        public static DynamicStateProperty Unbox<TStore>(TStore store)
-            where TStore : class
+        public static DynamicStateProperty Unbox<T>(T val)
+            where T : class
         {
-            return ImpromptuInterface.Impromptu.UndoActLike(store) as DynamicStateProperty;
+            return ImpromptuInterface.Impromptu.UndoActLike(val) as DynamicStateProperty;
         }
 
         public static bool IsObservable(object value)
@@ -91,18 +103,21 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer)
         {
-            observers.Add(observer);
+            var disposer = new ObserverDisposer();
 
             foreach (var observedDynamicObject in observedDynamicProperties.Values)
             {
                 DynamicStateProperty dynamicState = Unbox(observedDynamicObject);
                 if (dynamicState != null)
                 {
-                    dynamicState.Subscribe(observer);
+                    disposer.AddDisposeAction(dynamicState.Subscribe(observer));
                 }
             }
 
-            return new ObserverDisposer(() => observers.Remove(observer));
+            disposer.AddDisposeAction(() => observers.Remove(observer));
+
+            observers.Add(observer, disposer);
+            return disposer;
         }
 
         public override string ToString()
@@ -134,7 +149,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 PropertyName = name
             };
 
-            foreach (var observer in observers)
+            foreach (var observer in observers.Keys)
             {
                 observer.OnNext(args);
             }
@@ -148,7 +163,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 dynamicState.Dispose();
             }
 
-            foreach (var observer in observers)
+            foreach (var observer in observers.Keys)
             {
                 observer.OnCompleted();
             }
@@ -156,16 +171,38 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private class ObserverDisposer : IDisposable
         {
-            private readonly Action disposeAction;
+            private readonly List<Action> disposeActions = new List<Action>();
 
-            public ObserverDisposer(Action disposeAction)
+            private bool disposed;
+
+            public void AddDisposeAction(Action action)
             {
-                this.disposeAction = disposeAction;
+                disposeActions.Add(action);
+            }
+
+            public void AddDisposeAction(IDisposable disposable)
+            {
+                disposeActions.Add(() => disposable.Dispose());
             }
 
             public void Dispose()
             {
-                disposeAction();
+                if (!disposed)
+                {
+                    foreach (var disposeAction in disposeActions)
+                    {
+                        disposeAction();
+                    }
+
+                    disposed = true;
+                }
+#if DEBUG
+                else
+                {
+                    throw new Exception("Already disposed.");
+                }
+#endif
+
             }
         }
     }

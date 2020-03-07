@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Attributes;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Extensions
         public static bool HasObservableArrayElementAttribute(this Type type)
         {
             return type.GetCustomAttribute<ObservableArrayElementAttribute>() != null;
+        }
+
+        public static bool IsParameterProperty(this PropertyInfo property)
+        {
+            return property.GetCustomAttribute<ParameterAttribute>() != null;
         }
     }
 }

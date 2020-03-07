@@ -41,6 +41,26 @@ namespace Havit.Blazor.StateManagement.Mobx
             return newObservableProperty;
         }
 
+        internal static ObservableProperty CreateEmptyCopyWithoutCallbacks(ObservableProperty observableProperty)
+        {
+            var newObservableProperty = new ObservableProperty(
+                observableProperty.ObservedType,
+                null,
+                null);
+
+            return newObservableProperty;
+        }
+
+        internal static ObservableProperty CreateWithoutCallbacks(Type observedType)
+        {
+            var newObservableProperty = new ObservableProperty(
+                observedType,
+                null,
+                null);
+
+            return newObservableProperty;
+        }
+
         internal ObservableProperty(
             Type interfaceType,
             EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
