@@ -68,6 +68,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         public T CreateObservable<T>()
              where T : class
         {
+            // TODO: Create observable array method
             ObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
             DynamicStateProperty dynamicState = DynamicStateProperty.Create(observableProperty);
             // TODO: Plant listener
@@ -103,6 +104,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                     observerDisposables[key].Dispose();
                     observerDisposables.Remove(key);
                 }));
+            observerDisposables.Add(key, disposable);
         }
 
         private void DynamicStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
@@ -217,15 +219,15 @@ namespace Havit.Blazor.StateManagement.Mobx
 					binder: null,
 					types: new[] { typeof(Action) },
 					modifiers: null);
-			ComponentBaseInvokeAsync = (Func<ComponentBase, Action, Task>)
-				Delegate.CreateDelegate(typeof(Func<ComponentBase, Action, Task>), invokeAsyncMethodInfo);
+                ComponentBaseInvokeAsync = (Func<ComponentBase, Action, Task>)
+                    Delegate.CreateDelegate(typeof(Func<ComponentBase, Action, Task>), invokeAsyncMethodInfo);
 
-			MethodInfo stateHasChangedMethodInfo =
-				typeof(ComponentBase).GetMethod(
-					name: "StateHasChanged",
-					bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo stateHasChangedMethodInfo =
+                    typeof(ComponentBase).GetMethod(
+                        name: "StateHasChanged",
+                        bindingAttr: BindingFlags.NonPublic | BindingFlags.Instance);
 
-			ComponentBaseStateHasChanged = (Action<ComponentBase>)Delegate.CreateDelegate(typeof(Action<ComponentBase>), stateHasChangedMethodInfo);
+                ComponentBaseStateHasChanged = (Action<ComponentBase>)Delegate.CreateDelegate(typeof(Action<ComponentBase>), stateHasChangedMethodInfo);
             }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Reflection;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
@@ -15,7 +16,7 @@ namespace Havit.Blazor.StateManagement.Mobx
     {
         private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
 
-        private readonly Dictionary<string, ObservableArrayInternal> observedDynamicArrays = new Dictionary<string, ObservableArrayInternal>();
+        private readonly Dictionary<string, DynamicObservableArray> observedDynamicArrays = new Dictionary<string, DynamicObservableArray>();
         private readonly Dictionary<string, object> observedDynamicProperties = new Dictionary<string, object>();
 
         internal ObservableProperty ObservableProperty { get; }
@@ -23,18 +24,6 @@ namespace Havit.Blazor.StateManagement.Mobx
         public static DynamicStateProperty Create(ObservableProperty observableProperty)
         {
             return new DynamicStateProperty(observableProperty);
-        }
-
-        public static DynamicStateProperty PlantObserversFrom(ObservableProperty observableProperty, DynamicStateProperty source)
-        {
-            var dynamicState = Create(observableProperty);
-            foreach (var sourceObserver in source.observers)
-            {
-                ObserverDisposer disposer = sourceObserver.Value;
-                disposer.AddDisposeAction(dynamicState.Subscribe(sourceObserver.Key));
-            }
-
-            return dynamicState;
         }
 
         public static T Box<T>(DynamicStateProperty dynamicState)
@@ -45,7 +34,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public static dynamic Box(DynamicStateProperty dynamicState, Type type)
         {
-            return ImpromptuInterface.Impromptu.ActLike(dynamicState, type).Target;
+            return ImpromptuInterface.Impromptu.ActLike(dynamicState, type);
         }
 
         public static DynamicStateProperty Unbox<T>(T val)
@@ -75,6 +64,13 @@ namespace Havit.Blazor.StateManagement.Mobx
             if (observedDynamicProperties.ContainsKey(name))
             {
                 result = observedDynamicProperties[name];
+
+                return true;
+            }
+
+            if (observedDynamicArrays.ContainsKey(name))
+            {
+                result = observedDynamicArrays[name];
 
                 return true;
             }
@@ -128,17 +124,31 @@ namespace Havit.Blazor.StateManagement.Mobx
         private void Initialize()
         {
             var observedProperties = ObservableProperty.GetObservedProperties();
+            var observedArrays = ObservableProperty.GetObservedArrays();
 
             foreach (var observedProperty in observedProperties)
             {
                 observedDynamicProperties[observedProperty.Key] = GetObserverProperty(observedProperty.Value);
+            }
+
+            foreach (var observedArray in observedArrays)
+            {
+                observedDynamicArrays[observedArray.Key] = GetObserverArray(observedArray.Value);
             }
         }
 
         private object GetObserverProperty(ObservableProperty observableProperty)
         {
             DynamicStateProperty dynamicState = new DynamicStateProperty(observableProperty);
-            return Box(dynamicState, observableProperty.ObservedType);
+            return Box(dynamicState, observableProperty.ObservedType).Target;
+        }
+
+        private DynamicObservableArray GetObserverArray(ObservableArrayInternal observableArray)
+        {
+            Type elementType = observableArray.ObservedElementType;
+            Type dynamicObserverArrayType = typeof(DynamicObservableArray<>).MakeGenericType(elementType);
+
+            return (DynamicObservableArray)Activator.CreateInstance(dynamicObserverArrayType, observableArray);
         }
 
         private void OnPropertyAccessed(string name)

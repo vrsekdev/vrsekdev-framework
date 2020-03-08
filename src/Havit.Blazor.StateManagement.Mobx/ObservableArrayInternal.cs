@@ -10,6 +10,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 {
     internal abstract class ObservableArrayInternal : IEnumerable<object>, ICollection
     {
+        internal abstract Type ObservedElementType { get; }
+
         public abstract int Count { get; }
         public abstract bool IsSynchronized { get; }
         public abstract object SyncRoot { get; }
@@ -26,21 +28,17 @@ namespace Havit.Blazor.StateManagement.Mobx
         }
 
         public abstract IEnumerator<object> GetObjectEnumerator();
-
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void CopyTo(Array array, int index);
     }
 
     internal class ObservableArrayInternal<T> : ObservableArrayInternal, IObservableArray<T>, IObservable
     {
-        private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
-        private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        internal readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
+        internal readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private readonly List<T> list;
 
-        private bool ShouldObserveElements { get; }
+        internal override Type ObservedElementType { get; }
 
         internal ObservableArrayInternal(
             EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
@@ -50,7 +48,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
             list = new List<T>();
 
-            ShouldObserveElements = typeof(T).HasObservableArrayElementAttribute();
+            ObservedElementType = typeof(T);
         }
 
         public T this[int index]
@@ -64,7 +62,6 @@ namespace Havit.Blazor.StateManagement.Mobx
                 var removedItems = new object[] { oldValue };
 
                 T item = value;
-                TryBoxItem(ref item);
 
                 list[index] = item;
 
@@ -100,8 +97,6 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         internal void AddInternal(T item, bool suppressEvent)
         {
-            TryBoxItem(ref item);
-
             var addedItems = new object[] { item };
             var removedItems = Enumerable.Empty<object>();
 
@@ -138,7 +133,6 @@ namespace Havit.Blazor.StateManagement.Mobx
             foreach (T item in items)
             {
                 T innerItem = item;
-                TryBoxItem(ref innerItem);
                 list.Add(innerItem);
             }
 
@@ -215,30 +209,12 @@ namespace Havit.Blazor.StateManagement.Mobx
             return removed;
         }
 
-        private bool TryBoxItem(ref T item)
+        public void RemoveAt(int index)
         {
-            if (!ShouldObserveElements)
-            {
-                return false;
-            }
-
-            if (DynamicStateProperty.IsObservable(item))
-            {
-                return false;
-            }
-
-            ObservableProperty observableProperty = new ObservableProperty(typeof(T),
-                statePropertyChangedEvent,
-                collectionItemsChangedEvent);
-            observableProperty.OverwriteFrom(item);
-
-            DynamicStateProperty dynamicState = DynamicStateProperty.Create(observableProperty);
-            item = (T)DynamicStateProperty.Box(dynamicState, typeof(T));
-
-            return true;
+            throw new NotImplementedException();
         }
 
-        public void RemoveAt(int index)
+        public override void CopyTo(Array array, int index)
         {
             throw new NotImplementedException();
         }
