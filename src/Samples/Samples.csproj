@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>Havit.Blazor.StateManagement.Mobx.Samples</AssemblyName>
+    <RootNamespace>Havit.Blazor.StateManagement.Mobx.Samples</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Havit.Blazor.StateManagement.Mobx\Havit.Blazor.StateManagement.Mobx.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
 </Project>

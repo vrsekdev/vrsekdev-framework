@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Havit.Blazor.StateManagement.Mobx", "Havit.Blazor.StateManagement.Mobx\Havit.Blazor.StateManagement.Mobx.csproj", "{DF244571-6EF0-431B-8F73-8AB35132D5FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{DF244571-6EF0-431B-8F73-8AB35132D5FA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Havit.Blazor.StateManagement.Mobx.Samples", "Havit.Blazor.StateManagement.Mobx.Samples\Havit.Blazor.StateManagement.Mobx.Samples.csproj", "{062C5DA0-BF38-4133-A53D-B465F2084697}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{062C5DA0-BF38-4133-A53D-B465F2084697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Observers.Dynamic", "Observers.Dynamic\Observers.Dynamic.csproj", "{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Observers.Shared", "Observers.Shared\Observers.Shared.csproj", "{93507F4B-3050-4630-8E63-D84D821F6041}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{062C5DA0-BF38-4133-A53D-B465F2084697}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{062C5DA0-BF38-4133-A53D-B465F2084697}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{062C5DA0-BF38-4133-A53D-B465F2084697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93507F4B-3050-4630-8E63-D84D821F6041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93507F4B-3050-4630-8E63-D84D821F6041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93507F4B-3050-4630-8E63-D84D821F6041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93507F4B-3050-4630-8E63-D84D821F6041}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

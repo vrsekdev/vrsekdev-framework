@@ -8,13 +8,6 @@ using System.Reflection;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class PropertyAccessedArgs
-    {
-        public DynamicStateProperty DynamicStateProperty { get; set; }
-
-        public string PropertyName { get; set; }
-    }
-
     internal class DynamicStateProperty : DynamicObject, IObservable<PropertyAccessedArgs>, IDisposable
     {
         private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
