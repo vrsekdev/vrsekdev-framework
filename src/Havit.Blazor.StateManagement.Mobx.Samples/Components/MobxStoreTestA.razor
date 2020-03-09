@@ -1,0 +1,27 @@
+﻿@using Havit.Blazor.StateManagement.Mobx.Components
+
+@inherits BlazorMobxComponentBase<IHomeStore>
+
+<h3>MobxStateTestA</h3>
+
+<p>Value: @Store.Value</p>
+
+@foreach (var todo in Store.Todos)
+{
+    <p>@todo</p>
+}
+
+<button @onclick="IncrementValue">Increment value</button>
+<button @onclick="ResetStore">Reset store</button>
+
+@code {
+    protected void IncrementValue()
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+
+        Store.Value += 1;
+
+        sw.Stop();
+        Store.Timer = sw.ElapsedMilliseconds.ToString();
+    }
+}

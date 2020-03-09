@@ -1,0 +1,12 @@
+﻿@using Havit.Blazor.StateManagement.Mobx.Components
+
+@page "/person"
+
+@inherits BlazorMobxComponentBase<IHomeStore>
+
+<h3>Person</h3>
+
+<p>First name: <input @bind="Store.Person.FirstName" @bind:event="oninput"/></p>
+<p>Last name: <input @bind="Store.Person.LastName" @bind:event="oninput"/></p>
+
+<PersonDisplay />

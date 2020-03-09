@@ -1,0 +1,14 @@
+﻿@using Havit.Blazor.StateManagement.Mobx.Components
+
+@inherits BlazorMobxComponentBase<IHomeStore>
+
+<h3>MobxStateTestB</h3>
+
+<p>Value: @Store.Value</p>
+
+<p>Timer: @Store.Timer</p>
+
+@foreach (var todo in Store.Todos)
+{
+    <p>@todo</p>
+}

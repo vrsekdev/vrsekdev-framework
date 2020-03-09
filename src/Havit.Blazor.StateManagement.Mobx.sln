@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Havit.Blazor.StateManagement.Mobx", "Havit.Blazor.StateManagement.Mobx\Havit.Blazor.StateManagement.Mobx.csproj", "{DF244571-6EF0-431B-8F73-8AB35132D5FA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Havit.Blazor.StateManagement.Mobx.Samples", "Havit.Blazor.StateManagement.Mobx.Samples\Havit.Blazor.StateManagement.Mobx.Samples.csproj", "{062C5DA0-BF38-4133-A53D-B465F2084697}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DF244571-6EF0-431B-8F73-8AB35132D5FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF244571-6EF0-431B-8F73-8AB35132D5FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF244571-6EF0-431B-8F73-8AB35132D5FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{062C5DA0-BF38-4133-A53D-B465F2084697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{062C5DA0-BF38-4133-A53D-B465F2084697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{062C5DA0-BF38-4133-A53D-B465F2084697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{062C5DA0-BF38-4133-A53D-B465F2084697}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

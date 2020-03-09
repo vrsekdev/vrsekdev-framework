@@ -1,0 +1,20 @@
+﻿@using Havit.Blazor.StateManagement.Mobx.Components
+
+@inherits BlazorMobxComponentBase<IHomeStore>
+
+<h3>TodosDisplay</h3>
+
+@foreach (var todo in Store.Todos)
+{
+    <CascadeStoreHolder TStore="ITodoStore">
+        <TodoItemDisplay TodoItem="todo" />
+    </CascadeStoreHolder>
+    
+}
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+}
