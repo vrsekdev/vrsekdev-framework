@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Havit.Blazor.StateManagement.Mobx.Samples.Data;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Observables.Dynamic.Extensions;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples
 {
@@ -30,6 +30,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
 
+            services.UseDynamicObservables();
             services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).AsSingleton();
             services.AddMobxStore<IHomeStore>().AsSingleton();
             services.AddMobxStore<ICounterStore>().AsTransient();

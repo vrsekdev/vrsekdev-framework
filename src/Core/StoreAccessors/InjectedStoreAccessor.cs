@@ -1,5 +1,5 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Components;
-using Havit.Linq;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -8,45 +8,44 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 {
-    internal class PropertyAccessedEventArgs
-    {
-        public DynamicStateProperty DynamicStateProperty { get; set; }
-
-        public string PropertyName { get; set; }
-    }
-
-    internal class DynamicStoreAccessor<TStore> : IStoreAccessor<TStore>, IDisposable
+    internal class InjectedStoreAccessor<TStore> : IStoreAccessor<TStore>
         where TStore : class
     {
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
 
         private readonly IStoreHolder<TStore> storeHolder;
-
+        private readonly IPropertyObservableFactory propertyObservableFactory;
+        private readonly IPropertyObservableWrapper propertyObservableWrapper;
         private readonly object rootDisposableKey = new object();
 
-        private HashSet<(ObservableProperty, string)> subscribedProperties = new HashSet<(ObservableProperty, string)>();
+        private HashSet<(IObservableProperty, string)> subscribedProperties = new HashSet<(IObservableProperty, string)>();
         private Dictionary<object, IDisposable> observerDisposables = new Dictionary<object, IDisposable>();
 
         private IConsumerWrapper consumer;
 
-        public DynamicStoreAccessor(IStoreHolder<TStore> storeHolder)
+        public InjectedStoreAccessor(
+            IStoreHolder<TStore> storeHolder,
+            IPropertyObservableFactory propertyObservableFactory,
+            IPropertyObservableWrapper propertyObservableWrapper)
         {
             if (!typeof(TStore).IsInterface)
             {
                 throw new Exception("State type must be an interface");
             }
             this.storeHolder = storeHolder;
+            this.propertyObservableFactory = propertyObservableFactory;
+            this.propertyObservableWrapper = propertyObservableWrapper;
 
-            DynamicStateProperty dynamicState = DynamicStateProperty.Create(storeHolder.RootObservableProperty);
-            Store = DynamicStateProperty.Box<TStore>(dynamicState);
+            IPropertyObservable propertyObservable = propertyObservableFactory.Create(storeHolder.RootObservableProperty);
+            Store = propertyObservableWrapper.WrapPropertyObservable<TStore>(propertyObservable);
 
             PropertyAccessedEvent += DynamicStoreAccessor_PropertyAccessedEvent;
             storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
 
-            PlantSubscriber(rootDisposableKey, dynamicState);
+            PlantSubscriber(rootDisposableKey, propertyObservable);
         }
 
         public TStore Store { get; }
@@ -70,14 +69,21 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             // TODO: Create observable array method
             ObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
-            DynamicStateProperty dynamicState = DynamicStateProperty.Create(observableProperty);
-            // TODO: PlantSubscriber
-            return DynamicStateProperty.Box<T>(dynamicState);
+
+            return CreateObservable<T>(observableProperty);
         }
 
-        public void SubscribeObserver(DynamicStateProperty dynamicState)
+        internal T CreateObservable<T>(ObservableProperty observableProperty)
+            where T : class
         {
-            PlantSubscriber(new object(), dynamicState);
+            IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
+            // TODO: PlantSubscriber
+            return propertyObservableWrapper.WrapPropertyObservable<T>(propertyObservable);
+        }
+
+        public void ResetStore()
+        {
+            propertyObservableWrapper.UnwrapPropertyObservable(Store).ObservableProperty.ResetValues();
         }
 
         public void Dispose()
@@ -96,9 +102,9 @@ namespace Havit.Blazor.StateManagement.Mobx
             consumer = null;
         }
 
-        private void PlantSubscriber(object key, DynamicStateProperty dynamicState)
+        private void PlantSubscriber(object key, IPropertyObservable propertyObservable)
         {
-            var disposable = dynamicState.Subscribe(new PropertyAccessedObserver(
+            var disposable = propertyObservable.Subscribe(new PropertyAccessedObserver(
                 PropertyAccessedEvent,
                 () => {
                     observerDisposables[key].Dispose();
@@ -109,11 +115,11 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private void DynamicStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
-            ObservableProperty observableProperty = e.DynamicStateProperty.ObservableProperty;
+            IObservableProperty observableProperty = e.PropertyObservable.ObservableProperty;
             var key = (observableProperty, e.PropertyName);
             if (!subscribedProperties.Contains(key))
             {
-                PlantSubscriber(new object(), e.DynamicStateProperty);
+                PlantSubscriber(new object(), e.PropertyObservable);
                 subscribedProperties.Add(key);
             }
         }
@@ -155,7 +161,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 propertyAccessedEvent?.Invoke(this, new PropertyAccessedEventArgs
                 {
-                    DynamicStateProperty = value.DynamicStateProperty,
+                    PropertyObservable = value.PropertyObservable,
                     PropertyName = value.PropertyName
                 });
             }
@@ -202,8 +208,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private class ReflectionConsumerWrapper : IConsumerWrapper
         {
-            private static Func<ComponentBase, Action, Task> ComponentBaseInvokeAsync;
-            private static Action<ComponentBase> ComponentBaseStateHasChanged;
+            private static readonly Func<ComponentBase, Action, Task> ComponentBaseInvokeAsync;
+            private static readonly Action<ComponentBase> ComponentBaseStateHasChanged;
             
             static ReflectionConsumerWrapper()
             {

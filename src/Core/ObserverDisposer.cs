@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class ObserverDisposer : IDisposable
+    public class ObserverDisposer : IDisposable
     {
         private List<Action> disposeActions = new List<Action>();
 

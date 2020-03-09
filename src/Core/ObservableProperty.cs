@@ -1,6 +1,5 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Extensions;
-using Havit.Blazor.StateManagement.Mobx.Models;
-using Havit.Linq;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +8,15 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class ObservableProperty : IObservable
+    internal class ObservableProperty : IObservableProperty
     {
         private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
-        private Dictionary<string, ObservableProperty> observedProperties;
-        private Dictionary<string, ObservableArrayInternal> observedArrays;
+        private Dictionary<string, IObservableProperty> observedProperties;
+        private Dictionary<string, IObservableCollection> observedArrays;
         private Dictionary<string, PropertyInfo> allPropertiesByName;
         private Dictionary<string, object> normalProperties;
-
-        public ObservableType ObservableType => ObservableType.Property;
 
         public Type ObservedType { get; }
 
@@ -39,13 +36,6 @@ namespace Havit.Blazor.StateManagement.Mobx
                 observableProperty.collectionItemsChangedEvent);
 
             return newObservableProperty;
-        }
-
-        internal static ObservableFactory CreateFactoryFrom(ObservableProperty observableProperty)
-        {
-            return new ObservableFactory(
-                observableProperty.statePropertyChangedEvent,
-                observableProperty.collectionItemsChangedEvent);
         }
 
         internal ObservableProperty(
@@ -119,7 +109,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             if (observedArrays.ContainsKey(name))
             {
-                if (!(value is IObservableArray observableArray))
+                if (!(value is IObservableCollection observableArray))
                 {
                     throw new Exception("Unsupported type of array.");
                 }
@@ -132,7 +122,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 }
 
                 // TODO: Check logic
-                var items = oldArray.FullOuterJoin((IEnumerable<object>)observableArray, oldItem => oldItem, newItem => newItem, (oldItem, newItem) => new
+                var items = ((IEnumerable<object>)oldArray).FullOuterJoin((IEnumerable<object>)observableArray, (oldItem, newItem) => new
                 {
                     NewItem = newItem,
                     OldItem = oldItem
@@ -141,7 +131,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
                 IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
 
-                int oldArrayCount = oldArray.Count;
+                int oldArrayCount = oldArray.CountElements;
                 oldArray.OverwriteElements(observableArray);
 
                 collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
@@ -149,7 +139,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                     ItemsAdded = addedItems,
                     ItemsRemoved = removedItems,
                     OldCount = oldArrayCount,
-                    NewCount = oldArray.Count
+                    NewCount = oldArray.CountElements
                 });
 
                 return true;
@@ -175,12 +165,12 @@ namespace Havit.Blazor.StateManagement.Mobx
             throw new Exception();
         }
 
-        public Dictionary<string, ObservableProperty> GetObservedProperties()
+        public Dictionary<string, IObservableProperty> GetObservedProperties()
         {
             return observedProperties;
         }
 
-        public Dictionary<string, ObservableArrayInternal> GetObservedArrays()
+        public Dictionary<string, IObservableCollection> GetObservedCollections()
         {
             return observedArrays;
         }
@@ -208,7 +198,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             }
         }
 
-        public void OverwriteFrom(ObservableProperty source)
+        public void OverwriteFrom(IObservableProperty source)
         {
             object newValue;
             foreach (var propertyName in allPropertiesByName.Keys)
@@ -232,6 +222,11 @@ namespace Havit.Blazor.StateManagement.Mobx
                 observedProperty.ResetValues();
             }
 
+            foreach (var observedArray in observedArrays.Values)
+            {
+                observedArray.Reset();
+            }
+
             Initialize();
 
             foreach (var propertyName in allPropertiesByName.Keys)
@@ -243,6 +238,13 @@ namespace Havit.Blazor.StateManagement.Mobx
             }
         }
 
+        public IObservableFactory CreateFactory()
+        {
+            return new ObservableFactory(
+                statePropertyChangedEvent,
+                collectionItemsChangedEvent);
+        }
+
         public override string ToString()
         {
             return ObservedType.ToString();
@@ -251,8 +253,8 @@ namespace Havit.Blazor.StateManagement.Mobx
         private void Initialize()
         {
             allPropertiesByName = ObservedType.GetProperties().ToDictionary(x => x.Name);
-            observedProperties = new Dictionary<string, ObservableProperty>();
-            observedArrays = new Dictionary<string, ObservableArrayInternal>();
+            observedProperties = new Dictionary<string, IObservableProperty>();
+            observedArrays = new Dictionary<string, IObservableCollection>();
             normalProperties = new Dictionary<string, object>();
 
             foreach (var propertyKvp in allPropertiesByName)
@@ -283,10 +285,10 @@ namespace Havit.Blazor.StateManagement.Mobx
         private bool IsSupportedObservableArrayType(Type type)
         {
             return type.IsGenericType && 
-                type.GetGenericTypeDefinition() == typeof(IObservableArray<>);
+                type.GetGenericTypeDefinition() == typeof(IObservableCollection<>);
         }
 
-        private ObservableProperty CreateObservableProperty(PropertyInfo property)
+        private IObservableProperty CreateObservableProperty(PropertyInfo property)
         {
             Type valueType = property.PropertyType;
 
@@ -295,14 +297,12 @@ namespace Havit.Blazor.StateManagement.Mobx
                 collectionItemsChangedEvent);
         }
 
-        private ObservableArrayInternal CreateEmptyObservableArray(PropertyInfo property)
+        private IObservableCollection CreateEmptyObservableArray(PropertyInfo property)
         {
             Type valueType = property.PropertyType;
-            Type observableArrayType = typeof(ObservableArrayInternal<>).MakeGenericType(valueType.GetGenericArguments()[0]);
+            Type observableArrayType = typeof(ObservableCollection<>).MakeGenericType(valueType.GetGenericArguments()[0]);
 
-            object[] parameters = new object[] { statePropertyChangedEvent, collectionItemsChangedEvent };
-
-            return (ObservableArrayInternal)Activator.CreateInstance(observableArrayType, BindingFlags.NonPublic | BindingFlags.Instance, null, parameters, null);
+            return (IObservableCollection)Activator.CreateInstance(observableArrayType, statePropertyChangedEvent, collectionItemsChangedEvent);
         }
 
         private object GetDefault(Type t)

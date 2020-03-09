@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
         public IServiceCollection AsSingleton()
         {
             services.AddSingleton<IStoreHolder<TStore>>(GetStoreHolder());
-            services.AddTransient<IStoreAccessor<TStore>, DynamicStoreAccessor<TStore>>();
+            services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
 
             return services;
         }
@@ -29,7 +30,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
         public IServiceCollection AsTransient()
         {
             services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder());
-            services.AddTransient<IStoreAccessor<TStore>, DynamicStoreAccessor<TStore>>();
+            services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
 
             return services;
         }

@@ -72,7 +72,7 @@
 
     protected void RemoveTodo()
     {
-        Store.Todos = Store.Todos.Where(x => x.Id != id).ToObservableArray();
+        Store.Todos = Store.Todos.Where(x => x.Id != id).ToObservableCollection();
     }
 
     protected void LoadTodo()

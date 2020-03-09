@@ -1,4 +1,4 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Models;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
 using Havit.Blazor.StateManagement.Mobx.Samples.Models;
 using System;
@@ -50,9 +50,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
                     Link = "/todos",
                     Glyph = "oi oi-plus"
                 }
-            }.ToObservableArray();
+            }.ToObservableCollection();
         }
 
-        public IObservableArray<INavigationItem> NavigationItems { get; set; }
+        public IObservableCollection<INavigationItem> NavigationItems { get; set; }
     }
 }

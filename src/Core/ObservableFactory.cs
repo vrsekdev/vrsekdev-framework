@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class ObservableFactory
+    internal class ObservableFactory : IObservableFactory
     {
         private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
@@ -17,7 +18,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
         }
 
-        public ObservableProperty CreateObservableProperty(Type type)
+        public IObservableProperty CreateObservableProperty(Type type)
         {
             return new ObservableProperty(
                 type,
@@ -25,9 +26,9 @@ namespace Havit.Blazor.StateManagement.Mobx
                 collectionItemsChangedEvent);
         }
 
-        public ObservableArrayInternal CreateObservableArray<T>()
+        public IObservableCollection<T> CreateObservableArray<T>()
         {
-            return new ObservableArrayInternal<T>(
+            return new ObservableCollection<T>(
                 statePropertyChangedEvent,
                 collectionItemsChangedEvent);
         }

@@ -14,5 +14,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         void SetConsumer(ComponentBase consumer);
 
         T CreateObservable<T>() where T : class;
+
+        void ResetStore();
     }
 }

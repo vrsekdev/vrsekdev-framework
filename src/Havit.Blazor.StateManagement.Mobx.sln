@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{062C5DA0-BF38-4133-A53D-B465F2084697}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Observers.Dynamic", "Observers.Dynamic\Observers.Dynamic.csproj", "{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Observables.Dynamic", "Observables.Dynamic\Observables.Dynamic.csproj", "{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Observers.Shared", "Observers.Shared\Observers.Shared.csproj", "{93507F4B-3050-4630-8E63-D84D821F6041}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Abstractions", "Core.Abstractions\Core.Abstractions.csproj", "{AFEFE6AF-6158-41E7-ADCA-1AC57A825BCC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A65FBD6-3343-4868-A33F-8E9FD48E3F5F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{93507F4B-3050-4630-8E63-D84D821F6041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93507F4B-3050-4630-8E63-D84D821F6041}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93507F4B-3050-4630-8E63-D84D821F6041}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{93507F4B-3050-4630-8E63-D84D821F6041}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFEFE6AF-6158-41E7-ADCA-1AC57A825BCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFEFE6AF-6158-41E7-ADCA-1AC57A825BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFEFE6AF-6158-41E7-ADCA-1AC57A825BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFEFE6AF-6158-41E7-ADCA-1AC57A825BCC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

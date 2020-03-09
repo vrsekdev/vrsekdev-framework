@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 {
     public class CascadeStoreAccessor<TStore> : IStoreAccessor<TStore>
         where TStore : class
@@ -24,6 +24,11 @@ namespace Havit.Blazor.StateManagement.Mobx
         public void SetConsumer(ComponentBase consumer)
         {
             //throw CreateException();
+        }
+
+        public void ResetStore()
+        {
+            throw CreateException();
         }
 
         public void Dispose()

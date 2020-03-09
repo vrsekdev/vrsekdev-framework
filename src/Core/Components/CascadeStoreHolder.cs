@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
@@ -16,7 +18,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
     {
         private readonly IStoreHolder<TStore> storeHolder;
 
-        private IStoreAccessor<TStore> StoreAccessor => new DynamicStoreAccessor<TStore>(storeHolder);
+        private IStoreAccessor<TStore> StoreAccessor => CreateStoreAccessor();
+
+        [Inject]
+        private IPropertyObservableFactory PropertyObservableFactory { get; set; }
+
+        [Inject]
+        private IPropertyObservableWrapper PropertyObservableWrapper { get; set; }
 
         [Parameter]
         public RenderFragment ChildContent { get; set; }
@@ -28,13 +36,20 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 
         protected override void BuildRenderTree(RenderTreeBuilder __builder)
         {
-            //__builder.AddMarkupContent(0, "<h3>MobxStore</h3>\r\n\r\n");
             TypeInference.CreateCascadingValue_0(__builder, 1, 2, StoreAccessor, 3, 4, (__builder2) =>
             {
                 __builder2.AddMarkupContent(5, "\r\n    ");
                 __builder2.AddContent(6,ChildContent);
                 __builder2.AddMarkupContent(7, "\r\n");
             });
+        }
+
+        private IStoreAccessor<TStore> CreateStoreAccessor()
+        {
+            return new InjectedStoreAccessor<TStore>(
+                storeHolder,
+                PropertyObservableFactory,
+                PropertyObservableWrapper);
         }
 
         private static class TypeInference

@@ -1,4 +1,4 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Models;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +10,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
     {
         public int Value { get; set; }
 
-        public IObservableArray<string> Values { get; set; }
+        public IObservableCollection<string> Values { get; set; }
     }
 }

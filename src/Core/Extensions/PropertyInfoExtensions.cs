@@ -15,11 +15,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Extensions
             return property.GetCustomAttribute<ObservableAttribute>() != null;
         }
 
-        public static bool HasObservableArrayAttribute(this PropertyInfo property)
-        {
-            return property.GetCustomAttribute<ObservableArrayAttribute>() != null;
-        }
-
         public static bool HasObservableArrayElementAttribute(this Type type)
         {
             return type.GetCustomAttribute<ObservableArrayElementAttribute>() != null;

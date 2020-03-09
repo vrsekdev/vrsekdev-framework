@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Extensions;
+using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase
     {
-        private IParameterWrapper[] parameters;
+        /*private IParameterWrapper[] parameters;
 
         public BlazorMobxComponentBase()
         {
@@ -24,9 +25,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         {
             foreach (var parameter in parameters)
             {
-                object parametrValue = parameter.GetValue(this);
+                object parameterValue = parameter.GetValue(this);
 
-                if (DynamicStateProperty.Unbox(parametrValue) is DynamicStateProperty dynamicState)
+                if (parameterValue is IPropertyObservable dynamicState)
                 {
                     parameter.SetValue(this, dynamicState.ObservableProperty);
                 }
@@ -35,7 +36,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
             base.OnParametersSet();
         }
 
-        internal virtual DynamicStateProperty PlantComponentsObservers(ObservableProperty observableProperty)
+        internal virtual IPropertyObservable PlantComponentsObservers(ObservableProperty observableProperty)
         {
             // Empty
             return DynamicStateProperty.Create(observableProperty);
@@ -76,11 +77,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 
             public void SetValue(object instance, ObservableProperty observableProperty)
             {
-                DynamicStateProperty dynamicState = component.PlantComponentsObservers(observableProperty);
+                IPropertyObservable dynamicState = component.PlantComponentsObservers(observableProperty);
 
                 setValue(instance, DynamicStateProperty.Box<T>(dynamicState));
             }
-        }
+        }*/
     }
 
     public abstract class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
@@ -111,7 +112,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 
         public void ResetStore()
         {
-            DynamicStateProperty.Unbox(Store).ObservableProperty.ResetValues();
+            storeAccessor.ResetStore();
         }
 
         protected virtual T CreateObservable<T>()
@@ -120,15 +121,15 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
             return storeAccessor.CreateObservable<T>();
         }
 
-        internal override DynamicStateProperty PlantComponentsObservers(ObservableProperty observableProperty)
+        /*internal IPropertyObservable PlantComponentsObservers(ObservableProperty observableProperty)
         {
-            DynamicStateProperty dynamicState = DynamicStateProperty.Create(observableProperty);
-            if (storeAccessor is DynamicStoreAccessor<TStore> dynamicStoreAccessor)
+            IPropertyObservable dynamicState = storeAccessor.CreateObservable(observableProperty);
+            if (storeAccessor is InjectedStoreAccessor<TStore> dynamicStoreAccessor)
             {
                 dynamicStoreAccessor.SubscribeObserver(dynamicState);
             }
 
             return dynamicState;
-        }
+        }*/
     }
 }
