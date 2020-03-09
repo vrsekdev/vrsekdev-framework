@@ -10,7 +10,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 {
     internal abstract class ObservableArrayInternal : IEnumerable<object>, ICollection
     {
-        internal abstract Type ObservedElementType { get; }
+        internal abstract Type ElementType { get; }
+        internal abstract bool ElementObserved { get; }
 
         public abstract int Count { get; }
         public abstract bool IsSynchronized { get; }
@@ -28,17 +29,21 @@ namespace Havit.Blazor.StateManagement.Mobx
         }
 
         public abstract IEnumerator<object> GetObjectEnumerator();
+
+        public abstract void OverwriteElements(IObservableArray elements);
+
         public abstract void CopyTo(Array array, int index);
     }
 
     internal class ObservableArrayInternal<T> : ObservableArrayInternal, IObservableArray<T>, IObservable
     {
-        internal readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
-        internal readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
+        private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
-        private readonly List<T> list;
+        private List<T> list;
 
-        internal override Type ObservedElementType { get; }
+        internal override Type ElementType { get; }
+        internal override bool ElementObserved { get; }
 
         internal ObservableArrayInternal(
             EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
@@ -48,31 +53,14 @@ namespace Havit.Blazor.StateManagement.Mobx
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
             list = new List<T>();
 
-            ObservedElementType = typeof(T);
+            ElementType = typeof(T);
+            ElementObserved = ElementType.HasObservableArrayElementAttribute();
         }
 
         public T this[int index]
         {
             get => list[index];
-            set
-            {
-                T oldValue = this[index];
-
-                var addedItems = new object[] { value };
-                var removedItems = new object[] { oldValue };
-
-                T item = value;
-
-                list[index] = item;
-
-                collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
-                {
-                    ItemsAdded = addedItems,
-                    ItemsRemoved = removedItems,
-                    OldCount = Count,
-                    NewCount = Count
-                });
-            }
+            set => Insert(index, value);
         }
 
         public ObservableType ObservableType => ObservableType.Array;
@@ -97,6 +85,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         internal void AddInternal(T item, bool suppressEvent)
         {
+            // TODO: Box items into observable properties
+
             var addedItems = new object[] { item };
             var removedItems = Enumerable.Empty<object>();
 
@@ -183,7 +173,20 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void Insert(int index, T item)
         {
-            throw new NotImplementedException();
+            T oldValue = this[index];
+
+            var addedItems = new object[] { item };
+            var removedItems = new object[] { oldValue };
+
+            list[index] = item;
+
+            collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+            {
+                ItemsAdded = addedItems,
+                ItemsRemoved = removedItems,
+                OldCount = Count,
+                NewCount = Count
+            });
         }
 
         public bool Remove(T item)
@@ -212,6 +215,11 @@ namespace Havit.Blazor.StateManagement.Mobx
         public void RemoveAt(int index)
         {
             throw new NotImplementedException();
+        }
+
+        public override void OverwriteElements(IObservableArray source)
+        {
+            list = new List<T>(source.Cast<T>());
         }
 
         public override void CopyTo(Array array, int index)

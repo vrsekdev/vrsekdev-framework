@@ -27,15 +27,19 @@ namespace Havit.Blazor.StateManagement.Mobx
         public ObservableProperty RootObservableProperty { get; }
 
         public event EventHandler<StatePropertyChangedEventArgs> StatePropertyChangedEvent;
-
         public event EventHandler<CollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
 
         public StoreHolder()
         {
-            RootObservableProperty = new ObservableProperty(
-                typeof(TStore),
-                new EventHandler<StatePropertyChangedEventArgs>(OnStatePropertyChanged),
-                new EventHandler<CollectionItemsChangedEventArgs>(OnCollectionItemsChanged));
+            RootObservableProperty = CreateObservableProperty(typeof(TStore));
+        }
+
+        public ObservableProperty CreateObservableProperty(Type type)
+        {
+            return new ObservableProperty(
+                type,
+                OnStatePropertyChanged,
+                OnCollectionItemsChanged);
         }
 
         private void OnStatePropertyChanged(object sender, StatePropertyChangedEventArgs e)
@@ -46,14 +50,6 @@ namespace Havit.Blazor.StateManagement.Mobx
         private void OnCollectionItemsChanged(object sender, CollectionItemsChangedEventArgs e)
         {
             CollectionItemsChangedEvent?.Invoke(sender, e);
-        }
-
-        public ObservableProperty CreateObservableProperty(Type type)
-        {
-            return new ObservableProperty(
-                type,
-                new EventHandler<StatePropertyChangedEventArgs>(OnStatePropertyChanged),
-                new EventHandler<CollectionItemsChangedEventArgs>(OnCollectionItemsChanged));
         }
     }
 }

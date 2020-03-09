@@ -12,7 +12,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 {
     internal class PropertyAccessedEventArgs
     {
-        public Type ObservedType { get; set; }
+        public DynamicStateProperty DynamicStateProperty { get; set; }
 
         public string PropertyName { get; set; }
     }
@@ -26,8 +26,9 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private readonly object rootDisposableKey = new object();
 
-        private HashSet<(Type, string)> subscribedProperties = new HashSet<(Type, string)>();
-        private Dictionary<object, IDisposable> observerDisposables = new Dictionary<object, IDisposable>(); 
+        private HashSet<(ObservableProperty, string)> subscribedProperties = new HashSet<(ObservableProperty, string)>();
+        private Dictionary<object, IDisposable> observerDisposables = new Dictionary<object, IDisposable>();
+        private Dictionary<object, DynamicStateProperty> observers = new Dictionary<object, DynamicStateProperty>();
 
         private IConsumerWrapper consumer;
 
@@ -46,7 +47,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
 
-            PlantListener(rootDisposableKey, dynamicState);
+            PlantSubscriber(rootDisposableKey, dynamicState);
         }
 
         public TStore Store { get; }
@@ -71,13 +72,13 @@ namespace Havit.Blazor.StateManagement.Mobx
             // TODO: Create observable array method
             ObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
             DynamicStateProperty dynamicState = DynamicStateProperty.Create(observableProperty);
-            // TODO: Plant listener
+            // TODO: PlantSubscriber
             return DynamicStateProperty.Box<T>(dynamicState);
         }
 
         public void SubscribeObserver(DynamicStateProperty dynamicState)
         {
-            PlantListener(new object(), dynamicState);
+            PlantSubscriber(new object(), dynamicState);
         }
 
         public void Dispose()
@@ -96,7 +97,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             consumer = null;
         }
 
-        private void PlantListener(object key, DynamicStateProperty dynamicState)
+        private void PlantSubscriber(object key, DynamicStateProperty dynamicState)
         {
             var disposable = dynamicState.Subscribe(new PropertyChangedObserver(
                 PropertyAccessedEvent,
@@ -109,14 +110,20 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private void DynamicStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
-            subscribedProperties.Add((e.ObservedType, e.PropertyName));
+            ObservableProperty observableProperty = e.DynamicStateProperty.ObservableProperty;
+            var key = (observableProperty, e.PropertyName);
+            if (!subscribedProperties.Contains(key))
+            {
+                PlantSubscriber(new object(), e.DynamicStateProperty);
+                subscribedProperties.Add(key);
+            }
         }
 
         private async void StoreHolder_StatePropertyChangedEvent(object sender, StatePropertyChangedEventArgs e)
         {
             ObservableProperty observableProperty = (ObservableProperty)sender;
 
-            if (subscribedProperties.Contains((observableProperty.ObservedType, e.PropertyName)))
+            if (subscribedProperties.Contains((observableProperty, e.PropertyName)))
             {
                 await consumer.ForceUpdate();
             }
@@ -124,23 +131,6 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private async void StoreHolder_CollectionItemsChangedEvent(object sender, CollectionItemsChangedEventArgs e)
         {
-            foreach (object removedItem in e.ItemsRemoved)
-            {
-                if (observerDisposables.ContainsKey(removedItem))
-                {
-                    observerDisposables[removedItem].Dispose();
-                    observerDisposables.Remove(removedItem);
-                }
-            }
-
-            foreach (object addedItem in e.ItemsAdded)
-            {
-                if (DynamicStateProperty.Unbox(addedItem) is DynamicStateProperty dynamicState)
-                {
-                    PlantListener(addedItem, dynamicState);
-                }
-            }
-
             if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
             {
                 await consumer.ForceUpdate();
@@ -164,7 +154,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 propertyAccessedEvent?.Invoke(this, new PropertyAccessedEventArgs
                 {
-                    ObservedType = value.ObservableProperty.ObservedType,
+                    DynamicStateProperty = value.DynamicStateProperty,
                     PropertyName = value.PropertyName
                 });
             }

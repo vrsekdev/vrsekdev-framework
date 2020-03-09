@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class ObservablePropertyFactory
+    internal class ObservableFactory
     {
         private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
-        public ObservablePropertyFactory(
+        public ObservableFactory(
             EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
             EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent)
         {
@@ -17,10 +17,17 @@ namespace Havit.Blazor.StateManagement.Mobx
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
         }
 
-        public ObservableProperty Create(Type type)
+        public ObservableProperty CreateObservableProperty(Type type)
         {
             return new ObservableProperty(
                 type,
+                statePropertyChangedEvent,
+                collectionItemsChangedEvent);
+        }
+
+        public ObservableArrayInternal CreateObservableArray<T>()
+        {
+            return new ObservableArrayInternal<T>(
                 statePropertyChangedEvent,
                 collectionItemsChangedEvent);
         }

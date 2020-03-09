@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx.Components
 {
-    public class BlazorMobxComponentBase : ComponentBase
+    public abstract class BlazorMobxComponentBase : ComponentBase
     {
         private IParameterWrapper[] parameters;
 
@@ -83,7 +83,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         }
     }
 
-    public class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
+    public abstract class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
         where TStore : class
     {
         protected TStore Store => storeAccessor.Store;
@@ -126,7 +126,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
             if (storeAccessor is DynamicStoreAccessor<TStore> dynamicStoreAccessor)
             {
                 dynamicStoreAccessor.SubscribeObserver(dynamicState);
-
             }
 
             return dynamicState;

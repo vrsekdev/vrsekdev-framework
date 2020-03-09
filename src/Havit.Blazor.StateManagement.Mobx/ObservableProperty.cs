@@ -41,6 +41,13 @@ namespace Havit.Blazor.StateManagement.Mobx
             return newObservableProperty;
         }
 
+        internal static ObservableFactory CreateFactoryFrom(ObservableProperty observableProperty)
+        {
+            return new ObservableFactory(
+                observableProperty.statePropertyChangedEvent,
+                observableProperty.collectionItemsChangedEvent);
+        }
+
         internal ObservableProperty(
             Type interfaceType,
             EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
@@ -51,10 +58,9 @@ namespace Havit.Blazor.StateManagement.Mobx
                 throw new ArgumentException("Only interfaces can be observable.");
             }
 
-            this.ObservedType = interfaceType;
+            ObservedType = interfaceType;
             this.statePropertyChangedEvent = statePropertyChangedEvent;
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
-
             Initialize();
         }
 
@@ -118,28 +124,31 @@ namespace Havit.Blazor.StateManagement.Mobx
                 }
 
                 var oldArray = observedArrays[name];
+                if (oldArray == value)
+                {
+                    // Do nothing when collection is identical
+                    return true;
+                }
+
+                // TODO: Check logic
                 var items = oldArray.FullOuterJoin((IEnumerable<object>)observableArray, oldItem => oldItem, newItem => newItem, (oldItem, newItem) => new
                 {
                     NewItem = newItem,
                     OldItem = oldItem
                 });
 
-                if (!(observableArray is ObservableArrayInternal newArray))
-                {
-                    newArray = CreateObservableArray(observableArray, true);
-                }
-
-                observedArrays[name] = newArray;
-
                 IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
                 IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
+
+                int oldArrayCount = oldArray.Count;
+                oldArray.OverwriteElements(observableArray);
 
                 collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
                 {
                     ItemsAdded = addedItems,
                     ItemsRemoved = removedItems,
-                    OldCount = oldArray.Count,
-                    NewCount = newArray.Count
+                    OldCount = oldArrayCount,
+                    NewCount = oldArray.Count
                 });
 
                 return true;
@@ -294,44 +303,6 @@ namespace Havit.Blazor.StateManagement.Mobx
             object[] parameters = new object[] { statePropertyChangedEvent, collectionItemsChangedEvent };
 
             return (ObservableArrayInternal)Activator.CreateInstance(observableArrayType, BindingFlags.NonPublic | BindingFlags.Instance, null, parameters, null);
-        }
-
-        private ObservableArrayInternal CreateObservableArray(IObservableArray observableArray, bool suppressEvent)
-        {
-            if (observableArray is ObservableArrayInternal observableArrayInternal)
-            {
-                return observableArrayInternal;
-            }
-
-            Type observableArrayType = observableArray.GetType();
-            if (!observableArrayType.IsGenericType)
-            {
-                throw new Exception($"Unexpected implementation of {observableArrayType.Name}");
-            }
-
-            Type elementType = observableArrayType.GetGenericArguments()[0];
-
-            return (ObservableArrayInternal)GetType()
-                .GetMethod(nameof(CreateObservableArrayGeneric), BindingFlags.NonPublic | BindingFlags.Instance)
-                .MakeGenericMethod(elementType)
-                .Invoke(this, new object[] { observableArray, suppressEvent });
-        }
-
-        private ObservableArrayInternal CreateObservableArrayGeneric<T>(IObservableArray<T> observableArray, bool suppressEvent)
-        {
-            IEnumerable<T> elements = null;
-            if (observableArray is ObservableArrayAdapter<T> adapter)
-            {
-                elements = adapter;
-            }
-
-            ObservableArrayInternal<T> observableArrayInternal = new ObservableArrayInternal<T>(statePropertyChangedEvent, collectionItemsChangedEvent);
-            if (elements != null)
-            {
-                observableArrayInternal.AddRangeInternal(elements, suppressEvent);
-            }
-
-            return observableArrayInternal;
         }
 
         private object GetDefault(Type t)

@@ -10,29 +10,25 @@ namespace Havit.Blazor.StateManagement.Mobx
 {
     internal abstract class DynamicObservableArray : ObservableArrayInternal
     {
+        internal abstract ObservableArrayInternal ObservableArray { get; }
 
+        internal abstract IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer);
     }
 
     internal class DynamicObservableArray<T> : DynamicObservableArray, IObservableArray<T>, IDisposable
     {
         private readonly DynamicStatePropertyCache dynamicStatePropertyCache;
         private readonly ObservableArrayInternal<T> observableArray;
-        private readonly ObservablePropertyFactory observablePropertyFactory;
-
-        private bool ShouldObserveElements { get; }
 
         public DynamicObservableArray(
-            ObservableArrayInternal<T> observableArray)
+            ObservableArrayInternal<T> observableArray,
+            ObservableFactory observableFactory)
         {
             this.observableArray = observableArray;
-
-            ShouldObserveElements = typeof(T).HasObservableArrayElementAttribute();
-            if (ShouldObserveElements)
+            ElementObserved = observableArray.ElementObserved;
+            if (ElementObserved)
             {
-                observablePropertyFactory = new ObservablePropertyFactory(
-                    observableArray.statePropertyChangedEvent,
-                    observableArray.collectionItemsChangedEvent);
-                dynamicStatePropertyCache = new DynamicStatePropertyCache(observablePropertyFactory);
+                dynamicStatePropertyCache = new DynamicStatePropertyCache(observableFactory);
             }
         }
 
@@ -48,32 +44,18 @@ namespace Havit.Blazor.StateManagement.Mobx
 
                 return boxedValue;
             }
-            set
-            {
-                if (ShouldObserveElements)
-                {
-                    T previousOriginalValue = observableArray[index];
-                    if (dynamicStatePropertyCache.TryGetValue(previousOriginalValue, out T previousValue))
-                    {
-                        dynamicStatePropertyCache.Remove(previousValue);
-                    }
-
-                    BoxItem(value);
-                }
-
-                observableArray[index] = value;
-            }
+            set => Insert(index, value);
         }
 
         public override int Count => observableArray.Count;
-
         public bool IsReadOnly => ((IList)observableArray).IsReadOnly;
-
         public override bool IsSynchronized => ((ICollection)observableArray).IsSynchronized;
-
         public override object SyncRoot => ((ICollection)observableArray).SyncRoot;
 
-        internal override Type ObservedElementType => observableArray.ObservedElementType;
+        internal override Type ElementType => observableArray.ElementType;
+        internal override bool ElementObserved { get; }
+
+        internal override ObservableArrayInternal ObservableArray => observableArray;
 
         public void Add(T item)
         {
@@ -87,14 +69,18 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         internal void AddInternal(T item, bool suppressEvent)
         {
-            BoxItem(item);
+            if (ElementObserved)
+            {
+                BoxItem(item);
+            }
+
 
             observableArray.Add(item, suppressEvent);
         }
 
         public void AddRange(IEnumerable<T> items)
         {
-            if (ShouldObserveElements)
+            if (ElementObserved)
             {
                 foreach (T item in items)
                 {
@@ -107,7 +93,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         internal override void AddRange(IEnumerable<object> items, bool suppressEvent = false)
         {
-            if (ShouldObserveElements)
+            if (ElementObserved)
             {
                 foreach (T item in items)
                 {
@@ -120,7 +106,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void Clear()
         {
-            if (ShouldObserveElements)
+            if (ElementObserved)
             {
                 foreach (var item in observableArray)
                 {
@@ -138,12 +124,20 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            int index = arrayIndex;
+            foreach (var boxedItem in dynamicStatePropertyCache)
+            {
+                array[index] = boxedItem;
+            }
         }
 
-        public override void CopyTo(Array array, int index)
+        public override void CopyTo(Array array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            int index = arrayIndex;
+            foreach (var boxedItem in dynamicStatePropertyCache)
+            {
+                array.SetValue(boxedItem, index);
+            }
         }
 
         public int IndexOf(T item)
@@ -153,7 +147,18 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void Insert(int index, T item)
         {
-            throw new NotImplementedException();
+            if (ElementObserved)
+            {
+                T previousOriginalValue = observableArray[index];
+                if (dynamicStatePropertyCache.TryGetValue(previousOriginalValue, out T previousValue))
+                {
+                    dynamicStatePropertyCache.Remove(previousValue);
+                }
+
+                BoxItem(item);
+            }
+
+            observableArray[index] = item;
         }
 
         public bool Remove(T item)
@@ -161,7 +166,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             bool removed;
             if (removed = observableArray.Remove(item))
             {
-                if (ShouldObserveElements)
+                if (ElementObserved)
                 {
                     dynamicStatePropertyCache.Remove(item);
                 }
@@ -197,10 +202,20 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void Dispose()
         {
-            if (ShouldObserveElements)
+            if (ElementObserved)
             {
                 dynamicStatePropertyCache.Dispose();
             }
+        }
+
+        internal override IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer)
+        {
+            return dynamicStatePropertyCache?.Subscribe(observer);
+        }
+
+        public override void OverwriteElements(IObservableArray elements)
+        {
+            //dynamicStatePropertyCache = new DynamicStatePropertyCache(ObservableArray);
         }
 
         private class Enumerator : IEnumerator<T>, IEnumerator
@@ -227,6 +242,11 @@ namespace Havit.Blazor.StateManagement.Mobx
                 get
                 {
                     T originalValue = list[index];
+                    if (dynamicStatePropertyCache == null)
+                    {
+                        return originalValue;
+                    }
+                    
                     if (!dynamicStatePropertyCache.TryGetValue(originalValue, out T boxedItem))
                     {
                         boxedItem = dynamicStatePropertyCache.Insert(originalValue);
@@ -257,13 +277,14 @@ namespace Havit.Blazor.StateManagement.Mobx
         private class DynamicStatePropertyCache : IEnumerable<T>, IDisposable
         {
             // TODO: Concurrent dictionary
+            private readonly List<IObserver<PropertyAccessedArgs>> observers = new List<IObserver<PropertyAccessedArgs>>();
             private readonly Dictionary<T, T> boxedValuesDictionary = new Dictionary<T, T>();
-            private readonly ObservablePropertyFactory observablePropertyFactory;
+            private readonly ObservableFactory observableFactory;
 
             public DynamicStatePropertyCache(
-                ObservablePropertyFactory observablePropertyFactory)
+                ObservableFactory observableFactory)
             {
-                this.observablePropertyFactory = observablePropertyFactory;
+                this.observableFactory = observableFactory;
             }
 
             public bool TryGetValue(T originalValue, out T value)
@@ -291,6 +312,24 @@ namespace Havit.Blazor.StateManagement.Mobx
                 return removed;
             }
 
+            internal IDisposable Subscribe(
+                IObserver<PropertyAccessedArgs> observer)
+            {
+                observers.Add(observer);
+                var disposer = new ObserverDisposer();
+
+                foreach (var boxedValue in boxedValuesDictionary.Values)
+                {
+                    DynamicStateProperty dynamicState = DynamicStateProperty.Unbox((object)boxedValue);
+                    if (dynamicState != null)
+                    {
+                        disposer.AddDisposeAction(dynamicState.Subscribe(observer));
+                    }
+                }
+
+                return disposer;
+            }
+
             private T BoxItem(T item)
             {
                 ObservableProperty observableProperty;
@@ -300,11 +339,17 @@ namespace Havit.Blazor.StateManagement.Mobx
                 }
                 else
                 {
-                    observableProperty = observablePropertyFactory.Create(typeof(T));
+                    observableProperty = observableFactory.CreateObservableProperty(typeof(T));
                     observableProperty.OverwriteFrom(item);
                 }
 
                 dynamicState = DynamicStateProperty.Create(observableProperty);
+                foreach (var observer in observers)
+                {
+                    // TODO: Add disposer
+                    dynamicState.Subscribe(observer);
+                }
+
                 return DynamicStateProperty.Box(dynamicState, typeof(T));
             }
 

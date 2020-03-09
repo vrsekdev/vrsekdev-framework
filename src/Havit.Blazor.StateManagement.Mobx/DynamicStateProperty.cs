@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
     internal class PropertyAccessedArgs
     {
-        public ObservableProperty ObservableProperty { get; set; }
+        public DynamicStateProperty DynamicStateProperty { get; set; }
 
         public string PropertyName { get; set; }
     }
@@ -20,6 +22,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         private readonly Dictionary<string, object> observedDynamicProperties = new Dictionary<string, object>();
 
         internal ObservableProperty ObservableProperty { get; }
+        internal ObservableFactory ObservableFactory { get; }
 
         public static DynamicStateProperty Create(ObservableProperty observableProperty)
         {
@@ -51,6 +54,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         private DynamicStateProperty(ObservableProperty observableProperty)
         {
             ObservableProperty = observableProperty;
+            ObservableFactory = ObservableProperty.CreateFactoryFrom(observableProperty);
 
             Initialize();
         }
@@ -82,17 +86,21 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             string name = binder.Name;
 
-            if (observedDynamicArrays.ContainsKey(name))
+            /*if (observedDynamicArrays.TryGetValue(name, out DynamicObservableArray dynamicObservableArray))
             {
-                foreach (object item in observedDynamicArrays[name])
+                bool result;
+                if (result = ObservableProperty.TrySetMember(name, value))
                 {
-                    DynamicStateProperty dynamicState = Unbox(item);
-                    if (dynamicState != null)
-                    {
-                        dynamicState.Dispose();
-                    }
+                    var observedArrays = ObservableProperty.GetObservedArrays();
+                    // Get new array
+                    ObservableArrayInternal observedArray = observedArrays[name];
+                    Debug.Assert(dynamicObservableArray.ObservableArray != observedArray);
+
+                    observedDynamicArrays[name] = CreateObserverArray(observedArray);
                 }
-            }
+
+                return result;
+            }*/
 
             return ObservableProperty.TrySetMember(name, value);
         }
@@ -108,6 +116,11 @@ namespace Havit.Blazor.StateManagement.Mobx
                 {
                     disposer.AddDisposeAction(dynamicState.Subscribe(observer));
                 }
+            }
+
+            foreach (var observedDynamicArray in observedDynamicArrays.Values)
+            {
+                disposer.AddDisposeAction(observedDynamicArray.Subscribe(observer));
             }
 
             disposer.AddDisposeAction(() => observers.Remove(observer));
@@ -128,38 +141,55 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             foreach (var observedProperty in observedProperties)
             {
-                observedDynamicProperties[observedProperty.Key] = GetObserverProperty(observedProperty.Value);
+                observedDynamicProperties[observedProperty.Key] = CreateObserverProperty(observedProperty.Value);
             }
 
             foreach (var observedArray in observedArrays)
             {
-                observedDynamicArrays[observedArray.Key] = GetObserverArray(observedArray.Value);
+                observedDynamicArrays[observedArray.Key] = CreateObserverArray(observedArray.Value);
             }
         }
 
-        private object GetObserverProperty(ObservableProperty observableProperty)
+        private object CreateObserverProperty(ObservableProperty observableProperty)
         {
             DynamicStateProperty dynamicState = new DynamicStateProperty(observableProperty);
-            return Box(dynamicState, observableProperty.ObservedType).Target;
+            object boxedItem = Box(dynamicState, observableProperty.ObservedType).Target;
+
+            foreach (var observer in observers)
+            {
+                observer.Value.AddDisposeAction(dynamicState.Subscribe(observer.Key));
+            }
+
+            return boxedItem;
         }
 
-        private DynamicObservableArray GetObserverArray(ObservableArrayInternal observableArray)
+        private DynamicObservableArray CreateObserverArray(ObservableArrayInternal observableArray)
         {
-            Type elementType = observableArray.ObservedElementType;
+            Type elementType = observableArray.ElementType;
             Type dynamicObserverArrayType = typeof(DynamicObservableArray<>).MakeGenericType(elementType);
 
-            return (DynamicObservableArray)Activator.CreateInstance(dynamicObserverArrayType, observableArray);
+            DynamicObservableArray dynamicObservableArray = (DynamicObservableArray)Activator.CreateInstance(
+                dynamicObserverArrayType, 
+                observableArray, 
+                ObservableFactory);
+
+            foreach (var observer in observers)
+            {
+                observer.Value.AddDisposeAction(dynamicObservableArray.Subscribe(observer.Key));
+            }
+
+            return dynamicObservableArray;
         }
 
         private void OnPropertyAccessed(string name)
         {
             var args = new PropertyAccessedArgs
             {
-                ObservableProperty = ObservableProperty,
+                DynamicStateProperty = this,
                 PropertyName = name
             };
 
-            foreach (var observer in observers.Keys)
+            foreach (var observer in observers.Keys.ToList())
             {
                 observer.OnNext(args);
             }
@@ -176,43 +206,6 @@ namespace Havit.Blazor.StateManagement.Mobx
             foreach (var observer in observers.Keys)
             {
                 observer.OnCompleted();
-            }
-        }
-
-        private class ObserverDisposer : IDisposable
-        {
-            private readonly List<Action> disposeActions = new List<Action>();
-
-            private bool disposed;
-
-            public void AddDisposeAction(Action action)
-            {
-                disposeActions.Add(action);
-            }
-
-            public void AddDisposeAction(IDisposable disposable)
-            {
-                disposeActions.Add(() => disposable.Dispose());
-            }
-
-            public void Dispose()
-            {
-                if (!disposed)
-                {
-                    foreach (var disposeAction in disposeActions)
-                    {
-                        disposeAction();
-                    }
-
-                    disposed = true;
-                }
-#if DEBUG
-                else
-                {
-                    throw new Exception("Already disposed.");
-                }
-#endif
-
             }
         }
     }
