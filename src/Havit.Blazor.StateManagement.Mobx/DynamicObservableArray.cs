@@ -8,23 +8,28 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal abstract class DynamicObservableArray : ObservableArrayInternal
+    internal abstract class DynamicObservableArray : ObservableArrayInternal, IDisposable
     {
         internal abstract ObservableArrayInternal ObservableArray { get; }
 
         internal abstract IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer);
+
+        public abstract void Dispose();
     }
 
-    internal class DynamicObservableArray<T> : DynamicObservableArray, IObservableArray<T>, IDisposable
+    internal class DynamicObservableArray<T> : DynamicObservableArray, IObservableArray<T>
     {
-        private readonly DynamicStatePropertyCache dynamicStatePropertyCache;
         private readonly ObservableArrayInternal<T> observableArray;
+        private readonly ObservableFactory observableFactory;
+
+        private DynamicStatePropertyCache dynamicStatePropertyCache;
 
         public DynamicObservableArray(
             ObservableArrayInternal<T> observableArray,
             ObservableFactory observableFactory)
         {
             this.observableArray = observableArray;
+            this.observableFactory = observableFactory;
             ElementObserved = observableArray.ElementObserved;
             if (ElementObserved)
             {
@@ -200,11 +205,12 @@ namespace Havit.Blazor.StateManagement.Mobx
             return (IEnumerator<object>)GetEnumerator();
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (ElementObserved)
             {
                 dynamicStatePropertyCache.Dispose();
+                dynamicStatePropertyCache = null;
             }
         }
 
@@ -213,17 +219,19 @@ namespace Havit.Blazor.StateManagement.Mobx
             return dynamicStatePropertyCache?.Subscribe(observer);
         }
 
-        public override void OverwriteElements(IObservableArray elements)
+        public override void OverwriteElements(IEnumerable elements)
         {
-            //dynamicStatePropertyCache = new DynamicStatePropertyCache(ObservableArray);
+            if (ElementObserved)
+            {
+                dynamicStatePropertyCache.Dispose();
+                dynamicStatePropertyCache = new DynamicStatePropertyCache(observableFactory);
+            }
         }
 
         private class Enumerator : IEnumerator<T>, IEnumerator
         {
             private readonly IList<T> list;
             private readonly DynamicStatePropertyCache dynamicStatePropertyCache;
-
-            private readonly IEnumerator<T> thisEnumerator;
 
             private int index = -1;
 
@@ -234,7 +242,6 @@ namespace Havit.Blazor.StateManagement.Mobx
                 this.list = list;
                 this.dynamicStatePropertyCache = dynamicStatePropertyCache;
 
-                thisEnumerator = this;
             }
 
             public T Current
@@ -256,7 +263,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 }
             }
 
-            object IEnumerator.Current => thisEnumerator.Current;
+            object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
@@ -315,7 +322,6 @@ namespace Havit.Blazor.StateManagement.Mobx
             internal IDisposable Subscribe(
                 IObserver<PropertyAccessedArgs> observer)
             {
-                observers.Add(observer);
                 var disposer = new ObserverDisposer();
 
                 foreach (var boxedValue in boxedValuesDictionary.Values)
@@ -326,7 +332,9 @@ namespace Havit.Blazor.StateManagement.Mobx
                         disposer.AddDisposeAction(dynamicState.Subscribe(observer));
                     }
                 }
+                disposer.AddDisposeAction(() => observers.Remove(observer));
 
+                observers.Add(observer);
                 return disposer;
             }
 

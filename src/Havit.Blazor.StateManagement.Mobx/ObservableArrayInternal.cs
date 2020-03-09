@@ -30,7 +30,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public abstract IEnumerator<object> GetObjectEnumerator();
 
-        public abstract void OverwriteElements(IObservableArray elements);
+        public abstract void OverwriteElements(IEnumerable elements);
 
         public abstract void CopyTo(Array array, int index);
     }
@@ -217,7 +217,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             throw new NotImplementedException();
         }
 
-        public override void OverwriteElements(IObservableArray source)
+        public override void OverwriteElements(IEnumerable source)
         {
             list = new List<T>(source.Cast<T>());
         }

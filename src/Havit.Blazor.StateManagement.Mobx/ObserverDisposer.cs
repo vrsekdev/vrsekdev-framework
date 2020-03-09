@@ -6,7 +6,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 {
     internal class ObserverDisposer : IDisposable
     {
-        private readonly List<Action> disposeActions = new List<Action>();
+        private List<Action> disposeActions = new List<Action>();
 
         private bool disposed;
 
@@ -34,6 +34,8 @@ namespace Havit.Blazor.StateManagement.Mobx
                 {
                     disposeAction();
                 }
+
+                disposeActions = null;
             }
 #if DEBUG
             else

@@ -31,6 +31,6 @@ namespace Havit.Blazor.StateManagement.Mobx
             // NOOP
         }
 
-        private Exception CreateException() => new InvalidOperationException("Store accessor is not available for cascade lifestyle");
+        private Exception CreateException() => new InvalidOperationException("Store accessor is not available for cascade lifestyle. Use cascade parameter to inject store accessor.");
     }
 }

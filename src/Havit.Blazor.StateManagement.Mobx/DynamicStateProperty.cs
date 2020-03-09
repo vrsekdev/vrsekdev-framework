@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
@@ -86,21 +87,16 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             string name = binder.Name;
 
-            /*if (observedDynamicArrays.TryGetValue(name, out DynamicObservableArray dynamicObservableArray))
+            if (observedDynamicArrays.TryGetValue(name, out DynamicObservableArray dynamicObservableArray))
             {
                 bool result;
                 if (result = ObservableProperty.TrySetMember(name, value))
                 {
-                    var observedArrays = ObservableProperty.GetObservedArrays();
-                    // Get new array
-                    ObservableArrayInternal observedArray = observedArrays[name];
-                    Debug.Assert(dynamicObservableArray.ObservableArray != observedArray);
-
-                    observedDynamicArrays[name] = CreateObserverArray(observedArray);
+                    dynamicObservableArray.OverwriteElements(null);
                 }
 
                 return result;
-            }*/
+            }
 
             return ObservableProperty.TrySetMember(name, value);
         }
@@ -201,6 +197,11 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 DynamicStateProperty dynamicState = Unbox(observedDynamicProperty);
                 dynamicState.Dispose();
+            }
+
+            foreach (var observedDynamicArray in observedDynamicArrays.Values)
+            {
+                observedDynamicArray.Dispose();
             }
 
             foreach (var observer in observers.Keys)

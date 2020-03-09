@@ -94,7 +94,8 @@ namespace Havit.Blazor.StateManagement.Mobx
                 return true;
             }
 
-            throw new Exception();
+            result = null;
+            return false;
         }
 
         public bool TrySetMember(string name, object value)
@@ -210,7 +211,6 @@ namespace Havit.Blazor.StateManagement.Mobx
         public void OverwriteFrom(ObservableProperty source)
         {
             object newValue;
-
             foreach (var propertyName in allPropertiesByName.Keys)
             {
                 if (!source.TryGetMember(propertyName, out newValue))

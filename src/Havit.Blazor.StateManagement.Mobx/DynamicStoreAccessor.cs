@@ -28,7 +28,6 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private HashSet<(ObservableProperty, string)> subscribedProperties = new HashSet<(ObservableProperty, string)>();
         private Dictionary<object, IDisposable> observerDisposables = new Dictionary<object, IDisposable>();
-        private Dictionary<object, DynamicStateProperty> observers = new Dictionary<object, DynamicStateProperty>();
 
         private IConsumerWrapper consumer;
 
@@ -99,7 +98,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private void PlantSubscriber(object key, DynamicStateProperty dynamicState)
         {
-            var disposable = dynamicState.Subscribe(new PropertyChangedObserver(
+            var disposable = dynamicState.Subscribe(new PropertyAccessedObserver(
                 PropertyAccessedEvent,
                 () => {
                     observerDisposables[key].Dispose();
@@ -137,12 +136,14 @@ namespace Havit.Blazor.StateManagement.Mobx
             }
         }
 
-        private class PropertyChangedObserver : IObserver<PropertyAccessedArgs>
+        private class PropertyAccessedObserver : IObserver<PropertyAccessedArgs>
         {
             private readonly EventHandler<PropertyAccessedEventArgs> propertyAccessedEvent;
             private readonly Action disposeAction;
 
-            public PropertyChangedObserver(
+            private bool disposed;
+
+            public PropertyAccessedObserver(
                 EventHandler<PropertyAccessedEventArgs> propertyAccessedEvent,
                 Action disposeAction)
             {
@@ -161,7 +162,11 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             public void OnCompleted()
             {
-                disposeAction();
+                if (!disposed)
+                {
+                    disposed = true;
+                    disposeAction();
+                }
             }
 
             public void OnError(Exception error)
