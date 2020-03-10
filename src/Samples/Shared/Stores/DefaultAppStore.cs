@@ -28,12 +28,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
                 },
                 new NavigationItem
                 {
-                    Title = "Fetch data",
-                    Link = "fetchdata",
-                    Glyph = "oi oi-list-rich"
-                },
-                new NavigationItem
-                {
                     Title = "Person",
                     Link = "/person",
                     Glyph = "oi oi-plus"

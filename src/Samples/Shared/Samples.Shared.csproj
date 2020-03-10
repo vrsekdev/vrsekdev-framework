@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    <AssemblyName>Havit.Blazor.StateManagement.Mobx.Samples.Shared</AssemblyName>
+    <RootNamespace>Havit.Blazor.StateManagement.Mobx.Samples.Shared</RootNamespace>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.2.2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core.Abstractions\Core.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\Core.csproj" />
+    <ProjectReference Include="..\..\ObservableProperties.Default\ObservableProperties.Default.csproj" />
+    <ProjectReference Include="..\..\PropertyObservables.Dynamic\PropertyObservables.Dynamic.csproj" />
+  </ItemGroup>
+
+</Project>

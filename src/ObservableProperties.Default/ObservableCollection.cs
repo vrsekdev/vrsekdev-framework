@@ -13,7 +13,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
     {
         public abstract Type ElementType { get; }
         public abstract bool ElementObserved { get; }
-        public abstract int CountElements { get; }
+        internal abstract int CountElements { get; }
 
         public abstract void OverwriteElements(IEnumerable source);
         public abstract void Reset();
@@ -29,9 +29,9 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 
         public override bool ElementObserved { get; }
         public override Type ElementType { get; }
-        public override int CountElements => Count;
         public int Count => list.Count;
         public bool IsReadOnly => ((IList)list).IsReadOnly;
+        internal override int CountElements => Count;
 
         public ObservableCollection(
             EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,

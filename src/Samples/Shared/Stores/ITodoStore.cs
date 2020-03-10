@@ -8,8 +8,8 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
 {
     public interface ITodoStore
     {
-        public int Value { get; set; }
+        int Value { get; set; }
 
-        public IObservableCollection<string> Values { get; set; }
+        IObservableCollection<string> Values { get; set; }
     }
 }

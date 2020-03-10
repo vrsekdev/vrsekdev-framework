@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Havit.Blazor.StateManagement.Mobx.Samples.Data;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
 using Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensions;
 using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
@@ -29,7 +28,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
 
             services.UseDefaultObservableProperties();
             services.UseDynamicPropertyObservables();
