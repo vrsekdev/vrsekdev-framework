@@ -9,9 +9,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
     {
         Type ElementType { get; }
         bool ElementObserved { get; }
-        int CountElements { get; }
 
-        void OverwriteElements(IEnumerable source);
         void Reset();
     }
 

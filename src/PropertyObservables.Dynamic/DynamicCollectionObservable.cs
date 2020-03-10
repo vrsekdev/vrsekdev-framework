@@ -14,29 +14,19 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
         public abstract int CountElements { get; }
 
         internal abstract IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer);
-
-        internal abstract void Reset(IEnumerable elements);
-
-        public abstract void Dispose();
-
-        public abstract IEnumerator GetEnumerator();
-
-        public void OverwriteElements(IEnumerable source)
-        {
-            throw new NotImplementedException();
-        }
-
         public abstract void Reset();
+        public abstract void Dispose();
+        public abstract IEnumerator GetEnumerator();
     }
 
-    internal class DynamicObservableArray<T> : DynamicCollectionObservable, IObservableCollection<T>
+    internal class DynamicCollectionObservable<T> : DynamicCollectionObservable, IObservableCollection<T>
     {
         private readonly IObservableCollection<T> observableArray;
         private readonly IObservableFactory observableFactory;
 
         private DynamicStatePropertyCache dynamicStatePropertyCache;
 
-        public DynamicObservableArray(
+        public DynamicCollectionObservable(
             IObservableCollection<T> observableArray,
             IObservableFactory observableFactory)
         {
@@ -101,15 +91,18 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 
         public void Clear()
         {
-            if (ElementObserved)
-            {
-                foreach (var item in observableArray)
-                {
-                    DynamicPropertyObservable.Unbox(item).Dispose();
-                }
-            }
+            Reset();
 
             observableArray.Clear();
+        }
+
+        public override void Reset()
+        {
+            if (ElementObserved)
+            {
+                dynamicStatePropertyCache.Dispose();
+                dynamicStatePropertyCache = new DynamicStatePropertyCache(observableFactory);
+            }
         }
 
         public bool Contains(T item)
@@ -180,15 +173,6 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
             return dynamicStatePropertyCache.Insert(originalItem);
         }
 
-        internal override void Reset(IEnumerable elements)
-        {
-            if (ElementObserved)
-            {
-                dynamicStatePropertyCache.Dispose();
-                dynamicStatePropertyCache = new DynamicStatePropertyCache(observableFactory);
-            }
-        }
-
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return (IEnumerator<T>)GetEnumerator();
@@ -211,11 +195,6 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
         internal override IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer)
         {
             return dynamicStatePropertyCache?.Subscribe(observer);
-        }
-
-        public override void Reset()
-        {
-            throw new NotImplementedException();
         }
 
         private class Enumerator : IEnumerator<T>, IEnumerator

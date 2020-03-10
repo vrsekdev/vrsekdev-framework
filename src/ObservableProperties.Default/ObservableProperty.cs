@@ -14,30 +14,12 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
         private readonly EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
-        private Dictionary<string, IObservableProperty> observedProperties;
-        private Dictionary<string, IObservableCollection> observedArrays;
+        private Dictionary<string, ObservableProperty> observedProperties;
+        private Dictionary<string, ObservableCollection> observedArrays;
         private Dictionary<string, PropertyInfo> allPropertiesByName;
         private Dictionary<string, object> normalProperties;
 
         public Type ObservedType { get; }
-
-        internal static ObservableProperty CreateCopy(ObservableProperty observableProperty)
-        {
-            var newObservableProperty = CreateEmptyCopy(observableProperty);
-            newObservableProperty.OverwriteFrom(observableProperty);
-
-            return newObservableProperty;
-        }
-
-        internal static ObservableProperty CreateEmptyCopy(ObservableProperty observableProperty)
-        {
-            var newObservableProperty = new ObservableProperty(
-                observableProperty.ObservedType,
-                observableProperty.statePropertyChangedEvent,
-                observableProperty.collectionItemsChangedEvent);
-
-            return newObservableProperty;
-        }
 
         internal ObservableProperty(
             Type interfaceType,
@@ -168,12 +150,12 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 
         public Dictionary<string, IObservableProperty> GetObservedProperties()
         {
-            return observedProperties;
+            return observedProperties.ToDictionary(x => x.Key, x => (IObservableProperty)x.Value);
         }
 
         public Dictionary<string, IObservableCollection> GetObservedCollections()
         {
-            return observedArrays;
+            return observedArrays.ToDictionary(x => x.Key, x => (IObservableCollection)x.Value);
         }
 
         public void OverwriteFrom(object source)
@@ -254,8 +236,8 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
         private void Initialize()
         {
             allPropertiesByName = ObservedType.GetProperties().ToDictionary(x => x.Name);
-            observedProperties = new Dictionary<string, IObservableProperty>();
-            observedArrays = new Dictionary<string, IObservableCollection>();
+            observedProperties = new Dictionary<string, ObservableProperty>();
+            observedArrays = new Dictionary<string, ObservableCollection>();
             normalProperties = new Dictionary<string, object>();
 
             foreach (var propertyKvp in allPropertiesByName)
@@ -289,7 +271,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 type.GetGenericTypeDefinition() == typeof(IObservableCollection<>);
         }
 
-        private IObservableProperty CreateObservableProperty(PropertyInfo property)
+        private ObservableProperty CreateObservableProperty(PropertyInfo property)
         {
             Type valueType = property.PropertyType;
 
@@ -298,12 +280,12 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 collectionItemsChangedEvent);
         }
 
-        private IObservableCollection CreateEmptyObservableArray(PropertyInfo property)
+        private ObservableCollection CreateEmptyObservableArray(PropertyInfo property)
         {
             Type valueType = property.PropertyType;
             Type observableArrayType = typeof(ObservableCollection<>).MakeGenericType(valueType.GetGenericArguments()[0]);
 
-            return (IObservableCollection)Activator.CreateInstance(observableArrayType, statePropertyChangedEvent, collectionItemsChangedEvent);
+            return (ObservableCollection)Activator.CreateInstance(observableArrayType, statePropertyChangedEvent, collectionItemsChangedEvent);
         }
 
         private object GetDefault(Type t)

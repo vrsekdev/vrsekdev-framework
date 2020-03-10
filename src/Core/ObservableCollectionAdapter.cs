@@ -14,12 +14,6 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public Type ElementType => throw new NotImplementedException();
         public bool ElementObserved => throw new NotImplementedException();
-        public int CountElements => throw new NotImplementedException();
-
-        public void OverwriteElements(IEnumerable source)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Reset()
         {

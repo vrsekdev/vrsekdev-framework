@@ -9,20 +9,29 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 {
-    internal class ObservableCollection<T> : IObservableCollection<T>
+    internal abstract class ObservableCollection : IObservableCollection
+    {
+        public abstract Type ElementType { get; }
+        public abstract bool ElementObserved { get; }
+        public abstract int CountElements { get; }
+
+        public abstract void OverwriteElements(IEnumerable source);
+        public abstract void Reset();
+        public abstract IEnumerator GetEnumerator();
+    }
+
+    internal class ObservableCollection<T> : ObservableCollection, IObservableCollection<T>
     {
         private readonly EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
         private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private List<T> list;
 
-        public bool ElementObserved { get; }
-        public Type ElementType { get; }
-        public int CountElements => Count;
+        public override bool ElementObserved { get; }
+        public override Type ElementType { get; }
+        public override int CountElements => Count;
         public int Count => list.Count;
         public bool IsReadOnly => ((IList)list).IsReadOnly;
-        public bool IsSynchronized => ((ICollection)list).IsSynchronized;
-        public object SyncRoot => ((ICollection)list).SyncRoot;
 
         public ObservableCollection(
             EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
@@ -99,7 +108,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
             });
         }
 
-        public void Reset()
+        public override void Reset()
         {
             Clear();
         }
@@ -165,12 +174,12 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
             throw new NotImplementedException();
         }
 
-        public void OverwriteElements(IEnumerable source)
+        public override void OverwriteElements(IEnumerable source)
         {
             list = new List<T>(source.Cast<T>());
         }
 
-        public IEnumerator GetEnumerator()
+        public override IEnumerator GetEnumerator()
         {
             return list.GetEnumerator();
         }
