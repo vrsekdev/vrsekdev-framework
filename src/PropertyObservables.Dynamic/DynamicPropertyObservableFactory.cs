@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Observables.Dynamic
+namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 {
     internal class DynamicPropertyObservableFactory : IPropertyObservableFactory
     {

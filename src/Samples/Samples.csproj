@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\Observables.Dynamic\Observables.Dynamic.csproj" />
+    <ProjectReference Include="..\PropertyObservables.Dynamic\PropertyObservables.Dynamic.csproj" />
   </ItemGroup>
 
 </Project>

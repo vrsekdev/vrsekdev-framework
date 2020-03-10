@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Havit.Blazor.StateManagement.Mobx.Observables.Dynamic
+namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 {
     internal abstract class DynamicCollectionObservable : IObservableCollection, IDisposable
     {

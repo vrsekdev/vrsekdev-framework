@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Havit.Blazor.StateManagement.Mobx.Observables.Dynamic</AssemblyName>
-    <RootNamespace>Havit.Blazor.StateManagement.Mobx.Observables.Dynamic</RootNamespace>
+    <AssemblyName>Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic</AssemblyName>
+    <RootNamespace>Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

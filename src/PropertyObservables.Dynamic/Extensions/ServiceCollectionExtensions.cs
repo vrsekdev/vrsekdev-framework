@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Observables.Dynamic.Extensions
+namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void UseDynamicObservables(this IServiceCollection services)
+        public static void UseDynamicPropertyObservables(this IServiceCollection services)
         {
             services
                 .AddTransient<IPropertyObservableFactory, DynamicPropertyObservableFactory>()

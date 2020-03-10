@@ -5,7 +5,7 @@ using System.Collections;
 using System.Dynamic;
 using System.Linq;
 
-namespace Havit.Blazor.StateManagement.Mobx.Observables.Dynamic
+namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 {
     internal class DynamicPropertyObservable : DynamicObject, IPropertyObservable
     {
@@ -28,11 +28,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Dynamic
         public static DynamicPropertyObservable Unbox<T>(T val)
         {
             return ImpromptuInterface.Impromptu.UndoActLike(val) as DynamicPropertyObservable;
-        }
-
-        public static bool IsObservable(object value)
-        {
-            return Unbox(value) != null;
         }
 
         private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
