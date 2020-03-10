@@ -1,4 +1,5 @@
-﻿using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
 
         public IServiceCollection AsSingleton()
         {
-            services.AddSingleton<IStoreHolder<TStore>>(GetStoreHolder());
+            services.AddSingleton<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
 
             return services;
@@ -29,7 +30,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
 
         public IServiceCollection AsTransient()
         {
-            services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder());
+            services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
 
             return services;
@@ -37,14 +38,16 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
 
         public IServiceCollection Cascading()
         {
+            services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, CascadeStoreAccessor<TStore>>();
 
             return services;
         }
 
-        private IStoreHolder<TStore> GetStoreHolder()
+        private IStoreHolder<TStore> GetStoreHolder(IServiceProvider provider)
         {
-            var storeHolder = new StoreHolder<TStore>();
+            IObservableFactoryFactory observableFactoryFactory = provider.GetRequiredService<IObservableFactoryFactory>();
+            var storeHolder = new StoreHolder<TStore>(observableFactoryFactory);
             if (defaultState != null)
             {
                 storeHolder.RootObservableProperty.OverwriteFrom(defaultState);

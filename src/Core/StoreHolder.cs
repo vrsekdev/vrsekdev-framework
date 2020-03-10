@@ -1,53 +1,42 @@
-﻿using System;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class StatePropertyChangedEventArgs
-    {
-        public string PropertyName { get; set; }
-    }
-
-    internal class CollectionItemsChangedEventArgs
-    {
-        public int OldCount { get; set; }
-
-        public int NewCount { get; set; }
-
-        public IEnumerable<object> ItemsAdded { get; set; }
-
-        public IEnumerable<object> ItemsRemoved { get; set; }
-    }
-
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
-        public ObservableProperty RootObservableProperty { get; }
+        private readonly IObservableFactory observableFactory;
 
-        public event EventHandler<StatePropertyChangedEventArgs> StatePropertyChangedEvent;
-        public event EventHandler<CollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
+        public IObservableProperty RootObservableProperty { get; }
 
-        public StoreHolder()
+        public event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
+        public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
+
+        public StoreHolder(
+            IObservableFactoryFactory observableFactoryFactory)
         {
+            this.observableFactory = observableFactoryFactory.Create(
+                OnStatePropertyChanged,
+                OnCollectionItemsChanged);
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
         }
 
-        public ObservableProperty CreateObservableProperty(Type type)
+        public IObservableProperty CreateObservableProperty(Type type)
         {
-            return new ObservableProperty(
-                type,
-                OnStatePropertyChanged,
-                OnCollectionItemsChanged);
+            return observableFactory.CreateObservableProperty(type);
         }
 
-        private void OnStatePropertyChanged(object sender, StatePropertyChangedEventArgs e)
+        private void OnStatePropertyChanged(object sender, ObservablePropertyStateChangedEventArgs e)
         {
             StatePropertyChangedEvent?.Invoke(sender, e);
         }
 
-        private void OnCollectionItemsChanged(object sender, CollectionItemsChangedEventArgs e)
+        private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedEventArgs e)
         {
             CollectionItemsChangedEvent?.Invoke(sender, e);
         }

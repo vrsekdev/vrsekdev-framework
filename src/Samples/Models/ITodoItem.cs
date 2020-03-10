@@ -1,4 +1,4 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Attributes;
+﻿using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

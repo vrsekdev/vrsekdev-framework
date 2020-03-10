@@ -1,17 +1,18 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
+using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 {
     internal class ObservableCollection<T> : IObservableCollection<T>
     {
-        private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
-        private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        private readonly EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
+        private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private List<T> list;
 
@@ -24,8 +25,8 @@ namespace Havit.Blazor.StateManagement.Mobx
         public object SyncRoot => ((ICollection)list).SyncRoot;
 
         public ObservableCollection(
-            EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
-            EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent) : base()
+            EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
+            EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent) : base()
         {
             this.statePropertyChangedEvent = statePropertyChangedEvent;
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
@@ -51,7 +52,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             int oldCount = Count;
             list.Add(item);
 
-            collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
@@ -71,7 +72,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 list.Add(innerItem);
             }
 
-            collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
                 ItemsAdded = (IEnumerable<object>)items,
                 ItemsRemoved = Enumerable.Empty<object>(),
@@ -89,7 +90,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             list.Clear();
 
-            collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
@@ -127,7 +128,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             list[index] = item;
 
-            collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
@@ -148,7 +149,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 removedItems = new object[] { item };
             }
 
-            collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,

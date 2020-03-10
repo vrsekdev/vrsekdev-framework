@@ -16,8 +16,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
     public class CascadeStoreHolder<TStore> : ComponentBase
         where TStore : class
     {
-        private readonly IStoreHolder<TStore> storeHolder;
-
         private IStoreAccessor<TStore> StoreAccessor => CreateStoreAccessor();
 
         [Inject]
@@ -26,13 +24,12 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         [Inject]
         private IPropertyObservableWrapper PropertyObservableWrapper { get; set; }
 
+        [Inject]
+        private IStoreHolder<TStore> StoreHolder { get; set; }
+
         [Parameter]
         public RenderFragment ChildContent { get; set; }
 
-        public CascadeStoreHolder()
-        {
-            storeHolder = new StoreHolder<TStore>();
-        }
 
         protected override void BuildRenderTree(RenderTreeBuilder __builder)
         {
@@ -47,7 +44,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         private IStoreAccessor<TStore> CreateStoreAccessor()
         {
             return new InjectedStoreAccessor<TStore>(
-                storeHolder,
+                StoreHolder,
                 PropertyObservableFactory,
                 PropertyObservableWrapper);
         }

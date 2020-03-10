@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,12 +10,12 @@ namespace Havit.Blazor.StateManagement.Mobx
     internal interface IStoreHolder<TStore>
         where TStore : class
     {
-        ObservableProperty RootObservableProperty { get; }
+        IObservableProperty RootObservableProperty { get; }
 
-        event EventHandler<StatePropertyChangedEventArgs> StatePropertyChangedEvent;
+        event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
 
-        event EventHandler<CollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
+        event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
 
-        ObservableProperty CreateObservableProperty(Type type);
+        IObservableProperty CreateObservableProperty(Type type);
     }
 }

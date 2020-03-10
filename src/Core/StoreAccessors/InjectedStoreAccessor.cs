@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
 using Havit.Blazor.StateManagement.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -68,12 +69,12 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
              where T : class
         {
             // TODO: Create observable array method
-            ObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
+            IObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
 
             return CreateObservable<T>(observableProperty);
         }
 
-        internal T CreateObservable<T>(ObservableProperty observableProperty)
+        internal T CreateObservable<T>(IObservableProperty observableProperty)
             where T : class
         {
             IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
@@ -124,9 +125,9 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             }
         }
 
-        private async void StoreHolder_StatePropertyChangedEvent(object sender, StatePropertyChangedEventArgs e)
+        private async void StoreHolder_StatePropertyChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
         {
-            ObservableProperty observableProperty = (ObservableProperty)sender;
+            IObservableProperty observableProperty = (IObservableProperty)sender;
 
             if (subscribedProperties.Contains((observableProperty, e.PropertyName)))
             {
@@ -134,7 +135,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             }
         }
 
-        private async void StoreHolder_CollectionItemsChangedEvent(object sender, CollectionItemsChangedEventArgs e)
+        private async void StoreHolder_CollectionItemsChangedEvent(object sender, ObservableCollectionItemsChangedEventArgs e)
         {
             if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
             {

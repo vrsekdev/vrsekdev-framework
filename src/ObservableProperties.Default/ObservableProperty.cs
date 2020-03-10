@@ -1,17 +1,18 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
+using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 {
     internal class ObservableProperty : IObservableProperty
     {
-        private readonly EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent;
-        private readonly EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        private readonly EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
+        private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private Dictionary<string, IObservableProperty> observedProperties;
         private Dictionary<string, IObservableCollection> observedArrays;
@@ -40,8 +41,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         internal ObservableProperty(
             Type interfaceType,
-            EventHandler<StatePropertyChangedEventArgs> statePropertyChangedEvent,
-            EventHandler<CollectionItemsChangedEventArgs> collectionItemsChangedEvent)
+            EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
+            EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent)
         {
             if (!interfaceType.IsInterface)
             {
@@ -99,7 +100,7 @@ namespace Havit.Blazor.StateManagement.Mobx
             {
                 observedProperties[name].OverwriteFrom(value);
 
-                statePropertyChangedEvent?.Invoke(this, new StatePropertyChangedEventArgs
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
                     PropertyName = name
                 });
@@ -134,7 +135,7 @@ namespace Havit.Blazor.StateManagement.Mobx
                 int oldArrayCount = oldArray.CountElements;
                 oldArray.OverwriteElements(observableArray);
 
-                collectionItemsChangedEvent?.Invoke(this, new CollectionItemsChangedEventArgs
+                collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
                 {
                     ItemsAdded = addedItems,
                     ItemsRemoved = removedItems,
@@ -154,7 +155,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
                 normalProperties[name] = value;
 
-                statePropertyChangedEvent?.Invoke(this, new StatePropertyChangedEventArgs
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
                     PropertyName = name
                 });
@@ -231,7 +232,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             foreach (var propertyName in allPropertiesByName.Keys)
             {
-                statePropertyChangedEvent?.Invoke(this, new StatePropertyChangedEventArgs
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
                     PropertyName = propertyName
                 });
