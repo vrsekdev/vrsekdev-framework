@@ -31,18 +31,18 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
         }
 
         private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
+        private readonly Dictionary<string, DynamicCollectionObservable> collectionObservables = new Dictionary<string, DynamicCollectionObservable>();
+        private readonly Dictionary<string, object> propertyObservables = new Dictionary<string, object>();
 
-        private readonly Dictionary<string, DynamicCollectionObservable> observedDynamicArrays = new Dictionary<string, DynamicCollectionObservable>();
-        private readonly Dictionary<string, object> observedDynamicProperties = new Dictionary<string, object>();
+        private readonly IObservableFactory observableFactory;
 
         public IObservableProperty ObservableProperty { get; }
-        private IObservableFactory ObservableFactory { get; }
 
         private DynamicPropertyObservable(
             IObservableProperty observableProperty)
         {
             ObservableProperty = observableProperty;
-            ObservableFactory = observableProperty.CreateFactory();
+            observableFactory = observableProperty.CreateFactory();
 
             Initialize();
         }
@@ -53,14 +53,14 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 
             OnPropertyAccessed(name);
             
-            if (observedDynamicProperties.TryGetValue(name, out object propertyObservable))
+            if (propertyObservables.TryGetValue(name, out object propertyObservable))
             {
                 result = propertyObservable;
 
                 return true;
             }
 
-            if (observedDynamicArrays.TryGetValue(name, out DynamicCollectionObservable collectionObservable))
+            if (collectionObservables.TryGetValue(name, out DynamicCollectionObservable collectionObservable))
             {
                 result = collectionObservable;
 
@@ -74,7 +74,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
         {
             string name = binder.Name;
 
-            if (observedDynamicProperties.TryGetValue(name, out object boxedValue))
+            if (propertyObservables.TryGetValue(name, out object boxedValue))
             {
                 if (Unbox(value) is DynamicPropertyObservable newObservable)
                 {
@@ -88,12 +88,12 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
                         disposer.AddDisposeAction(newObservable.Subscribe(observer));
                     }
 
-                    observedDynamicProperties[name] = newObservable;
+                    propertyObservables[name] = newObservable;
                     return ObservableProperty.TrySetMember(name, newObservable.ObservableProperty);
                 }
             }
 
-            if (observedDynamicArrays.TryGetValue(name, out DynamicCollectionObservable dynamicCollectionObservable))
+            if (collectionObservables.TryGetValue(name, out DynamicCollectionObservable dynamicCollectionObservable))
             {
                 bool result;
                 if (result = ObservableProperty.TrySetMember(name, value))
@@ -111,7 +111,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
         {
             var disposer = new ObserverDisposer();
 
-            foreach (var observedDynamicObject in observedDynamicProperties.Values)
+            foreach (var observedDynamicObject in propertyObservables.Values)
             {
                 DynamicPropertyObservable dynamicState = Unbox(observedDynamicObject);
                 if (dynamicState != null)
@@ -120,7 +120,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
                 }
             }
 
-            foreach (var observedDynamicArray in observedDynamicArrays.Values)
+            foreach (var observedDynamicArray in collectionObservables.Values)
             {
                 disposer.AddDisposeAction(observedDynamicArray.Subscribe(observer));
             }
@@ -138,15 +138,13 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 
         public void Dispose()
         {
-            ObservableProperty.Dispose();
-
-            foreach (var observedDynamicProperty in observedDynamicProperties.Values)
+            foreach (var observedDynamicProperty in propertyObservables.Values)
             {
                 DynamicPropertyObservable dynamicState = Unbox(observedDynamicProperty);
                 dynamicState.Dispose();
             }
 
-            foreach (var observedDynamicArray in observedDynamicArrays.Values)
+            foreach (var observedDynamicArray in collectionObservables.Values)
             {
                 observedDynamicArray.Dispose();
             }
@@ -164,16 +162,16 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
 
             foreach (var observedProperty in observedProperties)
             {
-                observedDynamicProperties[observedProperty.Key] = CreateObserverProperty(observedProperty.Value);
+                propertyObservables[observedProperty.Key] = CreatePropertyObservable(observedProperty.Value);
             }
 
             foreach (var observedArray in observedArrays)
             {
-                observedDynamicArrays[observedArray.Key] = CreateObserverArray(observedArray.Value);
+                collectionObservables[observedArray.Key] = CreateCollectionObservable(observedArray.Value);
             }
         }
 
-        private object CreateObserverProperty(IObservableProperty observableProperty)
+        private object CreatePropertyObservable(IObservableProperty observableProperty)
         {
             DynamicPropertyObservable dynamicState = new DynamicPropertyObservable(observableProperty);
             object boxedItem = Box(dynamicState, observableProperty.ObservedType).Target;
@@ -186,7 +184,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
             return boxedItem;
         }
 
-        private DynamicCollectionObservable CreateObserverArray(IObservableCollection observableArray)
+        private DynamicCollectionObservable CreateCollectionObservable(IObservableCollection observableArray)
         {
             Type elementType = observableArray.ElementType;
             Type dynamicObserverArrayType = typeof(DynamicCollectionObservable<>).MakeGenericType(elementType);
@@ -194,7 +192,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
             DynamicCollectionObservable dynamicCollectionObservable = (DynamicCollectionObservable)Activator.CreateInstance(
                 dynamicObserverArrayType, 
                 observableArray, 
-                ObservableFactory);
+                observableFactory);
 
             foreach (var observer in observers)
             {
