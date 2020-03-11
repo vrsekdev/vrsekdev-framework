@@ -1,5 +1,4 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,17 +9,20 @@ namespace Havit.Blazor.StateManagement.Mobx
     internal class ObservableActionWrapper<TStore>
         where TStore : class
     {
+        private readonly Dictionary<IObservableProperty, TStore> storeInstanceCache = new Dictionary<IObservableProperty, TStore>();
+
         private readonly IPropertyObservableFactory propertyObservableFactory;
         private readonly IPropertyObservableWrapper propertyObservableWrapper;
         private readonly Action<TStore> action;
 
         public ObservableActionWrapper(
-            ActionBuilder<TStore> actionBuilder,
             IPropertyObservableFactory propertyObservableFactory,
-            IPropertyObservableWrapper propertyObservableWrapper)
+            IPropertyObservableWrapper propertyObservableWrapper,
+            ActionBuilder<TStore> actionBuilder)
         {
             this.propertyObservableFactory = propertyObservableFactory;
             this.propertyObservableWrapper = propertyObservableWrapper;
+
             this.action = actionBuilder.Action;
             this.ObservedProperties = actionBuilder.ObservedProperties;
             this.ObservedCollections = actionBuilder.ObservedCollections;
@@ -31,9 +33,19 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         public void Invoke(IObservableProperty observableProperty)
         {
-            IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
-            TStore store = propertyObservableWrapper.WrapPropertyObservable<TStore>(propertyObservable);
+            TStore store = GetStore(observableProperty);
             action(store);
+        }
+
+        private TStore GetStore(IObservableProperty observableProperty)
+        {
+            if (!storeInstanceCache.TryGetValue(observableProperty, out TStore store))
+            {
+                IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
+                store = propertyObservableWrapper.WrapPropertyObservable<TStore>(propertyObservable);
+            }
+
+            return store;
         }
     }
 }

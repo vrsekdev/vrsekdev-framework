@@ -49,9 +49,9 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             observableActions = actionRegistrator.Builders.Select(builder =>
                 new ObservableActionWrapper<TStore>(
-                    builder,
                     propertyObservableFactory,
-                    propertyObservableWrapper
+                    propertyObservableWrapper,
+                    builder
                 )
             ).ToArray();
         }

@@ -12,7 +12,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         where TStore : class
     {
         private readonly IObservableFactory observableFactory;
-        private readonly ObservableActionWrapper<TStore>[] observableActions;
+        private readonly ILookup<PropertyInfo, ObservableActionWrapper<TStore>> observableActionsLookup;
 
         public IObservableProperty RootObservableProperty { get; }
 
@@ -27,7 +27,10 @@ namespace Havit.Blazor.StateManagement.Mobx
                 OnStatePropertyChanged,
                 OnCollectionItemsChanged);
 
-            observableActions = storeMetadata.GetObservableActions();
+            observableActionsLookup = storeMetadata.GetObservableActions()
+                .SelectMany(action => action.ObservedProperties.Select(prop => new { PropertyInfo = prop, Action = action }))
+                .ToLookup(x => x.PropertyInfo, x => x.Action);
+
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
         }
 
@@ -38,8 +41,7 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private void OnStatePropertyChanged(object sender, ObservablePropertyStateChangedEventArgs e)
         {
-            var actionsToInvoke = observableActions.Where(x => x.ObservedProperties.Contains(e.PropertyInfo));
-            foreach (var action in actionsToInvoke)
+            foreach (var action in observableActionsLookup[e.PropertyInfo])
             {
                 action.Invoke(RootObservableProperty);
             }

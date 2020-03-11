@@ -26,10 +26,10 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples.ClientSide
         {
             services.UseDefaultObservableProperties();
             services.UseDynamicPropertyObservables();
-            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).AsSingleton();
-            services.AddMobxStore<IHomeStore>().AsSingleton();
-            services.AddMobxStore<ICounterStore>().AsTransient();
-            services.AddMobxStore<ITodoStore>().Cascading();
+            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleScoped();
+            services.AddMobxStore<IHomeStore>().LifestyleScoped();
+            services.AddMobxStore<ICounterStore>().LifestyleTransient();
+            services.AddMobxStore<ITodoStore>().LifestyleCascading();
         }
     }
 }

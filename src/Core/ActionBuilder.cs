@@ -7,17 +7,17 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class ActionBuilder
+    public class ActionBuilderFactory<TStore>
     {
-        public static ActionBuilder<TStore> For<TStore>(Action<TStore> action)
+        public ActionBuilder<TStore> For(Action<TStore> action)
         {
             return new ActionBuilder<TStore>(action);
         }
     }
 
-    public class ActionBuilderFactory<TStore>
+    public class ActionBuilder
     {
-        public ActionBuilder<TStore> For(Action<TStore> action)
+        public static ActionBuilder<TStore> For<TStore>(Action<TStore> action)
         {
             return new ActionBuilder<TStore>(action);
         }

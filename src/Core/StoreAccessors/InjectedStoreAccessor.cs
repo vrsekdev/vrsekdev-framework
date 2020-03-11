@@ -124,7 +124,6 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             var key = (observableProperty, e.PropertyName);
             if (!subscribedProperties.Contains(key))
             {
-                //PlantSubscriber(new object(), e.PropertyObservable);
                 subscribedProperties.Add(key);
             }
         }
