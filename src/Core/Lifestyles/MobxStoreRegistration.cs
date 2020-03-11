@@ -22,12 +22,12 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
             this.services = services;
         }
 
-        public MobxStoreRegistration<TStore> WithActions<TImpl>()
-            where TImpl : StoreActionRegistrator<TStore>
+        public MobxStoreRegistration<TStore> WithReactions<TImpl>()
+            where TImpl : ReactionRegistrator<TStore>
         {
             if (storeMetadataRegistered)
             {
-                throw new InvalidOperationException("Action class was already registered for this store");
+                throw new InvalidOperationException("Class containing reactions was already registered for this store");
             }
 
             services.AddTransient(typeof(TImpl));

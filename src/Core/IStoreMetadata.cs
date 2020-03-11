@@ -7,6 +7,6 @@ namespace Havit.Blazor.StateManagement.Mobx
     internal interface IStoreMetadata<TStore>
         where TStore : class
     {
-        ObservableActionWrapper<TStore>[] GetObservableActions();
+        ReactionWrapper<TStore>[] GetReactions();
     }
 }

@@ -7,23 +7,23 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    public class ActionBuilderFactory<TStore>
+    public class ReactionBuilderFactory<TStore>
     {
-        public ActionBuilder<TStore> For(Action<TStore> action)
+        public ReactionBuilder<TStore> For(Action<TStore> reaction)
         {
-            return new ActionBuilder<TStore>(action);
+            return new ReactionBuilder<TStore>(reaction);
         }
     }
 
-    public class ActionBuilder
+    public class ReactionBuilder
     {
-        public static ActionBuilder<TStore> For<TStore>(Action<TStore> action)
+        public static ReactionBuilder<TStore> For<TStore>(Action<TStore> reaction)
         {
-            return new ActionBuilder<TStore>(action);
+            return new ReactionBuilder<TStore>(reaction);
         }
     }
 
-    public class ActionBuilder<TStore>
+    public class ReactionBuilder<TStore>
     {
         internal Action<TStore> Action { get; }
 
@@ -31,24 +31,24 @@ namespace Havit.Blazor.StateManagement.Mobx
         internal HashSet<PropertyInfo> ObservedCollections { get; } = new HashSet<PropertyInfo>();
 
 
-        public static ActionBuilder<TStore> For(Action<TStore> action)
+        public static ReactionBuilder<TStore> For(Action<TStore> action)
         {
-            return new ActionBuilder<TStore>(action);
+            return new ReactionBuilder<TStore>(action);
         }
 
-        internal ActionBuilder(Action<TStore> action)
+        internal ReactionBuilder(Action<TStore> action)
         {
             Action = action;
         }
 
-        public ActionBuilder<TStore> Observe<T>(Expression<Func<TStore, T>> propertyExpression)
+        public ReactionBuilder<TStore> Observe<T>(Expression<Func<TStore, T>> propertyExpression)
         {
             ObservedProperties.Add(GetPropertyInfo(propertyExpression));
 
             return this;
         }
 
-        public ActionBuilder<TStore> Observe<T>(Expression<Func<TStore, IObservableCollection<T>>> collectionExpression)
+        public ReactionBuilder<TStore> Observe<T>(Expression<Func<TStore, IObservableCollection<T>>> collectionExpression)
         {
             ObservedCollections.Add(GetPropertyInfo(collectionExpression));
 

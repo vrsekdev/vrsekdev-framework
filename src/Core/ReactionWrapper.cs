@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx
 {
-    internal class ObservableActionWrapper<TStore>
+    internal class ReactionWrapper<TStore>
         where TStore : class
     {
         private readonly Dictionary<IObservableProperty, TStore> storeInstanceCache = new Dictionary<IObservableProperty, TStore>();
@@ -15,17 +15,17 @@ namespace Havit.Blazor.StateManagement.Mobx
         private readonly IPropertyObservableWrapper propertyObservableWrapper;
         private readonly Action<TStore> action;
 
-        public ObservableActionWrapper(
+        public ReactionWrapper(
             IPropertyObservableFactory propertyObservableFactory,
             IPropertyObservableWrapper propertyObservableWrapper,
-            ActionBuilder<TStore> actionBuilder)
+            ReactionBuilder<TStore> reactionBuilder)
         {
             this.propertyObservableFactory = propertyObservableFactory;
             this.propertyObservableWrapper = propertyObservableWrapper;
 
-            this.action = actionBuilder.Action;
-            this.ObservedProperties = actionBuilder.ObservedProperties;
-            this.ObservedCollections = actionBuilder.ObservedCollections;
+            this.action = reactionBuilder.Action;
+            this.ObservedProperties = reactionBuilder.ObservedProperties;
+            this.ObservedCollections = reactionBuilder.ObservedCollections;
         }
 
         public HashSet<PropertyInfo> ObservedProperties { get; }

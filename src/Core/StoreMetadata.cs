@@ -11,44 +11,44 @@ namespace Havit.Blazor.StateManagement.Mobx
     internal class StoreMetadata<TStore> : IStoreMetadata<TStore>
         where TStore : class
     {
-        public virtual ObservableActionWrapper<TStore>[] GetObservableActions()
+        public virtual ReactionWrapper<TStore>[] GetReactions()
         {
             // No class registered
-            return new ObservableActionWrapper<TStore>[0];
+            return new ReactionWrapper<TStore>[0];
         }
     }
 
     internal class StoreMetadata<TStore, TImpl> : StoreMetadata<TStore>
         where TStore : class
-        where TImpl : StoreActionRegistrator<TStore>
+        where TImpl : ReactionRegistrator<TStore>
     {
         private readonly IPropertyObservableFactory propertyObservableFactory;
         private readonly IPropertyObservableWrapper propertyObservableWrapper;
 
-        private ObservableActionWrapper<TStore>[] observableActions;
+        private ReactionWrapper<TStore>[] reactions;
 
         public StoreMetadata(
             IPropertyObservableFactory propertyObservableFactory,
             IPropertyObservableWrapper propertyObservableWrapper,
-            TImpl actionRegistrator)
+            TImpl reactionRegistrator)
         {
             this.propertyObservableFactory = propertyObservableFactory;
             this.propertyObservableWrapper = propertyObservableWrapper;
 
-            Initialize(actionRegistrator);
+            Initialize(reactionRegistrator);
         }
 
-        public override ObservableActionWrapper<TStore>[] GetObservableActions()
+        public override ReactionWrapper<TStore>[] GetReactions()
         {
-            return observableActions;
+            return reactions;
         }
 
-        private void Initialize(TImpl actionRegistrator)
+        private void Initialize(TImpl reactionRegistrator)
         {
-            actionRegistrator.RegisterInternal();
+            reactionRegistrator.RegisterInternal();
 
-            observableActions = actionRegistrator.Builders.Select(builder =>
-                new ObservableActionWrapper<TStore>(
+            reactions = reactionRegistrator.Builders.Select(builder =>
+                new ReactionWrapper<TStore>(
                     propertyObservableFactory,
                     propertyObservableWrapper,
                     builder

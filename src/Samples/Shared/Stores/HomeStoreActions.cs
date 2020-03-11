@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples.Shared.Stores
 {
-    public class HomeStoreActions : StoreActionRegistrator<IHomeStore>
+    public class HomeStoreActions : ReactionRegistrator<IHomeStore>
     {
         public override void Register()
         {
-            Register(ActionBuilder.For<IHomeStore>(SomeAction)
+            Register(ReactionBuilder.For<IHomeStore>(SomeAction)
                 .Observe(x => x.Value));
         }
 
