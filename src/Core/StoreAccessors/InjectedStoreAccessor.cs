@@ -42,7 +42,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             IPropertyObservable propertyObservable = propertyObservableFactory.Create(storeHolder.RootObservableProperty);
             Store = propertyObservableWrapper.WrapPropertyObservable<TStore>(propertyObservable);
 
-            PropertyAccessedEvent += DynamicStoreAccessor_PropertyAccessedEvent;
+            PropertyAccessedEvent += InjectedStoreAccessor_PropertyAccessedEvent;
             storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
 
@@ -51,7 +51,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
         public TStore Store { get; }
 
-        public void SetConsumer(BlazorMobxComponentBase<TStore> consumer)
+        public void SetConsumer(BlazorMobxComponentBase consumer)
         {
             Contract.Requires(consumer == null);
 
@@ -61,6 +61,11 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
         public void SetConsumer(ComponentBase consumer)
         {
             Contract.Requires(consumer == null);
+            if (consumer is BlazorMobxComponentBase<TStore> mobxConsumer)
+            {
+                SetConsumer(mobxConsumer);
+                return;
+            }
 
             this.consumer = new ReflectionConsumerWrapper(consumer);
         }
@@ -78,7 +83,6 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             where T : class
         {
             IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
-            // TODO: PlantSubscriber
             return propertyObservableWrapper.WrapPropertyObservable<T>(propertyObservable);
         }
 
@@ -89,7 +93,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
         public void Dispose()
         {
-            PropertyAccessedEvent -= DynamicStoreAccessor_PropertyAccessedEvent;
+            PropertyAccessedEvent -= InjectedStoreAccessor_PropertyAccessedEvent;
             storeHolder.StatePropertyChangedEvent -= StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent -= StoreHolder_CollectionItemsChangedEvent;
 
@@ -114,13 +118,13 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             observerDisposables.Add(key, disposable);
         }
 
-        private void DynamicStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
+        private void InjectedStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
             IObservableProperty observableProperty = e.PropertyObservable.ObservableProperty;
             var key = (observableProperty, e.PropertyName);
             if (!subscribedProperties.Contains(key))
             {
-                PlantSubscriber(new object(), e.PropertyObservable);
+                //PlantSubscriber(new object(), e.PropertyObservable);
                 subscribedProperties.Add(key);
             }
         }
@@ -128,8 +132,9 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
         private async void StoreHolder_StatePropertyChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
         {
             IObservableProperty observableProperty = (IObservableProperty)sender;
+            string propertyName = e.PropertyName;
 
-            if (subscribedProperties.Contains((observableProperty, e.PropertyName)))
+            if (subscribedProperties.Contains((observableProperty, propertyName)))
             {
                 await consumer.ForceUpdate();
             }
@@ -143,45 +148,6 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             }
         }
 
-        private class PropertyAccessedObserver : IObserver<PropertyAccessedArgs>
-        {
-            private readonly EventHandler<PropertyAccessedEventArgs> propertyAccessedEvent;
-            private readonly Action disposeAction;
-
-            private bool disposed;
-
-            public PropertyAccessedObserver(
-                EventHandler<PropertyAccessedEventArgs> propertyAccessedEvent,
-                Action disposeAction)
-            {
-                this.propertyAccessedEvent = propertyAccessedEvent;
-                this.disposeAction = disposeAction;
-            }
-
-            public void OnNext(PropertyAccessedArgs value)
-            {
-                propertyAccessedEvent?.Invoke(this, new PropertyAccessedEventArgs
-                {
-                    PropertyObservable = value.PropertyObservable,
-                    PropertyName = value.PropertyName
-                });
-            }
-
-            public void OnCompleted()
-            {
-                if (!disposed)
-                {
-                    disposed = true;
-                    disposeAction();
-                }
-            }
-
-            public void OnError(Exception error)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         private interface IConsumerWrapper
         {
             Task ForceUpdate();
@@ -189,9 +155,9 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
         private class MobxConsumerWrapper : IConsumerWrapper
         {
-            private readonly BlazorMobxComponentBase<TStore> consumer;
+            private readonly BlazorMobxComponentBase consumer;
 
-            public MobxConsumerWrapper(BlazorMobxComponentBase<TStore> consumer)
+            public MobxConsumerWrapper(BlazorMobxComponentBase consumer)
             {
                 this.consumer = consumer;
             }

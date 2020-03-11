@@ -82,6 +82,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
                 setValue(instance, DynamicStateProperty.Box<T>(dynamicState));
             }
         }*/
+
+        public Task ForceUpdate()
+        {
+            return InvokeAsync(StateHasChanged);
+        }
     }
 
     public abstract class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
@@ -96,11 +101,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 
         [CascadingParameter(Name = CascadeStoreHolder.CascadingParameterName)]
         private IStoreAccessor<TStore> CascadeStoreAccessor { get; set; }
-
-        public Task ForceUpdate()
-        {
-            return InvokeAsync(StateHasChanged);
-        }
 
         protected override void OnParametersSet()
         {

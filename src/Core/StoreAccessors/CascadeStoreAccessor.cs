@@ -16,7 +16,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             throw CreateException();
         }
 
-        public void SetConsumer(BlazorMobxComponentBase<TStore> consumer)
+        public void SetConsumer(BlazorMobxComponentBase consumer)
         {
             //throw CreateException();
         }
