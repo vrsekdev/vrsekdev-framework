@@ -9,7 +9,7 @@ namespace Havit.Blazor.StateManagement.Mobx
     {
         TStore Store { get; }
 
-        void SetConsumer(BlazorMobxComponentBase<TStore> consumer);
+        void SetConsumer(BlazorMobxComponentBase consumer);
 
         void SetConsumer(ComponentBase consumer);
 

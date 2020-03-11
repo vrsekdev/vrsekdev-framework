@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 {
-    public interface IObservableProperty
+    public interface IObservableProperty : IDisposable
     {
         Type ObservedType { get; }
 

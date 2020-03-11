@@ -11,13 +11,14 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 {
     internal class ObservableProperty : IObservableProperty
     {
-        private readonly EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
-        private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        private EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
+        private EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private Dictionary<string, ObservableProperty> observedProperties;
         private Dictionary<string, ObservableCollection> observedArrays;
         private Dictionary<string, PropertyInfo> allPropertiesByName;
         private Dictionary<string, object> normalProperties;
+        private bool disposed;
 
         public Type ObservedType { get; }
 
@@ -84,6 +85,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 
                 statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
+                    PropertyInfo = allPropertiesByName[name],
                     PropertyName = name
                 });
 
@@ -139,6 +141,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 
                 statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
+                    PropertyInfo = allPropertiesByName[name],
                     PropertyName = name
                 });
 
@@ -163,6 +166,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
             if (source is ObservableProperty observableProperty)
             {
                 OverwriteFrom(observableProperty);
+                observableProperty.Dispose();
                 return;
             }
 
@@ -216,6 +220,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
             {
                 statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
+                    PropertyInfo = allPropertiesByName[propertyName],
                     PropertyName = propertyName
                 });
             }
@@ -226,6 +231,27 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
             return new ObservableFactory(
                 statePropertyChangedEvent,
                 collectionItemsChangedEvent);
+        }
+
+        public void Dispose()
+        {
+            if (!disposed)
+            {
+                disposed = true;
+
+                statePropertyChangedEvent = null;
+                collectionItemsChangedEvent = null;
+                observedProperties = null;
+                observedArrays = null;
+                allPropertiesByName = null;
+                normalProperties = null;
+            }
+#if DEBUG
+            else
+            {
+                throw new Exception("Already disposed.");
+            }
+#endif
         }
 
         public override string ToString()
