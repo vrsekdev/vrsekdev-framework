@@ -6,4 +6,15 @@
     <RootNamespace>Havit.Blazor.StateManagement.Mobx.Abstractions</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.2.3</Version>
+    <Authors>Daniel Vršek</Authors>
+    <Company>Daniel Vršek</Company>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
 </Project>

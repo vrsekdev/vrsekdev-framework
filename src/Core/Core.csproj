@@ -2,15 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Havit.Blazor.StateManagement.Mobx</RootNamespace>
     <AssemblyName>Havit.Blazor.StateManagement.Mobx</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.2.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.2.3</Version>
     <Authors>Daniel Vršek</Authors>
     <Company>Daniel Vršek</Company>
+    <Description>Mobx.js - like state management for Blazor</Description>
   </PropertyGroup>
 
   <ItemGroup>
