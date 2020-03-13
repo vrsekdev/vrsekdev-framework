@@ -8,7 +8,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensi
 {
     public static class ServiceCollectionExtensions
     {
-        public static void UseDefaultObservableProperties(this IServiceCollection services)
+        public static void UseDefaultMobxObservableProperties(this IServiceCollection services)
         {
             services
                 .AddSingleton<IObservableFactoryFactory, ObservableFactoryFactory>();

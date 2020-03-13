@@ -3,11 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RootNamespace>Havit.Blazor.StateManagement.Mobx</RootNamespace>
+    <AssemblyName>Havit.Blazor.StateManagement.Mobx</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Version>0.2.0</Version>
     <Authors>Daniel Vršek</Authors>
     <Company>Daniel Vršek</Company>
-    <RootNamespace>Havit.Blazor.StateManagement.Mobx</RootNamespace>
-    <AssemblyName>Havit.Blazor.StateManagement.Mobx</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
+    <ProjectReference Include="..\ObservableProperties.Default\ObservableProperties.Default.csproj" />
+    <ProjectReference Include="..\PropertyObservables.Dynamic\PropertyObservables.Dynamic.csproj" />
   </ItemGroup>
 
 </Project>

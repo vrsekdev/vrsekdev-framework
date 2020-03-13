@@ -30,8 +30,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.UseDefaultObservableProperties();
-            services.UseDynamicPropertyObservables();
+            services.UseDefaultMobxProperties();
             services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleScoped();
             services.AddMobxStore<IHomeStore>().WithReactions<HomeStoreActions>().LifestyleScoped();
             services.AddMobxStore<ICounterStore>().LifestyleTransient();

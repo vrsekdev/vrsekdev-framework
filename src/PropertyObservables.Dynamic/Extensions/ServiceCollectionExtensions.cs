@@ -8,7 +8,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensio
 {
     public static class ServiceCollectionExtensions
     {
-        public static void UseDynamicPropertyObservables(this IServiceCollection services)
+        public static void UseDynamicMobxPropertyObservables(this IServiceCollection services)
         {
             services
                 .AddTransient<IPropertyObservableFactory, DynamicPropertyObservableFactory>()

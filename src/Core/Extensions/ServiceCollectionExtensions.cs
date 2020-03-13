@@ -1,4 +1,6 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Lifestyles;
+using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
+using Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,12 @@ namespace Havit.Blazor.StateManagement.Mobx.Extensions
             where TState : class
         {
             return new MobxStoreRegistration<TState>(services);
+        }
+
+        public static void UseDefaultMobxProperties(this IServiceCollection services)
+        {
+            services.UseDefaultMobxObservableProperties();
+            services.UseDynamicMobxPropertyObservables();
         }
     }
 }

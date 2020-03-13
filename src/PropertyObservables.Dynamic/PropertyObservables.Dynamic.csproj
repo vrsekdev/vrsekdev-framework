@@ -6,13 +6,19 @@
     <RootNamespace>Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>0.2.0</Version>
+    <Authors>Daniel Vršek</Authors>
+    <Company>Daniel Vršek</Company>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
-    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ImpromptuInterface" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
   </ItemGroup>
 
 </Project>
