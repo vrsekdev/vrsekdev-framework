@@ -15,39 +15,71 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
 
         private TStore defaultState;
 
+        private bool storeMetadataRegistered;
+
         public MobxStoreRegistration(IServiceCollection services)
         {
             this.services = services;
         }
 
-        public IServiceCollection AsSingleton()
+        public MobxStoreRegistration<TStore> WithReactions<TImpl>()
+            where TImpl : ReactionRegistrator<TStore>
         {
-            services.AddSingleton<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
+            if (storeMetadataRegistered)
+            {
+                throw new InvalidOperationException("Class containing reactions was already registered for this store");
+            }
+
+            services.AddTransient(typeof(TImpl));
+            services.AddTransient<IStoreMetadata<TStore>, StoreMetadata<TStore, TImpl>>();
+            storeMetadataRegistered = true;
+
+            return this;
+        }
+
+        public IServiceCollection LifestyleScoped()
+        {
+            services.AddScoped<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
+
+            RegisterStoreMetadata();
 
             return services;
         }
 
-        public IServiceCollection AsTransient()
+        public IServiceCollection LifestyleTransient()
         {
             services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
 
+            RegisterStoreMetadata();
+
             return services;
         }
 
-        public IServiceCollection Cascading()
+        public IServiceCollection LifestyleCascading()
         {
             services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, CascadeStoreAccessor<TStore>>();
 
+            RegisterStoreMetadata();
+
             return services;
+        }
+
+        private void RegisterStoreMetadata()
+        {
+            if (!storeMetadataRegistered)
+            {
+                services.AddTransient<IStoreMetadata<TStore>, StoreMetadata<TStore>>();
+            }
         }
 
         private IStoreHolder<TStore> GetStoreHolder(IServiceProvider provider)
         {
             IObservableFactoryFactory observableFactoryFactory = provider.GetRequiredService<IObservableFactoryFactory>();
-            var storeHolder = new StoreHolder<TStore>(observableFactoryFactory);
+            IStoreMetadata<TStore> storeMetadata = provider.GetRequiredService<IStoreMetadata<TStore>>();
+            var storeHolder = new StoreHolder<TStore>(storeMetadata, observableFactoryFactory);
             if (defaultState != null)
             {
                 storeHolder.RootObservableProperty.OverwriteFrom(defaultState);

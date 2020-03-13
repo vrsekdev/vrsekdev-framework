@@ -14,6 +14,5 @@ namespace Havit.Blazor.StateManagement.Mobx.Extensions
         {
             return new MobxStoreRegistration<TState>(services);
         }
-
     }
 }

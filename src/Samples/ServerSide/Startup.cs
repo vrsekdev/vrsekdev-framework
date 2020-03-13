@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
 using Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensions;
 using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Samples.Shared.Stores;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples
 {
@@ -31,10 +32,10 @@ namespace Havit.Blazor.StateManagement.Mobx.Samples
 
             services.UseDefaultObservableProperties();
             services.UseDynamicPropertyObservables();
-            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).AsSingleton();
-            services.AddMobxStore<IHomeStore>().AsSingleton();
-            services.AddMobxStore<ICounterStore>().AsTransient();
-            services.AddMobxStore<ITodoStore>().Cascading();
+            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleScoped();
+            services.AddMobxStore<IHomeStore>().WithReactions<HomeStoreActions>().LifestyleScoped();
+            services.AddMobxStore<ICounterStore>().LifestyleTransient();
+            services.AddMobxStore<ITodoStore>().WithReactions<TodoStoreActions>().LifestyleCascading();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

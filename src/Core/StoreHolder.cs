@@ -3,6 +3,7 @@ using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
@@ -11,6 +12,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         where TStore : class
     {
         private readonly IObservableFactory observableFactory;
+        private readonly ILookup<PropertyInfo, ReactionWrapper<TStore>> reactionsLookup;
 
         public IObservableProperty RootObservableProperty { get; }
 
@@ -18,11 +20,17 @@ namespace Havit.Blazor.StateManagement.Mobx
         public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
 
         public StoreHolder(
+            IStoreMetadata<TStore> storeMetadata,
             IObservableFactoryFactory observableFactoryFactory)
         {
             this.observableFactory = observableFactoryFactory.Create(
                 OnStatePropertyChanged,
                 OnCollectionItemsChanged);
+
+            reactionsLookup = storeMetadata.GetReactions()
+                .SelectMany(action => action.ObservedProperties.Select(prop => new { PropertyInfo = prop, Action = action }))
+                .ToLookup(x => x.PropertyInfo, x => x.Action);
+
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
         }
 
@@ -33,6 +41,11 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private void OnStatePropertyChanged(object sender, ObservablePropertyStateChangedEventArgs e)
         {
+            foreach (var action in reactionsLookup[e.PropertyInfo])
+            {
+                action.Invoke(RootObservableProperty);
+            }
+
             StatePropertyChangedEvent?.Invoke(sender, e);
         }
 
