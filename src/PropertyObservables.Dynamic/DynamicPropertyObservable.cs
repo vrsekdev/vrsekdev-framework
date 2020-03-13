@@ -74,21 +74,11 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
         {
             string name = binder.Name;
 
-            if (propertyObservables.TryGetValue(name, out object boxedValue))
+            if (propertyObservables.ContainsKey(name))
             {
                 if (Unbox(value) is DynamicPropertyObservable newObservable)
                 {
-                    DynamicPropertyObservable oldPropertyObservable = Unbox(boxedValue);
-                    oldPropertyObservable.Dispose();
-
-                    foreach (var observerKvp in observers)
-                    {
-                        var observer = observerKvp.Key;
-                        ObserverDisposer disposer = observerKvp.Value;
-                        disposer.AddDisposeAction(newObservable.Subscribe(observer));
-                    }
-
-                    propertyObservables[name] = newObservable;
+                    newObservable.Dispose();
                     return ObservableProperty.TrySetMember(name, newObservable.ObservableProperty);
                 }
             }
