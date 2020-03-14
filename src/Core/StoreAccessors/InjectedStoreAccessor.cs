@@ -135,7 +135,10 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
             if (subscribedProperties.Contains((observableProperty, propertyName)))
             {
-                await consumer.ForceUpdate();
+                if (consumer.IsRendered())
+                {
+                    await consumer.ForceUpdate();
+                }
             }
         }
 
@@ -143,37 +146,75 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
         {
             if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
             {
-                await consumer.ForceUpdate();
+                if (consumer.IsRendered())
+                {
+                    await consumer.ForceUpdate();
+                }
             }
         }
 
         private interface IConsumerWrapper
         {
             Task ForceUpdate();
+
+            bool IsAlive();
+
+            bool IsRendered();
         }
 
         private class MobxConsumerWrapper : IConsumerWrapper
         {
-            private readonly BlazorMobxComponentBase consumer;
+            private readonly WeakReference<BlazorMobxComponentBase> consumerReference;
+            private readonly string componentName;
 
             public MobxConsumerWrapper(BlazorMobxComponentBase consumer)
             {
-                this.consumer = consumer;
+                this.consumerReference = new WeakReference<BlazorMobxComponentBase>(consumer);
+                this.componentName = consumer.GetType().Name;
             }
 
             public Task ForceUpdate()
             {
+                if (!consumerReference.TryGetTarget(out BlazorMobxComponentBase consumer))
+                {
+#if DEBUG
+                    throw new Exception("Component is dead");
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+
                 return consumer.ForceUpdate();
+            }
+
+            public bool IsAlive()
+            {
+                return consumerReference.TryGetTarget(out _);
+            }
+
+            public bool IsRendered()
+            {
+                if (!consumerReference.TryGetTarget(out BlazorMobxComponentBase consumer))
+                {
+#if DEBUG
+                    throw new Exception("Component is dead");
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+
+                return consumer.IsRendered();
             }
 
             public override string ToString()
             {
-                return consumer.GetType().Name;
+                return componentName;
             }
         }
 
         private class ReflectionConsumerWrapper : IConsumerWrapper
         {
+            #region static
             private static readonly Func<ComponentBase, Action, Task> ComponentBaseInvokeAsync;
             private static readonly Action<ComponentBase> ComponentBaseStateHasChanged;
             
@@ -196,18 +237,38 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
                 ComponentBaseStateHasChanged = (Action<ComponentBase>)Delegate.CreateDelegate(typeof(Action<ComponentBase>), stateHasChangedMethodInfo);
             }
+            #endregion
 
-
-            private readonly ComponentBase consumer;
+            private readonly WeakReference<ComponentBase> consumerReference;
+            private readonly string componentName;
 
             public ReflectionConsumerWrapper(ComponentBase consumer)
             {
-                this.consumer = consumer;
+                this.consumerReference = new WeakReference<ComponentBase>(consumer);
             }
 
             public Task ForceUpdate()
             {
+                if (!consumerReference.TryGetTarget(out ComponentBase consumer))
+                {
+#if DEBUG
+                    throw new Exception("Component is dead");
+#else
+                    return Task.CompletedTask;
+#endif
+                }
+
                 return ComponentBaseInvokeAsync(consumer, () => ComponentBaseStateHasChanged(consumer));
+            }
+
+            public bool IsRendered()
+            {
+                return true;
+            }
+
+            public bool IsAlive()
+            {
+                return consumerReference.TryGetTarget(out _);
             }
         }
     }

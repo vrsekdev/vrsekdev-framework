@@ -11,6 +11,30 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase
     {
+        private bool isRendered;
+
+        public async override Task SetParametersAsync(ParameterView parameters)
+        {
+            await base.SetParametersAsync(parameters);
+            isRendered = false;
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            isRendered = true;
+            base.OnAfterRender(firstRender);
+        }
+
+        public bool IsRendered()
+        {
+            return isRendered;
+        }
+
+        public Task ForceUpdate()
+        {
+            return InvokeAsync(StateHasChanged);
+        }
+
         /*private IParameterWrapper[] parameters;
 
         public BlazorMobxComponentBase()
@@ -82,11 +106,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
                 setValue(instance, DynamicStateProperty.Box<T>(dynamicState));
             }
         }*/
-
-        public Task ForceUpdate()
-        {
-            return InvokeAsync(StateHasChanged);
-        }
     }
 
     public abstract class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
