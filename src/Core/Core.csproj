@@ -20,8 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
-    <ProjectReference Include="..\ObservableProperties.Default\ObservableProperties.Default.csproj" />
-    <ProjectReference Include="..\PropertyObservables.RuntimeType\PropertyObservables.RuntimeType.csproj" />
+    <ProjectReference Include="..\ObservableProperties.Default\Observables.Default.csproj" />
+    <ProjectReference Include="..\PropertyObservables.RuntimeType\Proxies.RuntimeProxy.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,8 +17,8 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
 
         private readonly IStoreHolder<TStore> storeHolder;
-        private readonly IPropertyObservableFactory propertyObservableFactory;
-        private readonly IPropertyObservableWrapper propertyObservableWrapper;
+        private readonly IPropertyProxyFactory propertyProxyFactory;
+        private readonly IPropertyProxyWrapper propertyProxyWrapper;
         private readonly object rootDisposableKey = new object();
 
         private HashSet<(IObservableProperty, string)> subscribedProperties = new HashSet<(IObservableProperty, string)>();
@@ -28,25 +28,25 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
         public InjectedStoreAccessor(
             IStoreHolder<TStore> storeHolder,
-            IPropertyObservableFactory propertyObservableFactory,
-            IPropertyObservableWrapper propertyObservableWrapper)
+            IPropertyProxyFactory propertyProxyFactory,
+            IPropertyProxyWrapper propertyProxyWrapper)
         {
             if (!typeof(TStore).IsInterface)
             {
                 throw new Exception("State type must be an interface");
             }
             this.storeHolder = storeHolder;
-            this.propertyObservableFactory = propertyObservableFactory;
-            this.propertyObservableWrapper = propertyObservableWrapper;
+            this.propertyProxyFactory = propertyProxyFactory;
+            this.propertyProxyWrapper = propertyProxyWrapper;
 
-            IPropertyObservable propertyObservable = propertyObservableFactory.Create(storeHolder.RootObservableProperty);
-            Store = propertyObservableWrapper.WrapPropertyObservable<TStore>(propertyObservable);
+            IPropertyProxy propertyProxy = propertyProxyFactory.Create(storeHolder.RootObservableProperty);
+            Store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
 
             PropertyAccessedEvent += InjectedStoreAccessor_PropertyAccessedEvent;
             storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
 
-            PlantSubscriber(rootDisposableKey, propertyObservable);
+            PlantSubscriber(rootDisposableKey, propertyProxy);
         }
 
         public TStore Store { get; }
@@ -82,13 +82,13 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
         internal T CreateObservable<T>(IObservableProperty observableProperty)
             where T : class
         {
-            IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
-            return propertyObservableWrapper.WrapPropertyObservable<T>(propertyObservable);
+            IPropertyProxy propertyProxy = propertyProxyFactory.Create(observableProperty);
+            return propertyProxyWrapper.WrapPropertyObservable<T>(propertyProxy);
         }
 
         public void ResetStore()
         {
-            propertyObservableWrapper.UnwrapPropertyObservable(Store).ObservableProperty.ResetValues();
+            propertyProxyWrapper.UnwrapPropertyObservable(Store).ObservableProperty.ResetValues();
         }
 
         public void Dispose()
@@ -107,9 +107,9 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             consumer = null;
         }
 
-        private void PlantSubscriber(object key, IPropertyObservable propertyObservable)
+        private void PlantSubscriber(object key, IPropertyProxy propertyProxy)
         {
-            var disposable = propertyObservable.Subscribe(new PropertyAccessedObserver(
+            var disposable = propertyProxy.Subscribe(new PropertyAccessedObserver(
                 PropertyAccessedEvent,
                 () => {
                     observerDisposables[key].Dispose();
@@ -120,7 +120,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
 
         private void InjectedStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
-            IObservableProperty observableProperty = e.PropertyObservable.ObservableProperty;
+            IObservableProperty observableProperty = e.PropertyProxy.ObservableProperty;
             var key = (observableProperty, e.PropertyName);
             if (!subscribedProperties.Contains(key))
             {

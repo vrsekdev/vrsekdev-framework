@@ -11,17 +11,17 @@ namespace Havit.Blazor.StateManagement.Mobx
     {
         private readonly Dictionary<IObservableProperty, TStore> storeInstanceCache = new Dictionary<IObservableProperty, TStore>();
 
-        private readonly IPropertyObservableFactory propertyObservableFactory;
-        private readonly IPropertyObservableWrapper propertyObservableWrapper;
+        private readonly IPropertyProxyFactory propertyProxyFactory;
+        private readonly IPropertyProxyWrapper propertyProxyWrapper;
         private readonly Action<TStore> action;
 
         public ReactionWrapper(
-            IPropertyObservableFactory propertyObservableFactory,
-            IPropertyObservableWrapper propertyObservableWrapper,
+            IPropertyProxyFactory propertyProxyFactory,
+            IPropertyProxyWrapper propertyProxyWrapper,
             ReactionBuilder<TStore> reactionBuilder)
         {
-            this.propertyObservableFactory = propertyObservableFactory;
-            this.propertyObservableWrapper = propertyObservableWrapper;
+            this.propertyProxyFactory = propertyProxyFactory;
+            this.propertyProxyWrapper = propertyProxyWrapper;
 
             this.action = reactionBuilder.Action;
             this.ObservedProperties = reactionBuilder.ObservedProperties;
@@ -41,8 +41,8 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             if (!storeInstanceCache.TryGetValue(observableProperty, out TStore store))
             {
-                IPropertyObservable propertyObservable = propertyObservableFactory.Create(observableProperty);
-                store = propertyObservableWrapper.WrapPropertyObservable<TStore>(propertyObservable);
+                IPropertyProxy propertyProxy = propertyProxyFactory.Create(observableProperty);
+                store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
             }
 
             return store;

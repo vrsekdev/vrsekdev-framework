@@ -19,10 +19,10 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         private IStoreAccessor<TStore> StoreAccessor => CreateStoreAccessor();
 
         [Inject]
-        private IPropertyObservableFactory PropertyObservableFactory { get; set; }
+        private IPropertyProxyFactory PropertyProxyFactory { get; set; }
 
         [Inject]
-        private IPropertyObservableWrapper PropertyObservableWrapper { get; set; }
+        private IPropertyProxyWrapper PropertyProxyWrapper { get; set; }
 
         [Inject]
         private IStoreHolder<TStore> StoreHolder { get; set; }
@@ -45,8 +45,8 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
         {
             return new InjectedStoreAccessor<TStore>(
                 StoreHolder,
-                PropertyObservableFactory,
-                PropertyObservableWrapper);
+                PropertyProxyFactory,
+                PropertyProxyWrapper);
         }
 
         private static class TypeInference

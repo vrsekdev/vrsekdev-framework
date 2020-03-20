@@ -24,7 +24,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             propertyAccessedEvent?.Invoke(this, new PropertyAccessedEventArgs
             {
-                PropertyObservable = value.PropertyObservable,
+                PropertyProxy = value.PropertyProxy,
                 PropertyName = value.PropertyName
             });
         }

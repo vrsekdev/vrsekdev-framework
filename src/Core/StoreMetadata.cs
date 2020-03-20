@@ -22,18 +22,18 @@ namespace Havit.Blazor.StateManagement.Mobx
         where TStore : class
         where TImpl : ReactionRegistrator<TStore>
     {
-        private readonly IPropertyObservableFactory propertyObservableFactory;
-        private readonly IPropertyObservableWrapper propertyObservableWrapper;
+        private readonly IPropertyProxyFactory propertyProxyFactory;
+        private readonly IPropertyProxyWrapper propertyProxyWrapper;
 
         private ReactionWrapper<TStore>[] reactions;
 
         public StoreMetadata(
-            IPropertyObservableFactory propertyObservableFactory,
-            IPropertyObservableWrapper propertyObservableWrapper,
+            IPropertyProxyFactory propertyProxyFactory,
+            IPropertyProxyWrapper propertyProxyWrapper,
             TImpl reactionRegistrator)
         {
-            this.propertyObservableFactory = propertyObservableFactory;
-            this.propertyObservableWrapper = propertyObservableWrapper;
+            this.propertyProxyFactory = propertyProxyFactory;
+            this.propertyProxyWrapper = propertyProxyWrapper;
 
             Initialize(reactionRegistrator);
         }
@@ -49,8 +49,8 @@ namespace Havit.Blazor.StateManagement.Mobx
 
             reactions = reactionRegistrator.Builders.Select(builder =>
                 new ReactionWrapper<TStore>(
-                    propertyObservableFactory,
-                    propertyObservableWrapper,
+                    propertyProxyFactory,
+                    propertyProxyWrapper,
                     builder
                 )
             ).ToArray();

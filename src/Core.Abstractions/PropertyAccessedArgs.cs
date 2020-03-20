@@ -6,7 +6,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 {
     public class PropertyAccessedArgs
     {
-        public IPropertyObservable PropertyObservable { get; set; }
+        public IPropertyProxy PropertyProxy { get; set; }
 
         public string PropertyName { get; set; }
     }
