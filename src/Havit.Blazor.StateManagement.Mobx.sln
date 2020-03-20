@@ -17,7 +17,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{EDBE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.ClientSide", "Samples\ClientSide\Samples.ClientSide.csproj", "{E4B9EEAB-75E1-4A8B-8D7C-FF3107DB89B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples.Shared", "Samples\Shared\Samples.Shared.csproj", "{AE94E805-9FCB-421F-9576-13CFABADC3DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.Shared", "Samples\Shared\Samples.Shared.csproj", "{AE94E805-9FCB-421F-9576-13CFABADC3DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyObservables.RuntimeType", "PropertyObservables.RuntimeType\PropertyObservables.RuntimeType.csproj", "{D75734D0-9CE4-488A-873D-B9F9BEE53D3F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C405AE1D-586F-4B3F-B1AA-6F09146512BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyObservables.RuntimeType.Tests", "PropertyObservables.RuntimeType.Tests\PropertyObservables.RuntimeType.Tests.csproj", "{2B766694-A199-42C9-BEC5-472A2043EBE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +59,14 @@ Global
 		{AE94E805-9FCB-421F-9576-13CFABADC3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE94E805-9FCB-421F-9576-13CFABADC3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE94E805-9FCB-421F-9576-13CFABADC3DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75734D0-9CE4-488A-873D-B9F9BEE53D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75734D0-9CE4-488A-873D-B9F9BEE53D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75734D0-9CE4-488A-873D-B9F9BEE53D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75734D0-9CE4-488A-873D-B9F9BEE53D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +75,7 @@ Global
 		{062C5DA0-BF38-4133-A53D-B465F2084697} = {EDBE713D-E921-470F-AD07-54378F82619F}
 		{E4B9EEAB-75E1-4A8B-8D7C-FF3107DB89B8} = {EDBE713D-E921-470F-AD07-54378F82619F}
 		{AE94E805-9FCB-421F-9576-13CFABADC3DD} = {EDBE713D-E921-470F-AD07-54378F82619F}
+		{2B766694-A199-42C9-BEC5-472A2043EBE5} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE564A88-644F-4961-8BA1-FDE397F17DF8}

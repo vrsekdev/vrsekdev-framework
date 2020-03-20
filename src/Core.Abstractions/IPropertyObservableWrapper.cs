@@ -9,6 +9,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
         T WrapPropertyObservable<T>(IPropertyObservable propertyObservable)
             where T : class;
 
-        IPropertyObservable UnwrapPropertyObservable<T>(T observableValue);
+        IPropertyObservable UnwrapPropertyObservable<T>(T observableValue)
+            where T : class;
     }
 }

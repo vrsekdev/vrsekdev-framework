@@ -3,20 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic
+namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
 {
-    internal class DynamicPropertyObservableWrapper : IPropertyObservableWrapper
+    internal class RuntimeTypePropertyObservableWrapper : IPropertyObservableWrapper
     {
         public T WrapPropertyObservable<T>(IPropertyObservable propertyObservable)
             where T : class
         {
-            return DynamicPropertyObservable.Box<T>((DynamicPropertyObservable)propertyObservable);
+            return ((RuntimeTypePropertyObservableManager<T>)propertyObservable).Implementation;
         }
 
         public IPropertyObservable UnwrapPropertyObservable<T>(T observableValue)
             where T : class
         {
-            return DynamicPropertyObservable.Unbox(observableValue);
+            IRuntimeTypeImpl impl = (IRuntimeTypeImpl)observableValue;
+            return (RuntimeTypePropertyObservableManager<T>)impl.Manager;
         }
     }
 }
