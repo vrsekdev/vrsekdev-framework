@@ -21,7 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
     <ProjectReference Include="..\ObservableProperties.Default\ObservableProperties.Default.csproj" />
-    <ProjectReference Include="..\PropertyObservables.Dynamic\PropertyObservables.Dynamic.csproj" />
+    <ProjectReference Include="..\PropertyObservables.RuntimeType\PropertyObservables.RuntimeType.csproj" />
   </ItemGroup>
 
 </Project>

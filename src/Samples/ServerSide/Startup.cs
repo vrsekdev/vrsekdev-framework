@@ -8,8 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
-using Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensions;
-using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
 using Havit.Blazor.StateManagement.Mobx.Samples.Shared.Stores;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples

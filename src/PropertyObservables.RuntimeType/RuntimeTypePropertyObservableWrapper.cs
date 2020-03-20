@@ -17,7 +17,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
             where T : class
         {
             IRuntimeTypeImpl impl = (IRuntimeTypeImpl)observableValue;
-            return (RuntimeTypePropertyObservableManager<T>)impl.Manager;
+            return impl.Manager;
         }
     }
 }

@@ -1,6 +1,7 @@
 //#define ENABLE_CACHING
 
 using Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Tests.Interfaces;
+using Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
@@ -157,9 +158,10 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             string value = "test value";
             object setValue = null;
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            managerMock.SetupGet(x => x.Implementation).Returns(null);
             managerMock.Setup(x => x.GetValue(nameof(IClassicInterface.ReferenceType)))
                 .Returns(() => setValue);
-            managerMock.Setup(x => x.SetValue(nameof(IClassicInterface.ReferenceType), It.IsAny<string>()))
+            managerMock.Setup(x => x.SetValue(nameof(IClassicInterface.ReferenceType), It.IsAny<object>()))
                 .Callback<string, object>((name, value) => setValue = value);
 
             var manager = managerMock.Object;
@@ -173,6 +175,63 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             
             // Assert
             Assert.AreEqual(value, impl.ReferenceType);
+        }
+
+        [TestMethod]
+        public void BuildRuntimeType_Struct_GetValue()
+        {
+            // Arrange
+            DefaultStruct defaultStruct = new DefaultStruct
+            {
+                ValueType = 50,
+                ReferencType = "test data"
+            };
+
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            managerMock.Setup(x => x.GetValue(nameof(InterfaceWithDefaultStruct.DefaultStruct)))
+                .Returns(defaultStruct);
+
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            // Act
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(InterfaceWithDefaultStruct), getMethod, setMethod);
+            InterfaceWithDefaultStruct impl = (InterfaceWithDefaultStruct)Activator.CreateInstance(runtimeType, manager);
+
+            // Assert
+            Assert.AreEqual(defaultStruct, impl.DefaultStruct);
+        }
+
+        [TestMethod]
+        public void BuildRuntimeType_Struct_SetValue()
+        {
+            // Arrange
+            DefaultStruct defaultStruct = new DefaultStruct
+            {
+                ValueType = 50,
+                ReferencType = "test data"
+            };
+
+            object setValue = null;
+
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            managerMock.Setup(x => x.GetValue(nameof(InterfaceWithDefaultStruct.DefaultStruct)))
+                .Returns(() => setValue);
+            managerMock.Setup(x => x.SetValue(nameof(InterfaceWithDefaultStruct.DefaultStruct), It.IsAny<object>()))
+                .Callback<string, object>((name, value) => setValue = value);
+
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            // Act
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(InterfaceWithDefaultStruct), getMethod, setMethod);
+            InterfaceWithDefaultStruct impl = (InterfaceWithDefaultStruct)Activator.CreateInstance(runtimeType, manager);
+            impl.DefaultStruct = defaultStruct;
+
+            // Assert
+            Assert.AreEqual(defaultStruct, impl.DefaultStruct);
         }
 
 #if ENABLE_CACHING

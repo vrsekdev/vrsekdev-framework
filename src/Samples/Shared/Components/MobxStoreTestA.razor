@@ -6,11 +6,6 @@
 
 <p>Value: @Store.Value</p>
 
-@foreach (var todo in Store.Todos)
-{
-    <p>@todo</p>
-}
-
 <button @onclick="IncrementValue">Increment value</button>
 <button @onclick="ResetStore">Reset store</button>
 

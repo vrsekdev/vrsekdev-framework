@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
 {
-    public interface IRuntimeTypePropertyObservableManager
+    public interface IRuntimeTypePropertyObservableManager : IPropertyObservable
     {
-        IObservableProperty ObservableProperty { get; }
+        object Implementation { get; }
     }
 }

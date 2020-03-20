@@ -7,25 +7,37 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
 {
-    public class RuntimeTypePropertyObservableManager<TInterface> : IRuntimeTypePropertyObservableManager, IPropertyObservable
+    public class RuntimeTypePropertyObservableManager<TInterface> : IRuntimeTypePropertyObservableManager
         where TInterface : class
     {
         #region static
         private readonly static Lazy<Type> runtimeTypeLazy;
+        private readonly static Func<Type, IObservableProperty, IRuntimeTypePropertyObservableManager> createManager;
 
         static RuntimeTypePropertyObservableManager()
         {
             Type type = typeof(RuntimeTypePropertyObservableManager<TInterface>);
+
+            /**** RuntimeType ****/
             MethodInfo getMethod = type.GetMethod(nameof(GetValue));
             MethodInfo setMethod = type.GetMethod(nameof(SetValue));
-
             runtimeTypeLazy = new Lazy<Type>(() => RuntimeTypeBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod));
+
+            /**** CreateManagerInternal ****/
+            MethodInfo createInternalInfo = type.GetMethod(nameof(CreateManagerInternal), BindingFlags.Static | BindingFlags.NonPublic);
+            createManager = (type, prop) => (IRuntimeTypePropertyObservableManager)createInternalInfo.MakeGenericMethod(type).Invoke(null, new[] { prop });
+        }
+
+        private static IRuntimeTypePropertyObservableManager CreateManagerInternal<T>(IObservableProperty observableProperty)
+            where T : class
+        {
+            return new RuntimeTypePropertyObservableManager<T>(observableProperty);
         }
         #endregion static
 
         private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
         private readonly Dictionary<string, RuntimeTypeCollectionObservable<TInterface>> collectionObservables = new Dictionary<string, RuntimeTypeCollectionObservable<TInterface>>();
-        private readonly Dictionary<string, RuntimeTypePropertyObservableManager<TInterface>> propertyObservables = new Dictionary<string, RuntimeTypePropertyObservableManager<TInterface>>();
+        private readonly Dictionary<string, IRuntimeTypePropertyObservableManager> propertyObservables = new Dictionary<string, IRuntimeTypePropertyObservableManager>();
 
         public IObservableProperty ObservableProperty { get; }
 
@@ -52,6 +64,8 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
             }
         }
 
+        object IRuntimeTypePropertyObservableManager.Implementation => Implementation;
+
         public RuntimeTypePropertyObservableManager(
             IObservableProperty observableProperty)
         {
@@ -64,7 +78,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
         {
             OnPropertyAccessed(propertyName);
 
-            if (propertyObservables.TryGetValue(propertyName, out RuntimeTypePropertyObservableManager<TInterface> propertyManager))
+            if (propertyObservables.TryGetValue(propertyName, out IRuntimeTypePropertyObservableManager propertyManager))
             {
                 return propertyManager.Implementation;
             }
@@ -140,7 +154,8 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
 
             foreach (var observedProperty in observedProperties)
             {
-                propertyObservables[observedProperty.Key] = new RuntimeTypePropertyObservableManager<TInterface>(observedProperty.Value);
+                IObservableProperty observableProperty = observedProperty.Value;
+                propertyObservables[observedProperty.Key] = createManager(observableProperty.ObservedType, observableProperty);
             }
 
             foreach (var observedArray in observedArrays)
