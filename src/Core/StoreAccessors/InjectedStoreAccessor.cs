@@ -19,10 +19,8 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
         private readonly IStoreHolder<TStore> storeHolder;
         private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
-        private readonly object rootDisposableKey = new object();
 
         private HashSet<(IObservableProperty, string)> subscribedProperties = new HashSet<(IObservableProperty, string)>();
-        private Dictionary<object, IDisposable> observerDisposables = new Dictionary<object, IDisposable>();
 
         private IConsumerWrapper consumer;
 
@@ -46,7 +44,7 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
 
-            PlantSubscriber(rootDisposableKey, propertyProxy);
+            PlantSubscriber(propertyProxy);
         }
 
         public TStore Store { get; }
@@ -97,25 +95,13 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             storeHolder.StatePropertyChangedEvent -= StoreHolder_StatePropertyChangedEvent;
             storeHolder.CollectionItemsChangedEvent -= StoreHolder_CollectionItemsChangedEvent;
 
-            foreach (var observerDisposable in observerDisposables.Values)
-            {
-                observerDisposable.Dispose();
-            }
-
             subscribedProperties = null;
-            observerDisposables = null;
             consumer = null;
         }
 
-        private void PlantSubscriber(object key, IPropertyProxy propertyProxy)
+        private void PlantSubscriber(IPropertyProxy propertyProxy)
         {
-            var disposable = propertyProxy.Subscribe(new PropertyAccessedObserver(
-                PropertyAccessedEvent,
-                () => {
-                    observerDisposables[key].Dispose();
-                    observerDisposables.Remove(key);
-                }));
-            observerDisposables.Add(key, disposable);
+            propertyProxy.Subscribe(new PropertyAccessedSubscriber(PropertyAccessedEvent));
         }
 
         private void InjectedStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
@@ -240,7 +226,6 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             #endregion
 
             private readonly WeakReference<ComponentBase> consumerReference;
-            private readonly string componentName;
 
             public ReflectionConsumerWrapper(ComponentBase consumer)
             {

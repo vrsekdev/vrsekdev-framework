@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Attributes;
+using Havit.Blazor.StateManagement.Mobx.Observables.Default.Attributes;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples
 {

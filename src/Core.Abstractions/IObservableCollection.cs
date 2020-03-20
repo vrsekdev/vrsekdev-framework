@@ -7,10 +7,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 {
     public interface IObservableCollection : IEnumerable
     {
-        Type ElementType { get; }
         bool ElementObserved { get; }
 
-        void Reset();
+        Type ElementType { get; }
     }
 
     public interface IObservableCollection<T> : IObservableCollection, IList<T>

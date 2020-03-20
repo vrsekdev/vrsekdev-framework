@@ -1,13 +1,13 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
 using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
-using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
+namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
 {
     internal abstract class ObservableCollection : IObservableCollection
     {

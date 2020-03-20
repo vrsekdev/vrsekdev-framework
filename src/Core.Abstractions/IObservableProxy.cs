@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 {
-    public interface IPropertyProxy : IObservableProxy
+    public interface IObservableProxy
     {
-        IObservableProperty ObservableProperty { get; }
+        void Subscribe(IPropertyAccessedSubscriber subscriber);
     }
 }

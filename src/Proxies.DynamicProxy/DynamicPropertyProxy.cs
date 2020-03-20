@@ -30,11 +30,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
             return ImpromptuInterface.Impromptu.UndoActLike(val) as DynamicPropertyProxy;
         }
 
-        private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
-        private readonly Dictionary<string, DynamicCollectionObservable> collectionObservables = new Dictionary<string, DynamicCollectionObservable>();
+        private readonly HashSet<IPropertyAccessedSubscriber> subscribers = new HashSet<IPropertyAccessedSubscriber>();
+        private readonly Dictionary<string, ICollectionProxy> collectionProxies = new Dictionary<string, ICollectionProxy>();
         private readonly Dictionary<string, object> dynamicProxies = new Dictionary<string, object>();
 
         private readonly IObservableFactory observableFactory;
+        private readonly DynamicProxyWrapper proxyWrapper = new DynamicProxyWrapper();
+        private readonly DynamicProxyFactory proxyFactory = new DynamicProxyFactory();
 
         public IObservableProperty ObservableProperty { get; }
 
@@ -60,7 +62,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
                 return true;
             }
 
-            if (collectionObservables.TryGetValue(name, out DynamicCollectionObservable collectionObservable))
+            if (collectionProxies.TryGetValue(name, out ICollectionProxy collectionObservable))
             {
                 result = collectionObservable;
 
@@ -78,12 +80,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
             {
                 if (Unbox(value) is DynamicPropertyProxy newProxy)
                 {
-                    newProxy.Dispose();
                     return ObservableProperty.TrySetMember(name, newProxy.ObservableProperty);
                 }
             }
 
-            if (collectionObservables.TryGetValue(name, out DynamicCollectionObservable dynamicCollectionObservable))
+            if (collectionProxies.TryGetValue(name, out ICollectionProxy dynamicCollectionObservable))
             {
                 bool result;
                 if (result = ObservableProperty.TrySetMember(name, value))
@@ -97,52 +98,26 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
             return ObservableProperty.TrySetMember(name, value);
         }
 
-        public IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer)
+        public void Subscribe(IPropertyAccessedSubscriber subscriber)
         {
-            var disposer = new ObserverDisposer();
-
             foreach (var observedDynamicObject in dynamicProxies.Values)
             {
                 DynamicPropertyProxy dynamicProxy = Unbox(observedDynamicObject);
                 if (dynamicProxy != null)
                 {
-                    disposer.AddDisposeAction(dynamicProxy.Subscribe(observer));
+                    dynamicProxy.Subscribe(subscriber);
                 }
             }
 
-            foreach (var observedDynamicArray in collectionObservables.Values)
+            foreach (var observedDynamicArray in collectionProxies.Values)
             {
-                disposer.AddDisposeAction(observedDynamicArray.Subscribe(observer));
+                observedDynamicArray.Subscribe(subscriber);
             }
-
-            disposer.AddDisposeAction(() => observers.Remove(observer));
-
-            observers.Add(observer, disposer);
-            return disposer;
         }
 
         public override string ToString()
         {
             return ObservableProperty.ToString();
-        }
-
-        public void Dispose()
-        {
-            foreach (var observedDynamicProperty in dynamicProxies.Values)
-            {
-                DynamicPropertyProxy dynamicProxy = Unbox(observedDynamicProperty);
-                dynamicProxy.Dispose();
-            }
-
-            foreach (var observedDynamicArray in collectionObservables.Values)
-            {
-                observedDynamicArray.Dispose();
-            }
-
-            foreach (var observer in observers.Keys)
-            {
-                observer.OnCompleted();
-            }
         }
 
         private void Initialize()
@@ -157,7 +132,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
 
             foreach (var observedArray in observedArrays)
             {
-                collectionObservables[observedArray.Key] = CreateCollectionObservable(observedArray.Value);
+                collectionProxies[observedArray.Key] = CreateCollectionObservable(observedArray.Value);
             }
         }
 
@@ -166,30 +141,28 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
             DynamicPropertyProxy dynamicProxy = new DynamicPropertyProxy(observableProperty);
             object boxedItem = Box(dynamicProxy, observableProperty.ObservedType).Target;
 
-            foreach (var observer in observers)
+            foreach (var subscriber in subscribers)
             {
-                observer.Value.AddDisposeAction(dynamicProxy.Subscribe(observer.Key));
+                dynamicProxy.Subscribe(subscriber);
             }
 
             return boxedItem;
         }
 
-        private DynamicCollectionObservable CreateCollectionObservable(IObservableCollection observableArray)
+        private ICollectionProxy CreateCollectionObservable(IObservableCollection observableCollection)
         {
-            Type elementType = observableArray.ElementType;
-            Type dynamicObserverArrayType = typeof(DynamicCollectionObservable<>).MakeGenericType(elementType);
-
-            DynamicCollectionObservable dynamicCollectionObservable = (DynamicCollectionObservable)Activator.CreateInstance(
-                dynamicObserverArrayType, 
-                observableArray, 
+            ICollectionProxy collectionProxy = CollectionProxy.Create(
+                observableCollection, 
+                proxyWrapper,
+                proxyFactory, 
                 observableFactory);
 
-            foreach (var observer in observers)
+            foreach (var subscriber in subscribers)
             {
-                observer.Value.AddDisposeAction(dynamicCollectionObservable.Subscribe(observer.Key));
+                collectionProxy.Subscribe(subscriber);
             }
 
-            return dynamicCollectionObservable;
+            return collectionProxy;
         }
 
         private void OnPropertyAccessed(string name)
@@ -200,9 +173,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
                 PropertyName = name
             };
 
-            foreach (var observer in observers.Keys.ToList())
+            foreach (var observer in subscribers.ToList())
             {
-                observer.OnNext(args);
+                observer.OnPropertyAccessed(args);
             }
         }
     }

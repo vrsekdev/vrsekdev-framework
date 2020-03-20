@@ -12,7 +12,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
     {
         #region static
         private readonly static Lazy<Type> runtimeTypeLazy;
-        private readonly static Func<Type, IObservableProperty, IRuntimeProxyManager> createManager;
+        private readonly static Func<Type, IObservableProperty, IRuntimeProxyManager> createProxy;
 
         static RuntimeProxyManager()
         {
@@ -25,7 +25,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 
             /**** CreateManagerInternal ****/
             MethodInfo createInternalInfo = type.GetMethod(nameof(CreateManagerInternal), BindingFlags.Static | BindingFlags.NonPublic);
-            createManager = (type, prop) => (IRuntimeProxyManager)createInternalInfo.MakeGenericMethod(type).Invoke(null, new[] { prop });
+            createProxy = (type, prop) => (IRuntimeProxyManager)createInternalInfo.MakeGenericMethod(type).Invoke(null, new[] { prop });
         }
 
         private static IRuntimeProxyManager CreateManagerInternal<T>(IObservableProperty observableProperty)
@@ -35,9 +35,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         }
         #endregion static
 
-        private readonly Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer> observers = new Dictionary<IObserver<PropertyAccessedArgs>, ObserverDisposer>();
-        private readonly Dictionary<string, RuntimeProxyCollectionObservable<TInterface>> collectionObservables = new Dictionary<string, RuntimeProxyCollectionObservable<TInterface>>();
-        private readonly Dictionary<string, IRuntimeProxyManager> propertyObservables = new Dictionary<string, IRuntimeProxyManager>();
+        private readonly IObservableFactory observableFactory;
+        private readonly RuntimeProxyWrapper proxyWrapper = new RuntimeProxyWrapper();
+        private readonly RuntimeProxyFactory proxyFactory = new RuntimeProxyFactory();
+
+        private readonly HashSet<IPropertyAccessedSubscriber> subscribers = new HashSet<IPropertyAccessedSubscriber>();
+        private readonly Dictionary<string, ICollectionProxy> collectionProxies = new Dictionary<string, ICollectionProxy>();
+        private readonly Dictionary<string, IRuntimeProxyManager> runtimeProxies = new Dictionary<string, IRuntimeProxyManager>();
 
         public IObservableProperty ObservableProperty { get; }
 
@@ -70,6 +74,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             IObservableProperty observableProperty)
         {
             ObservableProperty = observableProperty;
+            observableFactory = observableProperty.CreateFactory();
 
             Initialize();
         }
@@ -78,14 +83,14 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         {
             OnPropertyAccessed(propertyName);
 
-            if (propertyObservables.TryGetValue(propertyName, out IRuntimeProxyManager propertyManager))
+            if (runtimeProxies.TryGetValue(propertyName, out IRuntimeProxyManager propertyManager))
             {
                 return propertyManager.Implementation;
             }
 
-            if (collectionObservables.TryGetValue(propertyName, out RuntimeProxyCollectionObservable<TInterface> collectionObservable))
+            if (collectionProxies.TryGetValue(propertyName, out ICollectionProxy collectionProxy))
             {
-                return collectionObservable;
+                return collectionProxy;
             }
 
             if (!ObservableProperty.TryGetMember(propertyName, out object result))
@@ -98,7 +103,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 
         public void SetValue(string propertyName, object value)
         {
-            if (propertyObservables.ContainsKey(propertyName))
+            if (runtimeProxies.ContainsKey(propertyName))
             {
                 if (value is IRuntimeProxy newObservable)
                 {
@@ -109,15 +114,18 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
                 }
             }
 
-            if (collectionObservables.TryGetValue(propertyName, out RuntimeProxyCollectionObservable<TInterface> collectionObservable))
+            if (collectionProxies.TryGetValue(propertyName, out ICollectionProxy collectionProxy))
             {
-                /*bool result;
-                if (result = ObservableProperty.TrySetMember(name, value))
+                if (ObservableProperty.TrySetMember(propertyName, value))
                 {
-                    collectionObservable.Reset();
+                    collectionProxy.Reset();
                 }
-
-                return result;*/
+#if DEBUG
+                else
+                {
+                    throw new Exception();
+                }
+#endif
             }
 
             if (!ObservableProperty.TrySetMember(propertyName, value))
@@ -126,42 +134,39 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             }
         }
 
-        public IDisposable Subscribe(IObserver<PropertyAccessedArgs> observer)
+        public void Subscribe(IPropertyAccessedSubscriber subscriber)
         {
-            ObserverDisposer disposer = new ObserverDisposer();
+            subscribers.Add(subscriber);
 
-            foreach (var propertyManager in propertyObservables.Values)
+            foreach (var runtimeProxy in runtimeProxies.Values)
             {
-                disposer.AddDisposeAction(propertyManager.Subscribe(observer));
+                runtimeProxy.Subscribe(subscriber);
             }
 
-            /*foreach (var observedDynamicArray in collectionObservables.Values)
+            foreach (var collectionProxy in collectionProxies.Values)
             {
-                disposer.AddDisposeAction(observedDynamicArray.Subscribe(observer));
-            }*/
-
-            disposer.AddDisposeAction(() => observers.Remove(observer));
-
-            observers.Add(observer, disposer);
-
-            return disposer;
+                collectionProxy.Subscribe(subscriber);
+            }
         }
 
         private void Initialize()
         {
             var observedProperties = ObservableProperty.GetObservedProperties();
-            var observedArrays = ObservableProperty.GetObservedCollections();
+            var observedCollections = ObservableProperty.GetObservedCollections();
 
             foreach (var observedProperty in observedProperties)
             {
                 IObservableProperty observableProperty = observedProperty.Value;
-                propertyObservables[observedProperty.Key] = createManager(observableProperty.ObservedType, observableProperty);
+                runtimeProxies[observedProperty.Key] = createProxy(observableProperty.ObservedType, observableProperty);
             }
 
-            foreach (var observedArray in observedArrays)
+            foreach (var observedCollection in observedCollections)
             {
-                // TODO
-                //collectionObservables[observedArray.Key] = CreateCollectionObservable(observedArray.Value);
+                collectionProxies[observedCollection.Key] = CollectionProxy.Create(
+                    observedCollection.Value,
+                    proxyWrapper,
+                    proxyFactory,
+                    observableFactory);
             }
         }
 
@@ -173,9 +178,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
                 PropertyName = name
             };
 
-            foreach (var observer in observers.Keys.ToList())
+            foreach (var observer in subscribers.ToList())
             {
-                observer.OnNext(args);
+                observer.OnPropertyAccessed(args);
             }
         }
     }

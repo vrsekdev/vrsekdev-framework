@@ -1,11 +1,11 @@
-﻿using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Attributes;
+﻿using Havit.Blazor.StateManagement.Mobx.Observables.Default.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions
+namespace Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions
 {
     internal static class PropertyInfoExtensions
     {

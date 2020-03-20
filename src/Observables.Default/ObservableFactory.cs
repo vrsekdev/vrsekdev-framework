@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
+namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
 {
     internal class ObservableFactory : IObservableFactory
     {

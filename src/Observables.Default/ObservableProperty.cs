@@ -1,13 +1,13 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
 using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
-using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
+using Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
+namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
 {
     internal class ObservableProperty : IObservableProperty
     {
@@ -15,7 +15,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
         private EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
         private Dictionary<string, ObservableProperty> observedProperties;
-        private Dictionary<string, ObservableCollection> observedArrays;
+        private Dictionary<string, ObservableCollection> observedCollections;
         private Dictionary<string, PropertyInfo> allPropertiesByName;
         private Dictionary<string, object> normalProperties;
         private bool disposed;
@@ -54,9 +54,9 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 return true;
             }
 
-            if (observedArrays.ContainsKey(name))
+            if (observedCollections.ContainsKey(name))
             {
-                result = observedArrays[name];
+                result = observedCollections[name];
 
                 return true;
             }
@@ -92,14 +92,14 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 return true;
             }
 
-            if (observedArrays.ContainsKey(name))
+            if (observedCollections.ContainsKey(name))
             {
                 if (!(value is IObservableCollection observableArray))
                 {
                     throw new Exception("Unsupported type of array.");
                 }
 
-                var oldArray = observedArrays[name];
+                var oldArray = observedCollections[name];
                 if (oldArray == value)
                 {
                     // Do nothing when collection is identical
@@ -158,7 +158,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
 
         public Dictionary<string, IObservableCollection> GetObservedCollections()
         {
-            return observedArrays.ToDictionary(x => x.Key, x => (IObservableCollection)x.Value);
+            return observedCollections.ToDictionary(x => x.Key, x => (IObservableCollection)x.Value);
         }
 
         public void OverwriteFrom(object source)
@@ -209,7 +209,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 observedProperty.ResetValues();
             }
 
-            foreach (var observedArray in observedArrays.Values)
+            foreach (var observedArray in observedCollections.Values)
             {
                 observedArray.Reset();
             }
@@ -242,7 +242,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 statePropertyChangedEvent = null;
                 collectionItemsChangedEvent = null;
                 observedProperties = null;
-                observedArrays = null;
+                observedCollections = null;
                 allPropertiesByName = null;
                 normalProperties = null;
             }
@@ -263,7 +263,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
         {
             allPropertiesByName = ObservedType.GetProperties().ToDictionary(x => x.Name);
             observedProperties = new Dictionary<string, ObservableProperty>();
-            observedArrays = new Dictionary<string, ObservableCollection>();
+            observedCollections = new Dictionary<string, ObservableCollection>();
             normalProperties = new Dictionary<string, object>();
 
             foreach (var propertyKvp in allPropertiesByName)
@@ -282,7 +282,7 @@ namespace Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default
                 }
                 else if (IsSupportedObservableArrayType(propertyInfo.PropertyType))
                 {
-                    observedArrays.Add(propertyName, CreateEmptyObservableArray(propertyInfo));
+                    observedCollections.Add(propertyName, CreateEmptyObservableArray(propertyInfo));
                 }
                 else
                 {

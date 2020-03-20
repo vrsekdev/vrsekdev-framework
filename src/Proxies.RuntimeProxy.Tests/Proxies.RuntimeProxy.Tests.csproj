@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PropertyObservables.RuntimeType\Proxies.RuntimeProxy.csproj" />
+    <ProjectReference Include="..\Proxies.RuntimeProxy\Proxies.RuntimeProxy.csproj" />
   </ItemGroup>
 
 </Project>

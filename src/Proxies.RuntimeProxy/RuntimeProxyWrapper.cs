@@ -16,8 +16,8 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         public IPropertyProxy UnwrapPropertyObservable<T>(T propertyProxy)
             where T : class
         {
-            IRuntimeProxy impl = (IRuntimeProxy)propertyProxy;
-            return impl.Manager;
+            IRuntimeProxy impl = propertyProxy as IRuntimeProxy;
+            return impl?.Manager;
         }
     }
 }
