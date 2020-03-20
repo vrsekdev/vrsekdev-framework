@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Tests.Models
 {
-    public struct DefaultStruct
+    public struct SimpleStruct
     {
         public int ValueType { get; set; }
 

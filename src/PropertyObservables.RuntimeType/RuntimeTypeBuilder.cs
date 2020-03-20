@@ -1,4 +1,4 @@
-﻿#define ENABLE_CACHING
+﻿//#define ENABLE_CACHING
 
 using System;
 using System.Collections.Concurrent;
@@ -15,20 +15,16 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
 {
     internal static class RuntimeTypeBuilder
     {
-        private static ModuleBuilder module;
-        private static ModuleBuilder Module
-        {
-            get
-            {
-                if (module == null)
-                {
-                    var assemblyName = new AssemblyName("ObservablePropertyRuntimeTypeAssembly");
-                    AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-                    module = assemblyBuilder.DefineDynamicModule("MainModule");
-                }
+        private readonly static Lazy<ModuleBuilder> module;
 
-                return module;
-            }
+        static RuntimeTypeBuilder()
+        {
+            module = new Lazy<ModuleBuilder>(() =>
+            {
+                var assemblyName = new AssemblyName("ObservablePropertyRuntimeTypeAssembly");
+                AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+                return assemblyBuilder.DefineDynamicModule("MainModule");
+            });
         }
 
         private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
@@ -84,7 +80,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType
         private static TypeBuilder CreateTypeBuilder(Type interfaceType)
         {
             var typeSignature = interfaceType.Name + "_RuntimeImpl_" + Guid.NewGuid();
-            TypeBuilder typeBuilder = Module.DefineType(typeSignature,
+            TypeBuilder typeBuilder = module.Value.DefineType(typeSignature,
                     TypeAttributes.Public |
                     TypeAttributes.Class,
                     null);

@@ -15,7 +15,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
     public class RuntimeTypePropertyManagerTests
     {
         [TestMethod]
-        public void Implementation_MultipleManagers_Differentinterfaces()
+        public void Implementation_MultipleManagers_DifferentInterfaces()
         {
             // Arrange
             Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
@@ -26,20 +26,20 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             Mock<IObserver<PropertyAccessedArgs>> observerMock = new Mock<IObserver<PropertyAccessedArgs>>();
 
             // Act
-            var manager = new RuntimeTypePropertyObservableManager<IClassicInterface>(observableMock.Object);
+            var manager = new RuntimeTypePropertyObservableManager<ISimpleInterface>(observableMock.Object);
             var manager2 = new RuntimeTypePropertyObservableManager<IInterfaceWithNestedObservable>(observableMock.Object);
 
             manager.Subscribe(observerMock.Object);
             manager2.Subscribe(observerMock.Object);
 
-            IClassicInterface impl = manager.Implementation;
+            ISimpleInterface impl = manager.Implementation;
             IInterfaceWithNestedObservable impl2 = manager2.Implementation;
 
-            Trace.WriteLine(impl.ReferenceType);
+            Trace.WriteLine(impl.StringValue);
             Trace.WriteLine(impl2.NestedObservable);
 
             // Assert
-            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(IClassicInterface.ReferenceType))), Times.Once);
+            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(ISimpleInterface.StringValue))), Times.Once);
             observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(IInterfaceWithNestedObservable.NestedObservable))), Times.Once);
         }
 
@@ -48,7 +48,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
         {
             // Arrange
             Mock<IObservableProperty> nestedObservableMock = new Mock<IObservableProperty>();
-            nestedObservableMock.SetupGet(x => x.ObservedType).Returns(typeof(IClassicInterface));
+            nestedObservableMock.SetupGet(x => x.ObservedType).Returns(typeof(ISimpleInterface));
             nestedObservableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
             nestedObservableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
             nestedObservableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out It.Ref<object>.IsAny)).Returns(true);
@@ -68,11 +68,11 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             var manager = new RuntimeTypePropertyObservableManager<IInterfaceWithNestedObservable>(observableMock.Object);
             manager.Subscribe(observerMock.Object);
             IInterfaceWithNestedObservable impl = manager.Implementation;
-            Trace.WriteLine(impl.NestedObservable.ReferenceType);
+            Trace.WriteLine(impl.NestedObservable.StringValue);
 
             // Assert
             observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(IInterfaceWithNestedObservable.NestedObservable))), Times.Once);
-            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(IClassicInterface.ReferenceType))), Times.Once);
+            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(ISimpleInterface.StringValue))), Times.Once);
         }
 
         [TestMethod]
@@ -122,21 +122,21 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
         {
             // Arrange
             FakeObservableProperty observableProperty = new FakeObservableProperty();
-            observableProperty.TrySetMember("ValueType", 10);
+            observableProperty.TrySetMember(nameof(ISimpleInterface.ValueTypeValue), 10);
             Mock<IObserver<PropertyAccessedArgs>> observerMock = new Mock<IObserver<PropertyAccessedArgs>>();
 
             // Act
-            var manager = new RuntimeTypePropertyObservableManager<IClassicInterface>(observableProperty);
+            var manager = new RuntimeTypePropertyObservableManager<ISimpleInterface>(observableProperty);
             manager.Subscribe(observerMock.Object);
-            IClassicInterface impl = manager.Implementation;
-            Trace.WriteLine(impl.ValueType);
+            ISimpleInterface impl = manager.Implementation;
+            Trace.WriteLine(impl.ValueTypeValue);
 
             // Assert
-            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(impl.ValueType))), Times.Once);
+            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(impl.ValueTypeValue))), Times.Once);
         }
 
         [TestMethod]
-        public void Implementation_ClassicInterface_NotifyPropertyAccessed()
+        public void Implementation_StringValue_NotifyPropertyAccessed()
         {
             // Arrange
             Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
@@ -147,13 +147,51 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
 
             Mock<IObserver<PropertyAccessedArgs>> observerMock = new Mock<IObserver<PropertyAccessedArgs>>();
             // Act
-            var manager = new RuntimeTypePropertyObservableManager<IClassicInterface>(observableMock.Object);
+            var manager = new RuntimeTypePropertyObservableManager<ISimpleInterface>(observableMock.Object);
             manager.Subscribe(observerMock.Object);
-            IClassicInterface impl = manager.Implementation;
-            Trace.WriteLine(impl.ReferenceType);
+            ISimpleInterface impl = manager.Implementation;
+            Trace.WriteLine(impl.StringValue);
 
             // Assert
-            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(impl.ReferenceType))), Times.Once);
+            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(impl.StringValue))), Times.Once);
+        }
+
+        [TestMethod]
+        public void Implementation_ReferenceTypeValue_NotifyPropertyAccessed()
+        {
+            // Arrange
+            Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
+            observableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
+            observableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            object outParam = "tesada";
+            observableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out outParam)).Returns(true);
+
+            Mock<IObserver<PropertyAccessedArgs>> observerMock = new Mock<IObserver<PropertyAccessedArgs>>();
+            // Act
+            var manager = new RuntimeTypePropertyObservableManager<ISimpleInterface>(observableMock.Object);
+            manager.Subscribe(observerMock.Object);
+            ISimpleInterface impl = manager.Implementation;
+            Trace.WriteLine(impl.ReferenceTypeValue);
+
+            // Assert
+            observerMock.Verify(x => x.OnNext(It.Is<PropertyAccessedArgs>(args => args.PropertyName == nameof(impl.ReferenceTypeValue))), Times.Once);
+        }
+
+        [TestMethod]
+        public void Implementation_Manager_IsCorrectInstance()
+        {
+            // Arrange
+            Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
+            observableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
+            observableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+
+            Mock<IObserver<PropertyAccessedArgs>> observerMock = new Mock<IObserver<PropertyAccessedArgs>>();
+            // Act
+            var manager = new RuntimeTypePropertyObservableManager<ISimpleInterface>(observableMock.Object);
+            ISimpleInterface impl = manager.Implementation;
+
+            // Assert
+            Assert.AreEqual(manager, ((IRuntimeTypeImpl)impl).Manager);
         }
     }
 }

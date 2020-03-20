@@ -6,6 +6,6 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
 {
     public interface IInterfaceWithNestedObservable
     {
-        IClassicInterface NestedObservable { get; set; }
+        ISimpleInterface NestedObservable { get; set; }
     }
 }

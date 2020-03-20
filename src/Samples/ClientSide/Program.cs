@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
-using Havit.Blazor.StateManagement.Mobx.PropertyObservables.Dynamic.Extensions;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples.ClientSide
 {

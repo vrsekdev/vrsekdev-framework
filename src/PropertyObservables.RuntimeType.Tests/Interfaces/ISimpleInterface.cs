@@ -5,8 +5,12 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Tests.Interfaces
 {
-    public interface InterfaceWithDefaultStruct
+    public interface ISimpleInterface
     {
-        DefaultStruct DefaultStruct { get; set; }
+        SimpleClass ReferenceTypeValue { get; set; }
+
+        string StringValue { get; set; }
+
+        int ValueTypeValue { get; set; }
     }
 }

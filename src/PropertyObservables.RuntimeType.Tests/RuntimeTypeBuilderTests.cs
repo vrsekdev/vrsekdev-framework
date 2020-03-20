@@ -66,7 +66,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             string value = "test value";
 
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
-            managerMock.Setup(x => x.GetValue(nameof(IInterfaceWithAncestor.ReferenceType)))
+            managerMock.Setup(x => x.GetValue(nameof(IInterfaceWithAncestor.StringValue)))
                 .Returns(value);
 
             var manager = managerMock.Object;
@@ -78,7 +78,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             IInterfaceWithAncestor impl = (IInterfaceWithAncestor)Activator.CreateInstance(runtimeType, manager);
 
             // Assert
-            Assert.AreEqual(value, impl.ReferenceType);
+            Assert.AreEqual(value, impl.StringValue);
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             int value = 50;
 
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
-            managerMock.Setup(x => x.GetValue(nameof(IClassicInterface.ValueType)))
+            managerMock.Setup(x => x.GetValue(nameof(ISimpleInterface.ValueTypeValue)))
                 .Returns(value);
 
             var manager = managerMock.Object;
@@ -96,11 +96,11 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
-            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(IClassicInterface), getMethod, setMethod);
-            IClassicInterface impl = (IClassicInterface)Activator.CreateInstance(runtimeType, manager);
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
+            ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
 
             // Assert
-            Assert.AreEqual(value, impl.ValueType);
+            Assert.AreEqual(value, impl.ValueTypeValue);
         }
 
         [TestMethod]
@@ -110,9 +110,9 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             int value = 50;
             object setValue = null;
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
-            managerMock.Setup(x => x.GetValue(nameof(IClassicInterface.ValueType)))
+            managerMock.Setup(x => x.GetValue(nameof(ISimpleInterface.ValueTypeValue)))
                 .Returns(() => setValue);
-            managerMock.Setup(x => x.SetValue(nameof(IClassicInterface.ValueType), It.IsAny<object>()))
+            managerMock.Setup(x => x.SetValue(nameof(ISimpleInterface.ValueTypeValue), It.IsAny<object>()))
                 .Callback<string, object>((name, value) => setValue = value);
 
             var manager = managerMock.Object;
@@ -120,12 +120,12 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
-            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(IClassicInterface), getMethod, setMethod);
-            IClassicInterface impl = (IClassicInterface)Activator.CreateInstance(runtimeType, manager);
-            impl.ValueType = value;
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
+            ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
+            impl.ValueTypeValue = value;
 
             // Assert
-            Assert.AreEqual(value, impl.ValueType);
+            Assert.AreEqual(value, impl.ValueTypeValue);
         }
 
         [TestMethod]
@@ -135,7 +135,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             string value = "test value";
 
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
-            managerMock.Setup(x => x.GetValue(nameof(IClassicInterface.ReferenceType)))
+            managerMock.Setup(x => x.GetValue(nameof(ISimpleInterface.StringValue)))
                 .Returns(value);
 
             var manager = managerMock.Object;
@@ -143,9 +143,9 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
-            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(IClassicInterface), getMethod, setMethod);
-            IClassicInterface impl = (IClassicInterface)Activator.CreateInstance(runtimeType, manager);
-            string returnedValue = impl.ReferenceType;
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
+            ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
+            string returnedValue = impl.StringValue;
 
             // Assert
             Assert.AreEqual(value, returnedValue);
@@ -159,9 +159,9 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             object setValue = null;
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
             managerMock.SetupGet(x => x.Implementation).Returns(null);
-            managerMock.Setup(x => x.GetValue(nameof(IClassicInterface.ReferenceType)))
+            managerMock.Setup(x => x.GetValue(nameof(ISimpleInterface.StringValue)))
                 .Returns(() => setValue);
-            managerMock.Setup(x => x.SetValue(nameof(IClassicInterface.ReferenceType), It.IsAny<object>()))
+            managerMock.Setup(x => x.SetValue(nameof(ISimpleInterface.StringValue), It.IsAny<object>()))
                 .Callback<string, object>((name, value) => setValue = value);
 
             var manager = managerMock.Object;
@@ -169,26 +169,26 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
-            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(IClassicInterface), getMethod, setMethod);
-            IClassicInterface impl = (IClassicInterface)Activator.CreateInstance(runtimeType, manager);
-            impl.ReferenceType = value;
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
+            ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
+            impl.StringValue = value;
             
             // Assert
-            Assert.AreEqual(value, impl.ReferenceType);
+            Assert.AreEqual(value, impl.StringValue);
         }
 
         [TestMethod]
         public void BuildRuntimeType_Struct_GetValue()
         {
             // Arrange
-            DefaultStruct defaultStruct = new DefaultStruct
+            SimpleStruct defaultStruct = new SimpleStruct
             {
                 ValueType = 50,
                 ReferencType = "test data"
             };
 
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
-            managerMock.Setup(x => x.GetValue(nameof(InterfaceWithDefaultStruct.DefaultStruct)))
+            managerMock.Setup(x => x.GetValue(nameof(InterfaceWithSimpleStruct.DefaultStruct)))
                 .Returns(defaultStruct);
 
             var manager = managerMock.Object;
@@ -196,8 +196,8 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
-            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(InterfaceWithDefaultStruct), getMethod, setMethod);
-            InterfaceWithDefaultStruct impl = (InterfaceWithDefaultStruct)Activator.CreateInstance(runtimeType, manager);
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(InterfaceWithSimpleStruct), getMethod, setMethod);
+            InterfaceWithSimpleStruct impl = (InterfaceWithSimpleStruct)Activator.CreateInstance(runtimeType, manager);
 
             // Assert
             Assert.AreEqual(defaultStruct, impl.DefaultStruct);
@@ -207,7 +207,7 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
         public void BuildRuntimeType_Struct_SetValue()
         {
             // Arrange
-            DefaultStruct defaultStruct = new DefaultStruct
+            SimpleStruct defaultStruct = new SimpleStruct
             {
                 ValueType = 50,
                 ReferencType = "test data"
@@ -216,9 +216,9 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             object setValue = null;
 
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
-            managerMock.Setup(x => x.GetValue(nameof(InterfaceWithDefaultStruct.DefaultStruct)))
+            managerMock.Setup(x => x.GetValue(nameof(InterfaceWithSimpleStruct.DefaultStruct)))
                 .Returns(() => setValue);
-            managerMock.Setup(x => x.SetValue(nameof(InterfaceWithDefaultStruct.DefaultStruct), It.IsAny<object>()))
+            managerMock.Setup(x => x.SetValue(nameof(InterfaceWithSimpleStruct.DefaultStruct), It.IsAny<object>()))
                 .Callback<string, object>((name, value) => setValue = value);
 
             var manager = managerMock.Object;
@@ -226,8 +226,8 @@ namespace Havit.Blazor.StateManagement.Mobx.PropertyObservables.RuntimeType.Test
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
-            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(InterfaceWithDefaultStruct), getMethod, setMethod);
-            InterfaceWithDefaultStruct impl = (InterfaceWithDefaultStruct)Activator.CreateInstance(runtimeType, manager);
+            Type runtimeType = RuntimeTypeBuilder.BuildRuntimeType(typeof(InterfaceWithSimpleStruct), getMethod, setMethod);
+            InterfaceWithSimpleStruct impl = (InterfaceWithSimpleStruct)Activator.CreateInstance(runtimeType, manager);
             impl.DefaultStruct = defaultStruct;
 
             // Assert
