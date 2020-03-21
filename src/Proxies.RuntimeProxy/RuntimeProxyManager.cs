@@ -50,7 +50,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 
         private readonly HashSet<IPropertyAccessedSubscriber> subscribers = new HashSet<IPropertyAccessedSubscriber>();
         private readonly Dictionary<string, ICollectionProxy> collectionProxies = new Dictionary<string, ICollectionProxy>();
-        private readonly Dictionary<string, IRuntimeProxyManager> runtimeProxies = new Dictionary<string, IRuntimeProxyManager>();
+        /// <summary>
+        /// Manager has to keep track of all nested proxies, otherwise when the (for example) component keeps track of only the root proxy, 
+        /// all nested proxies lose reference and get collected by GC, because manager keeps only a weak reference
+        /// </summary>
+        private readonly Dictionary<string, IRuntimeProxy> runtimeProxies = new Dictionary<string, IRuntimeProxy>();
 
         public IObservableProperty ObservableProperty { get; }
         public bool IsReadOnly { get; }
@@ -95,9 +99,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         {
             OnPropertyAccessed(propertyName);
 
-            if (runtimeProxies.TryGetValue(propertyName, out IRuntimeProxyManager propertyManager))
+            if (runtimeProxies.TryGetValue(propertyName, out IRuntimeProxy runtimeProxy))
             {
-                return propertyManager.Implementation;
+                return runtimeProxy.Manager.Implementation;
             }
 
             if (collectionProxies.TryGetValue(propertyName, out ICollectionProxy collectionProxy))
@@ -157,7 +161,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 
             foreach (var runtimeProxy in runtimeProxies.Values)
             {
-                runtimeProxy.Subscribe(subscriber);
+                runtimeProxy.Manager.Subscribe(subscriber);
             }
 
             foreach (var collectionProxy in collectionProxies.Values)
@@ -174,7 +178,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             foreach (var observedProperty in observedProperties)
             {
                 IObservableProperty observableProperty = observedProperty.Value;
-                runtimeProxies[observedProperty.Key] = RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, IsReadOnly);
+                runtimeProxies[observedProperty.Key] = (IRuntimeProxy)RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, IsReadOnly).Implementation;
             }
 
             foreach (var observedCollection in observedCollections)
