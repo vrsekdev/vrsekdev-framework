@@ -1,5 +1,3 @@
-//#define ENABLE_CACHING
-
 using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
 using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -233,32 +231,5 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
             // Assert
             Assert.AreEqual(defaultStruct, impl.DefaultStruct);
         }
-
-#if ENABLE_CACHING
-        [TestMethod]
-        public void BuildRuntimeType_CacheType()
-        {
-            // Arrange
-            var managerMock = new Mock<IMockableRuntimeTypePropertyManager>();
-            var manager = managerMock.Object;
-            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
-            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
-
-            var managerMock2 = new Mock<IMockableRuntimeTypePropertyManager>();
-            var manager2 = managerMock2.Object;
-            MethodInfo getMethod2 = manager2.GetType().GetMethod("GetValue");
-            MethodInfo setMethod2 = manager2.GetType().GetMethod("SetValue");
-
-            // Act
-            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(IClassicInterface), getMethod, setMethod);
-            IClassicInterface impl = (IClassicInterface)Activator.CreateInstance(runtimeType, manager);
-
-            Type runtimeType2 = RuntimeProxyBuilder.BuildRuntimeType(typeof(IClassicInterface), getMethod2, setMethod2);
-            IClassicInterface impl2 = (IClassicInterface)Activator.CreateInstance(runtimeType2, manager2);
-
-            // Assert
-            Assert.AreEqual(impl.GetType(), impl2.GetType());
-        }
-#endif
     }
 }

@@ -32,35 +32,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 
         public static Type BuildRuntimeType(Type interfaceType, MethodInfo getMethod, MethodInfo setMethod)
         {
-#if !ENABLE_CACHING
             return BuildRuntimeTypeInternal(interfaceType, getMethod, setMethod);
-#else
-            cacheLock.EnterUpgradeableReadLock();
-            try
-            {
-                if (runtimeTypeCache.TryGetValue(interfaceType, out Type runtimeType))
-                {
-                    return runtimeType;
-                }
-
-                cacheLock.EnterWriteLock();
-                try
-                {
-                    runtimeType = BuildRuntimeTypeInternal(interfaceType, getMethod, setMethod);
-                    runtimeTypeCache.Add(interfaceType, runtimeType);
-
-                    return runtimeType;
-                }
-                finally
-                {
-                    cacheLock.ExitWriteLock();
-                }
-            }
-            finally
-            {
-                cacheLock.ExitUpgradeableReadLock();
-            }
-#endif
         }
 
         private static Type BuildRuntimeTypeInternal(Type type, MethodInfo getMethod, MethodInfo setMethod)

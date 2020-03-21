@@ -16,6 +16,44 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
     public class RuntimeProxyManagerTests
     {
         [TestMethod]
+        public void Implementation_CacheRuntimeType()
+        {
+            // Arrange
+            Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
+            observableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
+            observableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            observableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out It.Ref<object>.IsAny)).Returns(true);
+
+            Mock<IObservableProperty> nestedObservableMock = new Mock<IObservableProperty>();
+            nestedObservableMock.SetupGet(x => x.ObservedType).Returns(typeof(ISimpleInterface));
+            nestedObservableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
+            nestedObservableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            nestedObservableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out It.Ref<object>.IsAny)).Returns(true);
+            var nestedObservable = (object)nestedObservableMock.Object;
+
+            Mock<IObservableProperty> observableMock2 = new Mock<IObservableProperty>();
+            observableMock2.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>
+            {
+                [nameof(IInterfaceWithNestedObservable.NestedObservable)] = nestedObservableMock.Object
+            });
+            observableMock2.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            observableMock2.Setup(x => x.TryGetMember(It.IsAny<string>(), out nestedObservable)).Returns(true);
+
+            // Act
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, false);
+            var manager2 = new RuntimeProxyManager<IInterfaceWithNestedObservable>(observableMock2.Object, false);
+
+            ISimpleInterface impl = manager.Implementation;
+            IInterfaceWithNestedObservable impl2 = manager2.Implementation;
+
+            Trace.WriteLine(impl.StringValue);
+            Trace.WriteLine(impl2.NestedObservable);
+
+            // Assert
+            Assert.AreEqual(impl.GetType(), impl2.NestedObservable.GetType());
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(PropertyReadonlyException))]
         public void Implementation_IsReadonly_ObservedPropertyShouldThrowException()
         {
