@@ -105,9 +105,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         {
             if (runtimeProxies.ContainsKey(propertyName))
             {
-                if (value is IRuntimeProxy newObservable)
+                if (value is IRuntimeProxy runtimeProxy)
                 {
-                    if (!ObservableProperty.TrySetMember(propertyName, newObservable.Manager.ObservableProperty))
+                    if (!ObservableProperty.TrySetMember(propertyName, runtimeProxy.Manager.ObservableProperty))
                     {
                         throw new NotSupportedException(propertyName);
                     }
@@ -178,9 +178,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
                 PropertyName = name
             };
 
-            foreach (var observer in subscribers.ToList())
+            foreach (var subscriber in subscribers.ToList())
             {
-                observer.OnPropertyAccessed(args);
+                subscriber.OnPropertyAccessed(args);
             }
         }
     }

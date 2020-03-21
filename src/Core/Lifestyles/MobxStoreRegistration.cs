@@ -41,7 +41,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
         public IServiceCollection LifestyleScoped()
         {
             services.AddScoped<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
-            services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
+            services.AddTransient<IStoreAccessor<TStore>, StoreAccessor<TStore>>();
 
             RegisterStoreMetadata();
 
@@ -51,7 +51,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
         public IServiceCollection LifestyleTransient()
         {
             services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
-            services.AddTransient<IStoreAccessor<TStore>, InjectedStoreAccessor<TStore>>();
+            services.AddTransient<IStoreAccessor<TStore>, StoreAccessor<TStore>>();
 
             RegisterStoreMetadata();
 

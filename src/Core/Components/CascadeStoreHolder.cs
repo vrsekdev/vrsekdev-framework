@@ -43,7 +43,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Components
 
         private IStoreAccessor<TStore> CreateStoreAccessor()
         {
-            return new InjectedStoreAccessor<TStore>(
+            return new StoreAccessor<TStore>(
                 StoreHolder,
                 PropertyProxyFactory,
                 PropertyProxyWrapper);
