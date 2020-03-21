@@ -29,10 +29,6 @@ namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
             IPropertyProxyFactory propertyProxyFactory,
             IPropertyProxyWrapper propertyProxyWrapper)
         {
-            if (!typeof(TStore).IsInterface)
-            {
-                throw new Exception("State type must be an interface");
-            }
             this.storeHolder = storeHolder;
             this.propertyProxyFactory = propertyProxyFactory;
             this.propertyProxyWrapper = propertyProxyWrapper;

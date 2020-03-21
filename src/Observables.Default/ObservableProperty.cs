@@ -27,11 +27,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
             EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
             EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent)
         {
-            if (!interfaceType.IsInterface)
-            {
-                throw new ArgumentException("Only interfaces can be observable.");
-            }
-
             ObservedType = interfaceType;
             this.statePropertyChangedEvent = statePropertyChangedEvent;
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
@@ -273,11 +268,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
 
                 if (propertyInfo.HasObservableAttribute())
                 {
-                    if (!propertyInfo.PropertyType.IsInterface)
-                    {
-                        throw new Exception("Observables must be an interface.");
-                    }
-
                     observedProperties.Add(propertyName, CreateObservableProperty(propertyInfo));
                 }
                 else if (IsSupportedObservableArrayType(propertyInfo.PropertyType))

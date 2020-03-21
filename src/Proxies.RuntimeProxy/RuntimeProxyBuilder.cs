@@ -63,13 +63,14 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 #endif
         }
 
-        private static Type BuildRuntimeTypeInternal(Type interfaceType, MethodInfo getMethod, MethodInfo setMethod)
+        private static Type BuildRuntimeTypeInternal(Type type, MethodInfo getMethod, MethodInfo setMethod)
         {
-            TypeBuilder typeBuilder = CreateTypeBuilder(interfaceType);
+            TypeBuilder typeBuilder = CreateTypeBuilder(type);
             FieldBuilder managerField = AddManagerProperty(typeBuilder);
 
+            bool isClass = type.IsClass;
             AddConstructor(typeBuilder, managerField);
-            foreach (var propertyInfo in GetPublicProperties(interfaceType).Where(x => x.GetMethod.IsAbstract))
+            foreach (var propertyInfo in GetPublicProperties(type).Where(x => x.GetMethod.IsAbstract || (isClass && x.GetMethod.IsVirtual)))
             {
                 AddProperty(typeBuilder, propertyInfo, managerField, getMethod, setMethod);
             }
@@ -77,14 +78,21 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             return typeBuilder.CreateType();
         }
 
-        private static TypeBuilder CreateTypeBuilder(Type interfaceType)
+        private static TypeBuilder CreateTypeBuilder(Type type)
         {
-            var typeSignature = interfaceType.Name + "_RuntimeImpl_" + Guid.NewGuid();
+            var typeSignature = type.Name + "_RuntimeImpl_" + Guid.NewGuid();
             TypeBuilder typeBuilder = module.Value.DefineType(typeSignature,
                     TypeAttributes.Public |
                     TypeAttributes.Class,
                     null);
-            typeBuilder.AddInterfaceImplementation(interfaceType);
+            if (type.IsInterface)
+            {
+                typeBuilder.AddInterfaceImplementation(type);
+            }
+            else
+            {
+                typeBuilder.SetParent(type);
+            }
             typeBuilder.AddInterfaceImplementation(typeof(IRuntimeProxy));
 
             return typeBuilder;
@@ -138,7 +146,12 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             Type propertyType = propertyInfo.PropertyType;
             string propertyName = propertyInfo.Name;
 
-            PropertyBuilder propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.None, propertyType, null);
+            PropertyBuilder propertyBuilder = null;
+            if (propertyInfo.DeclaringType.IsInterface)
+            {
+                propertyBuilder = typeBuilder.DefineProperty(propertyName, PropertyAttributes.None, propertyType, null);
+            }
+
             MethodAttributes getSetAttributes = MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig | MethodAttributes.Virtual;
 
             // Define the "get" accessor method
@@ -180,46 +193,55 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             setPropertyGenerator.Emit(OpCodes.Ret);
 
             // Map the accessor methods
-            propertyBuilder.SetGetMethod(propGetAccessor);
-            propertyBuilder.SetSetMethod(propSetAccessor);
+            if (propertyInfo.DeclaringType.IsInterface)
+            {
+                propertyBuilder.SetGetMethod(propGetAccessor);
+                propertyBuilder.SetSetMethod(propSetAccessor);
+            }
+            else
+            {
+                typeBuilder.DefineMethodOverride(propGetAccessor, propertyInfo.GetMethod);
+                typeBuilder.DefineMethodOverride(propSetAccessor, propertyInfo.SetMethod);
+            }
         }
 
         private static PropertyInfo[] GetPublicProperties(Type type)
         {
-            Contract.Requires(type.IsInterface);
-
-            var propertyInfos = new List<PropertyInfo>();
-
-            var considered = new List<Type>();
-            var queue = new Queue<Type>();
-            considered.Add(type);
-            queue.Enqueue(type);
-            while (queue.Count > 0)
+            if (type.IsInterface)
             {
-                var subType = queue.Dequeue();
-                foreach (var subInterface in subType.GetInterfaces())
+                var propertyInfos = new List<PropertyInfo>();
+
+                var considered = new List<Type>();
+                var queue = new Queue<Type>();
+                considered.Add(type);
+                queue.Enqueue(type);
+                while (queue.Count > 0)
                 {
-                    if (considered.Contains(subInterface))
+                    var subType = queue.Dequeue();
+                    foreach (var subInterface in subType.GetInterfaces())
                     {
-                        continue;
+                        if (considered.Contains(subInterface)) continue;
+
+                        considered.Add(subInterface);
+                        queue.Enqueue(subInterface);
                     }
 
-                    considered.Add(subInterface);
-                    queue.Enqueue(subInterface);
+                    var typeProperties = subType.GetProperties(
+                        BindingFlags.FlattenHierarchy
+                        | BindingFlags.Public
+                        | BindingFlags.Instance);
+
+                    var newPropertyInfos = typeProperties
+                        .Where(x => !propertyInfos.Contains(x));
+
+                    propertyInfos.InsertRange(0, newPropertyInfos);
                 }
 
-                var typeProperties = subType.GetProperties(
-                    BindingFlags.FlattenHierarchy
-                    | BindingFlags.Public
-                    | BindingFlags.Instance);
-
-                var newPropertyInfos = typeProperties
-                    .Where(x => !propertyInfos.Contains(x));
-
-                propertyInfos.InsertRange(0, newPropertyInfos);
+                return propertyInfos.ToArray();
             }
 
-            return propertyInfos.ToArray();
+            return type.GetProperties(BindingFlags.FlattenHierarchy
+                | BindingFlags.Public | BindingFlags.Instance);
         }
     }
 }
