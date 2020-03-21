@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Havit.Blazor.StateManagement.Mobx
@@ -12,6 +13,8 @@ namespace Havit.Blazor.StateManagement.Mobx
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
+        private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+
         private readonly IObservableFactory observableFactory;
         private readonly ILookup<PropertyInfo, ReactionWrapper<TStore>> reactionsLookup;
 
@@ -42,17 +45,41 @@ namespace Havit.Blazor.StateManagement.Mobx
 
         private void OnStatePropertyChanged(object sender, ObservablePropertyStateChangedEventArgs e)
         {
-            foreach (var action in reactionsLookup[e.PropertyInfo])
+            ExecuteWithWriteLock(() =>
             {
-                action.Invoke(RootObservableProperty);
-            }
+                foreach (var action in reactionsLookup[e.PropertyInfo])
+                {
+                    action.Invoke(RootObservableProperty);
+                }
 
-            StatePropertyChangedEvent?.Invoke(sender, e);
+                StatePropertyChangedEvent?.Invoke(sender, e);
+            });
         }
 
         private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedEventArgs e)
         {
-            CollectionItemsChangedEvent?.Invoke(sender, e);
+            ExecuteWithWriteLock(() =>
+            {
+                CollectionItemsChangedEvent?.Invoke(sender, e);
+            });
+        }
+
+        private void ExecuteWithWriteLock(Action action)
+        {
+            if (!readerWriterLock.TryEnterWriteLock(0))
+            {
+                // Already being invoked. All other changes are going to be rendered.
+                // Possibly this call is from an invoked reaction
+                return;
+            }
+            try
+            {
+                action();
+            }
+            finally
+            {
+                readerWriterLock.ExitWriteLock();
+            }
         }
     }
 }
