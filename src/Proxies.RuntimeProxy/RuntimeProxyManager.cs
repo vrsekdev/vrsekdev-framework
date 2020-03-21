@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,31 +8,39 @@ using System.Text;
 
 namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 {
+    #region helper
+    internal delegate IRuntimeProxyManager CreateRuntimeManager(IObservableProperty observableProperty, bool readOnly);
+    internal static class RuntimeProxyManagerHelper
+    {
+        public readonly static CreateRuntimeManager CreateRuntimeManager;
+
+        static RuntimeProxyManagerHelper()
+        {
+            Type type = typeof(RuntimeProxyManager<>);
+            CreateRuntimeManager =
+                (IObservableProperty observableProperty, bool readOnly) =>
+                {
+                    Type genericType = type.MakeGenericType(observableProperty.ObservedType);
+                    return (IRuntimeProxyManager)Activator.CreateInstance(genericType, new object[] { observableProperty, readOnly });
+                };
+        }
+    }
+    #endregion helper
+
     public class RuntimeProxyManager<TInterface> : IRuntimeProxyManager
         where TInterface : class
     {
         #region static
         private readonly static Lazy<Type> runtimeTypeLazy;
-        private readonly static Func<Type, IObservableProperty, IRuntimeProxyManager> createProxy;
 
         static RuntimeProxyManager()
         {
-            Type type = typeof(RuntimeProxyManager<TInterface>);
+            Type currentType = typeof(RuntimeProxyManager<TInterface>);
 
             /**** RuntimeType ****/
-            MethodInfo getMethod = type.GetMethod(nameof(GetValue));
-            MethodInfo setMethod = type.GetMethod(nameof(SetValue));
+            MethodInfo getMethod = currentType.GetMethod(nameof(GetValue));
+            MethodInfo setMethod = currentType.GetMethod(nameof(SetValue));
             runtimeTypeLazy = new Lazy<Type>(() => RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod));
-
-            /**** CreateManagerInternal ****/
-            MethodInfo createInternalInfo = type.GetMethod(nameof(CreateManagerInternal), BindingFlags.Static | BindingFlags.NonPublic);
-            createProxy = (type, prop) => (IRuntimeProxyManager)createInternalInfo.MakeGenericMethod(type).Invoke(null, new[] { prop });
-        }
-
-        private static IRuntimeProxyManager CreateManagerInternal<T>(IObservableProperty observableProperty)
-            where T : class
-        {
-            return new RuntimeProxyManager<T>(observableProperty);
         }
         #endregion static
 
@@ -44,6 +53,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         private readonly Dictionary<string, IRuntimeProxyManager> runtimeProxies = new Dictionary<string, IRuntimeProxyManager>();
 
         public IObservableProperty ObservableProperty { get; }
+        public bool IsReadOnly { get; }
 
         private WeakReference<TInterface> implementation;
         internal TInterface Implementation
@@ -71,9 +81,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
         object IRuntimeProxyManager.Implementation => Implementation;
 
         public RuntimeProxyManager(
-            IObservableProperty observableProperty)
+            IObservableProperty observableProperty,
+            bool readOnly)
         {
             ObservableProperty = observableProperty;
+            IsReadOnly = readOnly;
             observableFactory = observableProperty.CreateFactory();
 
             Initialize();
@@ -103,6 +115,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
 
         public void SetValue(string propertyName, object value)
         {
+            if (IsReadOnly)
+            {
+                throw new PropertyReadonlyException();
+            }
+
             if (runtimeProxies.ContainsKey(propertyName))
             {
                 if (value is IRuntimeProxy runtimeProxy)
@@ -157,7 +174,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
             foreach (var observedProperty in observedProperties)
             {
                 IObservableProperty observableProperty = observedProperty.Value;
-                runtimeProxies[observedProperty.Key] = createProxy(observableProperty.ObservedType, observableProperty);
+                runtimeProxies[observedProperty.Key] = RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, IsReadOnly);
             }
 
             foreach (var observedCollection in observedCollections)

@@ -6,6 +6,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 {
     public interface IPropertyProxyFactory
     {
-        IPropertyProxy Create(IObservableProperty observableProperty);
+        IPropertyProxy Create(IObservableProperty observableProperty, bool readOnly = false);
     }
 }

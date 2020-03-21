@@ -7,9 +7,9 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
 {
     internal class DynamicProxyFactory : IPropertyProxyFactory
     {
-        public IPropertyProxy Create(IObservableProperty observableProperty)
+        public IPropertyProxy Create(IObservableProperty observableProperty, bool readOnly = false)
         {
-            return DynamicPropertyProxy.Create(observableProperty);
+            return DynamicPropertyProxy.Create(observableProperty, readOnly);
         }
     }
 }

@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Dynamic;
 using System.Linq;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Exceptions;
 
 namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
 {
     internal class DynamicPropertyProxy : DynamicObject, IPropertyProxy
     {
-        public static DynamicPropertyProxy Create(IObservableProperty observableProperty)
+        public static DynamicPropertyProxy Create(IObservableProperty observableProperty, bool readOnly)
         {
-            return new DynamicPropertyProxy(observableProperty);
+            return new DynamicPropertyProxy(observableProperty, readOnly);
         }
 
         public static T Box<T>(DynamicPropertyProxy dynamicProxy)
@@ -39,11 +40,14 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
         private readonly DynamicProxyFactory proxyFactory = new DynamicProxyFactory();
 
         public IObservableProperty ObservableProperty { get; }
+        public bool IsReadOnly { get; }
 
         private DynamicPropertyProxy(
-            IObservableProperty observableProperty)
+            IObservableProperty observableProperty,
+            bool readOnly)
         {
             ObservableProperty = observableProperty;
+            IsReadOnly = readOnly;
             observableFactory = observableProperty.CreateFactory();
 
             Initialize();
@@ -74,6 +78,11 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
+            if (IsReadOnly)
+            {
+                throw new PropertyReadonlyException();
+            }
+
             string name = binder.Name;
 
             if (dynamicProxies.ContainsKey(name))
@@ -138,7 +147,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
 
         private object CreatePropertyObservable(IObservableProperty observableProperty)
         {
-            DynamicPropertyProxy dynamicProxy = new DynamicPropertyProxy(observableProperty);
+            DynamicPropertyProxy dynamicProxy = new DynamicPropertyProxy(observableProperty, IsReadOnly);
             object boxedItem = Box(dynamicProxy, observableProperty.ObservedType).Target;
 
             foreach (var subscriber in subscribers)

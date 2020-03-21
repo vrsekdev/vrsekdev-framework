@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Exceptions;
 using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Fakes;
 using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,6 +16,62 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
     public class RuntimeProxyManagerTests
     {
         [TestMethod]
+        [ExpectedException(typeof(PropertyReadonlyException))]
+        public void Implementation_IsReadonly_ObservedPropertyShouldThrowException()
+        {
+            // Arrange
+            Mock<IObservableProperty> nestedObservableMock = new Mock<IObservableProperty>();
+            nestedObservableMock.SetupGet(x => x.ObservedType).Returns(typeof(ISimpleInterface));
+            nestedObservableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
+            nestedObservableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            nestedObservableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out It.Ref<object>.IsAny)).Returns(true);
+            var nestedObservable = (object)nestedObservableMock.Object;
+
+            Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
+            observableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>
+            {
+                [nameof(IInterfaceWithNestedObservable.NestedObservable)] = nestedObservableMock.Object
+            });
+            observableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            observableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out nestedObservable)).Returns(true);
+            Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
+
+            // Act
+            var manager = new RuntimeProxyManager<IInterfaceWithNestedObservable>(observableMock.Object, true);
+            manager.Subscribe(subscriberMock.Object);
+
+            IInterfaceWithNestedObservable impl = manager.Implementation;
+
+            impl.NestedObservable.StringValue = "test";
+
+            // Assert
+            // exc
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(PropertyReadonlyException))]
+        public void Implementation_IsReadonly_ThrowException()
+        {
+            // Arrange
+            Mock<IObservableProperty> observableMock = new Mock<IObservableProperty>();
+            observableMock.Setup(x => x.GetObservedProperties()).Returns(new Dictionary<string, IObservableProperty>());
+            observableMock.Setup(x => x.GetObservedCollections()).Returns(new Dictionary<string, IObservableCollection>());
+            observableMock.Setup(x => x.TryGetMember(It.IsAny<string>(), out It.Ref<object>.IsAny)).Returns(true);
+            Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
+
+            // Act
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, true);
+            manager.Subscribe(subscriberMock.Object);
+
+            ISimpleInterface impl = manager.Implementation;
+
+            impl.StringValue = "test";
+
+            // Assert
+            // exc
+        }
+
+        [TestMethod]
         public void Implementation_MultipleManagers_DifferentInterfaces()
         {
             // Arrange
@@ -26,8 +83,8 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
 
             // Act
-            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object);
-            var manager2 = new RuntimeProxyManager<IInterfaceWithNestedObservable>(observableMock.Object);
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, false);
+            var manager2 = new RuntimeProxyManager<IInterfaceWithNestedObservable>(observableMock.Object, false);
 
             manager.Subscribe(subscriberMock.Object);
             manager2.Subscribe(subscriberMock.Object);
@@ -65,7 +122,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
 
             // Act
-            var manager = new RuntimeProxyManager<IInterfaceWithNestedObservable>(observableMock.Object);
+            var manager = new RuntimeProxyManager<IInterfaceWithNestedObservable>(observableMock.Object, false);
             manager.Subscribe(subscriberMock.Object);
             IInterfaceWithNestedObservable impl = manager.Implementation;
             Trace.WriteLine(impl.NestedObservable.StringValue);
@@ -87,7 +144,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
 
             // Act
-            var manager = new RuntimeProxyManager<IInterfaceWithDefaultProperty>(observableMock.Object);
+            var manager = new RuntimeProxyManager<IInterfaceWithDefaultProperty>(observableMock.Object, false);
             manager.Subscribe(subscriberMock.Object);
             IInterfaceWithDefaultProperty impl = manager.Implementation;
             Trace.WriteLine(impl.DefaultProperty);
@@ -108,7 +165,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
 
             // Act
-            var manager = new RuntimeProxyManager<IInterfaceWithReadonlyProperty>(observableMock.Object);
+            var manager = new RuntimeProxyManager<IInterfaceWithReadonlyProperty>(observableMock.Object, false);
             manager.Subscribe(subscriberMock.Object);
             IInterfaceWithReadonlyProperty impl = manager.Implementation;
             Trace.WriteLine(impl.ReadonlyStringProperty);
@@ -129,7 +186,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
 
             // Act
-            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object);
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, false);
             manager.Subscribe(subscriberMock.Object);
             ISimpleInterface impl = manager.Implementation;
             Trace.WriteLine(impl.ValueTypeValue);
@@ -150,7 +207,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
 
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
             // Act
-            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object);
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, false);
             manager.Subscribe(subscriberMock.Object);
             ISimpleInterface impl = manager.Implementation;
             Trace.WriteLine(impl.StringValue);
@@ -171,7 +228,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
 
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
             // Act
-            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object);
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, false);
             manager.Subscribe(subscriberMock.Object);
             ISimpleInterface impl = manager.Implementation;
             Trace.WriteLine(impl.ReferenceTypeValue);
@@ -190,7 +247,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
 
             Mock<IPropertyAccessedSubscriber> subscriberMock = new Mock<IPropertyAccessedSubscriber>();
             // Act
-            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object);
+            var manager = new RuntimeProxyManager<ISimpleInterface>(observableMock.Object, false);
             ISimpleInterface impl = manager.Implementation;
 
             // Assert
