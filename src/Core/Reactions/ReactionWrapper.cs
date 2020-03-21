@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.StateManagement.Mobx.Reactions
 {
     internal class ReactionWrapper<TStore>
         where TStore : class

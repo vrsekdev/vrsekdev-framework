@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Text;
 using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Havit.Blazor.StateManagement.Mobx.ObservableProperties.Default.Extensions;
 using Havit.Blazor.StateManagement.Mobx.Extensions;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples.ClientSide

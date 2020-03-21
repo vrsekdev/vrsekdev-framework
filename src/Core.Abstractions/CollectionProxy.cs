@@ -284,7 +284,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
     {
         private readonly IPropertyProxyCache<TObservable> propertyProxyCache;
 
-
         public ObservableEnumerator(
             IObservableCollection<TObservable> observableCollection,
             IPropertyProxyCache<TObservable> propertyProxyCache) : base(observableCollection)

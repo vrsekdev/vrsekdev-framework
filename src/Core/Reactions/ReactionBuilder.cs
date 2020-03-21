@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.StateManagement.Mobx.Reactions
 {
     public class ReactionBuilderFactory<TStore>
     {
