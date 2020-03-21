@@ -2,12 +2,13 @@
 using System;
 using System.Linq;
 using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Observables.Default.Attributes;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Attributes;
 
 namespace Havit.Blazor.StateManagement.Mobx.Samples
 {
     public interface IHomeStore
     {
+        [Observable]
         IObservableCollection<ITodoItem> Todos { get; set; }
 
         int TodoValue { get; set; }

@@ -34,6 +34,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
         internal override int CountElements => Count;
 
         public ObservableCollection(
+            bool observeElement,
             EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
             EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent) : base()
         {
@@ -42,7 +43,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
             list = new List<T>();
 
             ElementType = typeof(T);
-            ElementObserved = ElementType.HasObservableArrayElementAttribute();
+            ElementObserved = observeElement;
         }
 
         public T this[int index]

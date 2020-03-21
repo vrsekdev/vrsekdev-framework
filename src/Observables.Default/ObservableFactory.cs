@@ -27,9 +27,10 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
                 observableCollectionItemsChangedEventArgs);
         }
 
-        public IObservableCollection<T> CreateObservableArray<T>()
+        public IObservableCollection<T> CreateObservableArray<T>(bool observeElement)
         {
             return new ObservableCollection<T>(
+                observeElement,
                 observablePropertyStateChangedEventArgs,
                 observableCollectionItemsChangedEventArgs);
         }

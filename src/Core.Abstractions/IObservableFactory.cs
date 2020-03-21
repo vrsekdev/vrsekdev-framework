@@ -8,6 +8,6 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
     {
         IObservableProperty CreateObservableProperty(Type type);
 
-        IObservableCollection<T> CreateObservableArray<T>();
+        IObservableCollection<T> CreateObservableArray<T>(bool observeElement);
     }
 }

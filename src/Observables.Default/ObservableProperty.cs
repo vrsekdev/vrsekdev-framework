@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+using Havit.Blazor.StateManagement.Mobx.Abstractions.Attributes;
 using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
 using Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions;
 using System;
@@ -266,13 +267,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
                 string propertyName = propertyKvp.Key;
                 PropertyInfo propertyInfo = propertyKvp.Value;
 
-                if (propertyInfo.HasObservableAttribute())
+                if (IsSupportedObservableArrayType(propertyInfo.PropertyType))
+                {
+                    observedCollections.Add(propertyName, CreateEmptyObservableCollection(propertyInfo));
+                }
+                else if (propertyInfo.HasObservableAttribute())
                 {
                     observedProperties.Add(propertyName, CreateObservableProperty(propertyInfo));
-                }
-                else if (IsSupportedObservableArrayType(propertyInfo.PropertyType))
-                {
-                    observedCollections.Add(propertyName, CreateEmptyObservableArray(propertyInfo));
                 }
                 else
                 {
@@ -296,12 +297,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Observables.Default
                 collectionItemsChangedEvent);
         }
 
-        private ObservableCollection CreateEmptyObservableArray(PropertyInfo property)
+        private ObservableCollection CreateEmptyObservableCollection(PropertyInfo property)
         {
             Type valueType = property.PropertyType;
             Type observableArrayType = typeof(ObservableCollection<>).MakeGenericType(valueType.GetGenericArguments()[0]);
+            bool shouldObserveElement = property.GetCustomAttribute<ObservableAttribute>() != null;
 
-            return (ObservableCollection)Activator.CreateInstance(observableArrayType, statePropertyChangedEvent, collectionItemsChangedEvent);
+            return (ObservableCollection)Activator.CreateInstance(observableArrayType, shouldObserveElement, statePropertyChangedEvent, collectionItemsChangedEvent);
         }
 
         private object GetDefault(Type t)
