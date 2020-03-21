@@ -8,6 +8,14 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
     public class PropertyProxyCache<T> : IPropertyProxyCache<T>
         where T : class
     {
+        public static IPropertyProxyCache<T> Create(
+            IPropertyProxyWrapper proxyWrapper,
+            IPropertyProxyFactory proxyFactory,
+            IObservableFactory observableFactory)
+        {
+            return new PropertyProxyCache<T>(proxyWrapper, proxyFactory, observableFactory);
+        }
+
         private readonly IPropertyProxyWrapper proxyWrapper;
         private readonly IPropertyProxyFactory proxyFactory;
         private readonly IObservableFactory observableFactory;
@@ -47,6 +55,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 
         void IPropertyProxyCache<T>.SubscribeAll(IPropertyAccessedSubscriber subscriber)
         {
+            subscribers.Add(subscriber);
             foreach (var boxedValue in boxedValuesDictionary.Values)
             {
                 IPropertyProxy proxy = proxyWrapper.UnwrapPropertyObservable((object)boxedValue);
@@ -56,24 +65,19 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 
         private T BoxItem(T item)
         {
-            IObservableProperty observableProperty;
-            if (item != null && proxyWrapper.UnwrapPropertyObservable((object)item) is IPropertyProxy propertyProxy)
+            if (!(item != null && proxyWrapper.UnwrapPropertyObservable(item) is IPropertyProxy propertyProxy))
             {
-                observableProperty = propertyProxy.ObservableProperty;
-            }
-            else
-            {
-                observableProperty = observableFactory.CreateObservableProperty(typeof(T));
+                IObservableProperty observableProperty = observableFactory.CreateObservableProperty(typeof(T));
                 if (item != null)
                 {
                     observableProperty.OverwriteFrom(item);
                 }
+                propertyProxy = proxyFactory.Create(observableProperty);
             }
 
-            propertyProxy = proxyFactory.Create(observableProperty);
-            foreach (var observer in subscribers)
+            foreach(var subscriber in subscribers)
             {
-                propertyProxy.Subscribe(observer);
+                propertyProxy.Subscribe(subscriber);
             }
 
             return proxyWrapper.WrapPropertyObservable<T>(propertyProxy);

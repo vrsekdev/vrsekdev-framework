@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Havit.Blazor.StateManagement.Mobx.Abstractions
 {
@@ -48,26 +49,28 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
             IObservableCollection<T> observableCollection,
             IPropertyProxyCache<T> propertyProxyCache);
 
-        private readonly static CacheFactory cacheFactory;
-        private readonly static ObservableEnumeratorFactory observableEnumeratorFactory;
+        private readonly static Lazy<CacheFactory> cacheFactory;
+        private readonly static Lazy<ObservableEnumeratorFactory> observableEnumeratorFactory;
 
         static CollectionProxy()
         {
-            cacheFactory = (proxyWrapper, proxyFactory, observableFactory) =>
+            cacheFactory = new Lazy<CacheFactory>(() =>
             {
                 Type cacheType = typeof(PropertyProxyCache<>).MakeGenericType(typeof(T));
-                return (IPropertyProxyCache<T>)Activator
-                    .CreateInstance(cacheType, new object[] { proxyWrapper, proxyFactory, observableFactory });
-            };
+                return (CacheFactory)Delegate.CreateDelegate(
+                        typeof(CacheFactory),
+                        cacheType.GetMethod(nameof(PropertyProxyCache<object>.Create)));
+            });
 
-            observableEnumeratorFactory = (observableCollection, propertyProxyCache) =>
+            observableEnumeratorFactory = new Lazy<ObservableEnumeratorFactory>(() =>
             {
-                Type type = typeof(ObservableEnumerator<>).MakeGenericType(typeof(T));
-                return (Enumerator<T>)Activator
-                    .CreateInstance(type, new object[] { observableCollection, propertyProxyCache });
-            };
-        }
+                Type enumeratorType = typeof(ObservableEnumerator<>).MakeGenericType(typeof(T));
+                return (ObservableEnumeratorFactory)Delegate.CreateDelegate(
+                        typeof(ObservableEnumeratorFactory),
+                        enumeratorType.GetMethod(nameof(ObservableEnumerator<object>.Create)));
+            });
 
+        }
         #endregion static
 
         private readonly IObservableCollection<T> observableCollection;
@@ -93,7 +96,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
             ElementObserved = observableCollection.ElementObserved;
             if (ElementObserved)
             {
-                propertyProxyCache = cacheFactory(proxyWrapper, proxyFactory, observableFactory);
+                propertyProxyCache = cacheFactory.Value(proxyWrapper, proxyFactory, observableFactory);
             }
         }
 
@@ -152,7 +155,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
         {
             if (ElementObserved)
             {
-                propertyProxyCache = cacheFactory(proxyWrapper, proxyFactory, observableFactory);
+                propertyProxyCache = cacheFactory.Value(proxyWrapper, proxyFactory, observableFactory);
             }
         }
 
@@ -223,7 +226,7 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
         {
             if (ElementObserved)
             {
-                return observableEnumeratorFactory(observableCollection, propertyProxyCache);
+                return observableEnumeratorFactory.Value(observableCollection, propertyProxyCache);
             }
 
             return new Enumerator<T>(observableCollection);
@@ -282,6 +285,13 @@ namespace Havit.Blazor.StateManagement.Mobx.Abstractions
     internal class ObservableEnumerator<TObservable> : Enumerator<TObservable>
         where TObservable : class
     {
+        public static Enumerator<TObservable> Create(
+            IObservableCollection<TObservable> observableCollection,
+            IPropertyProxyCache<TObservable> propertyProxyCache)
+        {
+            return new ObservableEnumerator<TObservable>(observableCollection, propertyProxyCache);
+        }
+
         private readonly IPropertyProxyCache<TObservable> propertyProxyCache;
 
         public ObservableEnumerator(

@@ -68,7 +68,7 @@ namespace Havit.Blazor.StateManagement.Mobx
         {
             if (!readerWriterLock.TryEnterWriteLock(0))
             {
-                // Already being invoked. All other changes are going to be rendered.
+                // Already being invoked. All changes are going to be rendered.
                 // Possibly this call is from an invoked reaction
                 return;
             }
