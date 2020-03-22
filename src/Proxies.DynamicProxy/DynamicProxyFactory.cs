@@ -11,5 +11,10 @@ namespace Havit.Blazor.Mobx.Proxies.DynamicProxy
         {
             return DynamicPropertyProxy.Create(observableProperty, readOnly);
         }
+
+        public IPropertyProxy Create(IObservableProperty observableProperty, MethodInterceptions interceptions, bool readOnly = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

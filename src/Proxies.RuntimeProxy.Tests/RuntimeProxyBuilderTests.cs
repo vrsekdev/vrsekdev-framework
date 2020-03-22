@@ -1,3 +1,5 @@
+using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Classes;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,6 +13,97 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
     [TestClass]
     public class RuntimeProxyBuilderTests
     {
+        [TestMethod]
+        public void BuildRuntimeType_MethodInterceptors_InterceptClassMethodAndCallBase()
+        {
+            // Arrange
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            bool interceptorCalled = false;
+            MethodInterceptorProxy interceptorProxy = new MethodInterceptorProxy(() => interceptorCalled = true);
+
+            MethodInterception[] interceptions = new MethodInterception[]
+            {
+                new MethodInterception
+                {
+                    InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.MethodToIntercept)),
+                    Interceptor = typeof(MethodInterceptorProxy).GetMethod(nameof(MethodInterceptorProxy.Invoke))
+                }
+            };
+
+            // Act
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
+            ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptorProxy });
+            impl.MethodToIntercept();
+
+            // Assert
+            Assert.IsTrue(interceptorCalled);
+            Assert.IsTrue(impl.InterceptedMethodCalled);
+        }
+
+        [TestMethod]
+        public void BuildRuntimeType_MethodInterceptors_InterceptClassMethod()
+        {
+            // Arrange
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            bool interceptorCalled = false;
+            MethodInterceptorProxy interceptorProxy = new MethodInterceptorProxy(() => interceptorCalled = true);
+
+            MethodInterception[] interceptions = new MethodInterception[]
+            {
+                new MethodInterception
+                {
+                    InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.MethodToIntercept)),
+                    Interceptor = typeof(MethodInterceptorProxy).GetMethod(nameof(MethodInterceptorProxy.Invoke))
+                }
+            };
+
+            // Act
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
+            ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptorProxy });
+            impl.MethodToIntercept();
+
+            // Assert
+            Assert.IsTrue(interceptorCalled);
+        }
+
+        [TestMethod]
+        public void BuildRuntimeType_MethodInterceptors_InterceptInterfaceMethod()
+        {
+            // Arrange
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            bool interceptorCalled = false;
+            MethodInterceptorProxy interceptorProxy = new MethodInterceptorProxy(() => interceptorCalled = true);
+
+            MethodInterception[] interceptions = new MethodInterception[]
+            {
+                new MethodInterception
+                {
+                    InterceptedMethod = typeof(IInterfaceWithMethod).GetMethod(nameof(IInterfaceWithMethod.MethodToIntercept)),
+                    Interceptor = typeof(MethodInterceptorProxy).GetMethod(nameof(MethodInterceptorProxy.Invoke))
+                }
+            };
+
+            // Act
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(IInterfaceWithMethod), getMethod, setMethod, interceptions);
+            IInterfaceWithMethod impl = (IInterfaceWithMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptorProxy });
+            impl.MethodToIntercept();
+
+            // Assert
+            Assert.IsTrue(interceptorCalled);
+        }
+
         [TestMethod]
         public void BuildRuntimeType_ReadonlyProperties_Override()
         {

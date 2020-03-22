@@ -9,7 +9,7 @@ using System.Text;
 namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 {
     #region helper
-    internal delegate IRuntimeProxyManager CreateRuntimeManager(IObservableProperty observableProperty, bool readOnly);
+    internal delegate IRuntimeProxyManager CreateRuntimeManager(IObservableProperty observableProperty, MethodInterceptions methodInterceptions, bool readOnly);
     internal static class RuntimeProxyManagerHelper
     {
         public readonly static CreateRuntimeManager CreateRuntimeManager;
@@ -18,10 +18,10 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         {
             Type type = typeof(RuntimeProxyManager<>);
             CreateRuntimeManager =
-                (IObservableProperty observableProperty, bool readOnly) =>
+                (observableProperty, methodInterceptions, readOnly) =>
                 {
                     Type genericType = type.MakeGenericType(observableProperty.ObservedType);
-                    return (IRuntimeProxyManager)Activator.CreateInstance(genericType, new object[] { observableProperty, readOnly });
+                    return (IRuntimeProxyManager)Activator.CreateInstance(genericType, new object[] { observableProperty, methodInterceptions, readOnly });
                 };
         }
     }
@@ -31,20 +31,32 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         where TInterface : class
     {
         #region static
-        private readonly static Lazy<Type> runtimeTypeLazy;
+        private readonly static Lazy<Type> runtimeTypeWithoutInterceptions;
+
+        private readonly static MethodInfo getMethod;
+        private readonly static MethodInfo setMethod;
 
         static RuntimeProxyManager()
         {
             Type currentType = typeof(RuntimeProxyManager<TInterface>);
 
             /**** RuntimeType ****/
-            MethodInfo getMethod = currentType.GetMethod(nameof(GetValue));
-            MethodInfo setMethod = currentType.GetMethod(nameof(SetValue));
-            runtimeTypeLazy = new Lazy<Type>(() => RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod));
+            getMethod = currentType.GetMethod(nameof(GetValue));
+            setMethod = currentType.GetMethod(nameof(SetValue));
+            runtimeTypeWithoutInterceptions = new Lazy<Type>(() => RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, null));
+        }
+
+        private static Type GetRuntimeType(MethodInterception[] interceptions)
+        {
+            if (interceptions == null)
+            {
+                return runtimeTypeWithoutInterceptions.Value;
+            }
+
+            return RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, interceptions);
         }
         #endregion static
 
-        private readonly IObservableFactory observableFactory;
         private readonly RuntimeProxyWrapper proxyWrapper = new RuntimeProxyWrapper();
         private readonly RuntimeProxyFactory proxyFactory = new RuntimeProxyFactory();
 
@@ -55,6 +67,41 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         /// all nested proxies lose reference and get collected by GC, because manager keeps only a weak reference
         /// </summary>
         private readonly Dictionary<string, IRuntimeProxy> runtimeProxies = new Dictionary<string, IRuntimeProxy>();
+
+        private readonly IObservableFactory observableFactory;
+        private readonly MethodInterceptions methodInterceptions;
+
+        #region ctors
+        public RuntimeProxyManager(
+            IObservableProperty observableProperty) : this(observableProperty, null, false)
+        {
+        }
+
+        public RuntimeProxyManager(
+            IObservableProperty observableProperty,
+            bool readOnly) : this(observableProperty, null, readOnly)
+        {
+        }
+
+        public RuntimeProxyManager(
+            IObservableProperty observableProperty,
+            MethodInterceptions methodInterceptions) : this(observableProperty, methodInterceptions, false)
+        {
+        }
+
+        public RuntimeProxyManager(
+            IObservableProperty observableProperty,
+            MethodInterceptions methodInterceptions,
+            bool readOnly)
+        {
+            ObservableProperty = observableProperty;
+            this.methodInterceptions = methodInterceptions;
+            IsReadOnly = readOnly;
+            observableFactory = observableProperty.CreateFactory();
+
+            Initialize();
+        }
+        #endregion ctors
 
         public IObservableProperty ObservableProperty { get; }
         public bool IsReadOnly { get; }
@@ -68,7 +115,8 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 
                 if (implementation == null)
                 {
-                    impl = (TInterface)Activator.CreateInstance(runtimeTypeLazy.Value, new object[] { this });
+                    Type runtimeType = GetRuntimeType(methodInterceptions?.Interceptions);
+                    impl = (TInterface)Activator.CreateInstance(runtimeType, new object[] { this, methodInterceptions?.CapturedContext });
                     implementation = new WeakReference<TInterface>(impl);
                     return impl;
                 }
@@ -83,17 +131,6 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         }
 
         object IRuntimeProxyManager.Implementation => Implementation;
-
-        public RuntimeProxyManager(
-            IObservableProperty observableProperty,
-            bool readOnly)
-        {
-            ObservableProperty = observableProperty;
-            IsReadOnly = readOnly;
-            observableFactory = observableProperty.CreateFactory();
-
-            Initialize();
-        }
 
         public object GetValue(string propertyName)
         {
@@ -178,7 +215,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             foreach (var observedProperty in observedProperties)
             {
                 IObservableProperty observableProperty = observedProperty.Value;
-                runtimeProxies[observedProperty.Key] = (IRuntimeProxy)RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, IsReadOnly).Implementation;
+                runtimeProxies[observedProperty.Key] = (IRuntimeProxy)RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, null, IsReadOnly).Implementation;
             }
 
             foreach (var observedCollection in observedCollections)

@@ -10,7 +10,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
     {
         public IPropertyProxy Create(IObservableProperty observableProperty, bool readOnly = false)
         {
-            return RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, readOnly);
+            return RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, null, readOnly);
+        }
+
+        public IPropertyProxy Create(IObservableProperty observableProperty, MethodInterceptions interceptions, bool readOnly = false)
+        {
+            return RuntimeProxyManagerHelper.CreateRuntimeManager(observableProperty, interceptions, readOnly);
         }
     }
 }

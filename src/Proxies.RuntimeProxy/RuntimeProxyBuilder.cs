@@ -1,5 +1,6 @@
 ﻿//#define ENABLE_CACHING
 
+using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -30,21 +32,30 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
         private static Dictionary<Type, Type> runtimeTypeCache = new Dictionary<Type, Type>();
 
-        public static Type BuildRuntimeType(Type interfaceType, MethodInfo getMethod, MethodInfo setMethod)
+        public static Type BuildRuntimeType(Type interfaceType, MethodInfo getMethod, MethodInfo setMethod, MethodInterception[] methodInterceptions = null)
         {
-            return BuildRuntimeTypeInternal(interfaceType, getMethod, setMethod);
+            return BuildRuntimeTypeInternal(interfaceType, getMethod, setMethod, methodInterceptions);
         }
 
-        private static Type BuildRuntimeTypeInternal(Type type, MethodInfo getMethod, MethodInfo setMethod)
+        private static Type BuildRuntimeTypeInternal(Type type, MethodInfo getMethod, MethodInfo setMethod, MethodInterception[] methodInterceptions = null)
         {
             TypeBuilder typeBuilder = CreateTypeBuilder(type);
             FieldBuilder managerField = AddManagerProperty(typeBuilder);
+            FieldBuilder capturedContextField = AddCapturedContextField(typeBuilder);
 
             bool isClass = type.IsClass;
-            AddConstructor(typeBuilder, managerField);
+            AddConstructors(typeBuilder, managerField, capturedContextField);
             foreach (var propertyInfo in GetPublicProperties(type).Where(x => x.GetMethod.IsAbstract || (isClass && x.GetMethod.IsVirtual)))
             {
                 AddProperty(typeBuilder, propertyInfo, managerField, getMethod, setMethod);
+            }
+
+            if (methodInterceptions != null)
+            {
+                foreach (var methodInterception in methodInterceptions)
+                {
+                    AddInterceptedMethod(typeBuilder, methodInterception.InterceptedMethod, methodInterception.Interceptor, capturedContextField);
+                }
             }
 
             return typeBuilder.CreateType();
@@ -70,10 +81,33 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             return typeBuilder;
         }
 
-        private static void AddConstructor(TypeBuilder typeBuilder, FieldBuilder managerField)
+        private static void AddInterceptedMethod(TypeBuilder typeBuilder, MethodInfo interceptedMethod, MethodInfo methodInterceptor, FieldInfo capturedContext)
         {
+            if (!interceptedMethod.IsVirtual)
+            {
+                throw new ArgumentException("Intercepted method must be virtual.");
+            }
+
+            MethodBuilder methodBuilder = typeBuilder.DefineMethod(interceptedMethod.Name, MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.NewSlot);
+            ILGenerator methodGenerator = methodBuilder.GetILGenerator();
+            methodGenerator.Emit(OpCodes.Ldarg_0);
+            methodGenerator.Emit(OpCodes.Ldfld, capturedContext);
+            methodGenerator.Emit(OpCodes.Callvirt, methodInterceptor);
+            if (!interceptedMethod.IsAbstract)
+            {
+                methodGenerator.Emit(OpCodes.Ldarg_0);
+                methodGenerator.Emit(OpCodes.Call, interceptedMethod);
+            }
+            methodGenerator.Emit(OpCodes.Ret);
+
+            typeBuilder.DefineMethodOverride(methodBuilder, interceptedMethod);
+        }
+
+        private static void AddConstructors(TypeBuilder typeBuilder, FieldBuilder managerField, FieldBuilder capturedContextField)
+        {
+            /*** ctor(manager) ***/
             ConstructorBuilder ctorBuilder = typeBuilder.DefineConstructor(
-                MethodAttributes.Public | MethodAttributes.SpecialName, 
+                MethodAttributes.Public | MethodAttributes.SpecialName,
                 CallingConventions.Standard,
                 new Type[] { managerField.FieldType });
 
@@ -81,7 +115,35 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             ctorGenerator.Emit(OpCodes.Ldarg_0);
             ctorGenerator.Emit(OpCodes.Ldarg_1);
             ctorGenerator.Emit(OpCodes.Stfld, managerField);
+            ctorGenerator.Emit(OpCodes.Ldarg_0);
+            ctorGenerator.Emit(OpCodes.Ldnull);
+            ctorGenerator.Emit(OpCodes.Stfld, capturedContextField);
             ctorGenerator.Emit(OpCodes.Ret);
+
+            /*** ctor(manager, capturedContext) ***/
+            ConstructorBuilder ctor2Builder = typeBuilder.DefineConstructor(
+                MethodAttributes.Public | MethodAttributes.SpecialName, 
+                CallingConventions.Standard,
+                new Type[] { managerField.FieldType, capturedContextField.FieldType });
+
+            // TODO: Capturing a context in a runtime proxy probably creates memory leak
+            // because the context can also have a reference to this proxy
+            ILGenerator ctor2Generator = ctor2Builder.GetILGenerator();
+            ctor2Generator.Emit(OpCodes.Ldarg_0);
+            ctor2Generator.Emit(OpCodes.Ldarg_1);
+            ctor2Generator.Emit(OpCodes.Stfld, managerField);
+            ctor2Generator.Emit(OpCodes.Ldarg_0);
+            ctor2Generator.Emit(OpCodes.Ldarg_2);
+            ctor2Generator.Emit(OpCodes.Stfld, capturedContextField);
+            ctor2Generator.Emit(OpCodes.Ret);
+        }
+
+        private static FieldBuilder AddCapturedContextField(TypeBuilder typeBuilder)
+        {
+            return typeBuilder.DefineField(
+                "capturedContext",
+                typeof(object),
+                FieldAttributes.Private);
         }
 
         private static FieldBuilder AddManagerProperty(TypeBuilder typeBuilder)

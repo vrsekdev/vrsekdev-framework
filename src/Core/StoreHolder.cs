@@ -27,7 +27,7 @@ namespace Havit.Blazor.Mobx
             IStoreMetadata<TStore> storeMetadata,
             IObservableFactoryFactory observableFactoryFactory)
         {
-            this.observableFactory = observableFactoryFactory.Create(
+            this.observableFactory = observableFactoryFactory.CreateFactory(
                 OnStatePropertyChanged,
                 OnCollectionItemsChanged);
 
