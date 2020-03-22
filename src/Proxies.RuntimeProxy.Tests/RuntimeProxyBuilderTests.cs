@@ -14,6 +14,38 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
     [TestClass]
     public class RuntimeProxyBuilderTests
     {
+        [TestMethod]
+        public void BuildRuntimeType_MethodInterceptors_Function_MultipleParameters_InterceptClassMethod()
+        {
+            // Arrange
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            int expectedValue = 50;
+            Func<Func<string, int>, int> interceptor = (Func<string, int> baseMethod) => expectedValue;
+
+            MethodInterceptions interceptions = new MethodInterceptions
+            {
+                Interceptions = new MethodInterception[]
+                {
+                    new MethodInterception
+                    {
+                        InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.FunctionWithParameterToIntercept)),
+                        Interceptor = interceptor
+                    }
+                }
+            };
+
+            // Act
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
+            ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
+            int returnedValue = impl.FunctionWithParameterToIntercept(String.Empty);
+
+            // Assert
+            Assert.AreEqual(expectedValue, returnedValue);
+        }
 
         [TestMethod]
         public void BuildRuntimeType_MethodInterceptors_Function_InterceptClassMethod_ReturnParentValue()

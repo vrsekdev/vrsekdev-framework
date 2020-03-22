@@ -23,5 +23,10 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Classes
         {
             return "base";
         }
+
+        public virtual int FunctionWithParameterToIntercept(string param)
+        {
+            return 10;
+        }
     }
 }

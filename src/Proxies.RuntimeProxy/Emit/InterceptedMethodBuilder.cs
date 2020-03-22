@@ -3,6 +3,7 @@ using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
@@ -86,12 +87,16 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             ILGenerator invokeGenerator = invokeMethod.GetILGenerator();
             invokeGenerator.Emit(OpCodes.Ldarg_0);
             invokeGenerator.Emit(OpCodes.Ldfld, wrapperContainer.TargetField);
+            for (int i = 1; i < parameterTypes.Length + 1; i++)
+            {
+                invokeGenerator.Emit(OpCodes.Ldarg, i);
+            }
             invokeGenerator.Emit(OpCodes.Call, interceptedMethod);
             invokeGenerator.Emit(OpCodes.Ret);
 
             var baseDelegateLocal = methodGenerator.DeclareLocal(typeof(Delegate));
             var delegateWrapperLocal = methodGenerator.DeclareLocal(wrapperContainer.TypeBuilder);
-            methodGenerator.Emit(OpCodes.Ldtoken, typeof(Func<string>));
+            methodGenerator.Emit(OpCodes.Ldtoken, GetFuncType());
             methodGenerator.Emit(OpCodes.Ldarg_0);
             methodGenerator.Emit(OpCodes.Ldtoken, interceptedMethod);
             methodGenerator.Emit(OpCodes.Newobj, wrapperContainer.Constructor);
@@ -114,6 +119,16 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
                 methodGenerator.Emit(OpCodes.Ldarg_0);
                 methodGenerator.Emit(OpCodes.Call, interceptedMethod);
             }
+        }
+
+        private Type GetFuncType()
+        {
+            if (parameterTypes.Length == 0)
+            {
+                return typeof(Func<>).MakeGenericType(returnType);
+            }
+
+            return Expression.GetFuncType(parameterTypes.Concat(new[] { returnType }).ToArray());
         }
     }
 }
