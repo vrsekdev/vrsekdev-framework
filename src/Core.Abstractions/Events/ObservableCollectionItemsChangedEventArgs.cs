@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Abstractions.Events
+namespace Havit.Blazor.Mobx.Abstractions.Events
 {
     public class ObservableCollectionItemsChangedEventArgs
     {

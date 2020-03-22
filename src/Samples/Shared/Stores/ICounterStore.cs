@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples
+namespace Havit.Blazor.Mobx.Samples
 {
     public interface ICounterStore
     {

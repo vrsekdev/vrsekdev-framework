@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Text;
 using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Havit.Blazor.StateManagement.Mobx.Extensions;
+using Havit.Blazor.Mobx.Extensions;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples.ClientSide
+namespace Havit.Blazor.Mobx.Samples.ClientSide
 {
     public class Program
     {

@@ -1,11 +1,11 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Reactions
+namespace Havit.Blazor.Mobx.Reactions
 {
     public class ReactionBuilderFactory<TStore>
     {

@@ -1,7 +1,7 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Samples.Models;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Samples.Models;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples
+namespace Havit.Blazor.Mobx.Samples
 {
     public interface IAppStore
     {

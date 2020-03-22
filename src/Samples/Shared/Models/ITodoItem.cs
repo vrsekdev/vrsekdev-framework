@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions.Attributes;
+﻿using Havit.Blazor.Mobx.Abstractions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples.Models
+namespace Havit.Blazor.Mobx.Samples.Models
 {
     public interface ITodoItem
     {

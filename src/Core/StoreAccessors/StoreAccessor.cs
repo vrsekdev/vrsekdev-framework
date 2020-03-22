@@ -1,6 +1,6 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
-using Havit.Blazor.StateManagement.Mobx.Components;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Abstractions.Events;
+using Havit.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
+namespace Havit.Blazor.Mobx.StoreAccessors
 {
     internal class StoreAccessor<TStore> : IStoreAccessor<TStore>
         where TStore : class

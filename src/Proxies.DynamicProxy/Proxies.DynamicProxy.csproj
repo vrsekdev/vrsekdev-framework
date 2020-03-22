@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>Havit.Blazor.StateManagement.Mobx.Observers.DynamicProxy</AssemblyName>
-    <RootNamespace>Havit.Blazor.StateManagement.Mobx.Observers.DynamicProxy</RootNamespace>
+    <AssemblyName>Havit.Blazor.Mobx.Observers.DynamicProxy</AssemblyName>
+    <RootNamespace>Havit.Blazor.Mobx.Observers.DynamicProxy</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>

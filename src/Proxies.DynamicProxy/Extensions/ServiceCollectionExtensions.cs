@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy.Extensions
+namespace Havit.Blazor.Mobx.Proxies.DynamicProxy.Extensions
 {
     public static class ServiceCollectionExtensions
     {

@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Reactions
+namespace Havit.Blazor.Mobx.Reactions
 {
     internal class ReactionWrapper<TStore>
         where TStore : class

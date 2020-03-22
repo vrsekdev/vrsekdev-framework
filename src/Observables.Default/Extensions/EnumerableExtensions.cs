@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions
+namespace Havit.Blazor.Mobx.Observables.Default.Extensions
 {
     internal static class EnumerableExtensions
     {

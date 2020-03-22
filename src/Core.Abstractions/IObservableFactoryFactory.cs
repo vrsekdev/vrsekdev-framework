@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
+﻿using Havit.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Abstractions
+namespace Havit.Blazor.Mobx.Abstractions
 {
     public interface IObservableFactoryFactory
     {

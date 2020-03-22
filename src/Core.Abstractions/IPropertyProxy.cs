@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Abstractions
+namespace Havit.Blazor.Mobx.Abstractions
 {
     public interface IPropertyProxy : IObservableProxy
     {

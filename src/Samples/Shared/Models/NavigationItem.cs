@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples.Models
+namespace Havit.Blazor.Mobx.Samples.Models
 {
     public class NavigationItem : INavigationItem
     {

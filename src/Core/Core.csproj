@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>Havit.Blazor.StateManagement.Mobx</RootNamespace>
-    <AssemblyName>Havit.Blazor.StateManagement.Mobx</AssemblyName>
+    <RootNamespace>Havit.Blazor.Mobx</RootNamespace>
+    <AssemblyName>Havit.Blazor.Mobx</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>

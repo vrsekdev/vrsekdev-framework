@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Samples.Models;
+﻿using Havit.Blazor.Mobx.Samples.Models;
 using System;
 using System.Linq;
-using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Abstractions.Attributes;
+using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Abstractions.Attributes;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples
+namespace Havit.Blazor.Mobx.Samples
 {
     public interface IHomeStore
     {

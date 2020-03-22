@@ -1,6 +1,6 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Abstractions.Events;
-using Havit.Blazor.StateManagement.Mobx.Reactions;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Abstractions.Events;
+using Havit.Blazor.Mobx.Reactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.Mobx
 {
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class

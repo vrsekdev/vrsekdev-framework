@@ -1,8 +1,8 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Components;
+﻿using Havit.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.Mobx
 {
     public interface IStoreAccessor<TStore> : IDisposable
         where TStore : class

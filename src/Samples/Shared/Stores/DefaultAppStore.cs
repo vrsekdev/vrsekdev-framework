@@ -1,12 +1,12 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Extensions;
-using Havit.Blazor.StateManagement.Mobx.Samples.Models;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Extensions;
+using Havit.Blazor.Mobx.Samples.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples
+namespace Havit.Blazor.Mobx.Samples
 {
     public class DefaultAppStore : IAppStore
     {

@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
+namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 {
     internal static class RuntimeProxyBuilder
     {

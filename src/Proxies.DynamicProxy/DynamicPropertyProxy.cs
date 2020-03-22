@@ -1,12 +1,12 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Dynamic;
 using System.Linq;
-using Havit.Blazor.StateManagement.Mobx.Abstractions.Exceptions;
+using Havit.Blazor.Mobx.Abstractions.Exceptions;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
+namespace Havit.Blazor.Mobx.Proxies.DynamicProxy
 {
     internal class DynamicPropertyProxy : DynamicObject, IPropertyProxy
     {

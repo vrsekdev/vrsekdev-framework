@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.DynamicProxy
+namespace Havit.Blazor.Mobx.Proxies.DynamicProxy
 {
     internal class DynamicProxyWrapper : IPropertyProxyWrapper
     {

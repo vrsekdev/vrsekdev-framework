@@ -1,5 +1,5 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Extensions;
-using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
+﻿using Havit.Blazor.Mobx.Extensions;
+using Havit.Blazor.Mobx.StoreAccessors;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.Components
+namespace Havit.Blazor.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase
     {

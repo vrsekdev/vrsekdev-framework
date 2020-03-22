@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
+using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.StoreAccessors;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace Havit.Blazor.StateManagement.Mobx.Components
+namespace Havit.Blazor.Mobx.Components
 {
     public class CascadeStoreHolder
     {

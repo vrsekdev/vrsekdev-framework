@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Havit.Blazor.StateManagement.Mobx.Abstractions
+namespace Havit.Blazor.Mobx.Abstractions
 {
     public class CollectionProxy
     {

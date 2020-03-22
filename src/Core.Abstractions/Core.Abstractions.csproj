@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>Havit.Blazor.StateManagement.Mobx.Abstractions</AssemblyName>
-    <RootNamespace>Havit.Blazor.StateManagement.Mobx.Abstractions</RootNamespace>
+    <AssemblyName>Havit.Blazor.Mobx.Abstractions</AssemblyName>
+    <RootNamespace>Havit.Blazor.Mobx.Abstractions</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
+namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 {
     internal class RuntimeProxyFactory : IPropertyProxyFactory
     {

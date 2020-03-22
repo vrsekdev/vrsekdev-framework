@@ -5,9 +5,9 @@
 
     <IsPackable>false</IsPackable>
 
-    <AssemblyName>Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests</AssemblyName>
+    <AssemblyName>Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests</AssemblyName>
 
-    <RootNamespace>Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests</RootNamespace>
+    <RootNamespace>Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

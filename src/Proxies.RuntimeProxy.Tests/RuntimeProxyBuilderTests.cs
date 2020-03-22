@@ -1,12 +1,12 @@
-using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
-using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Models;
+using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
+using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests
+namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
 {
     [TestClass]
     public class RuntimeProxyBuilderTests

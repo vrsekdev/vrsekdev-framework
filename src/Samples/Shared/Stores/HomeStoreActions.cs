@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Reactions;
+﻿using Havit.Blazor.Mobx.Reactions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Samples.Shared.Stores
+namespace Havit.Blazor.Mobx.Samples.Shared.Stores
 {
     public class HomeStoreActions : ReactionRegistrator<IHomeStore>
     {

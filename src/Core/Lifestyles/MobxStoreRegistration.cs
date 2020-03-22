@@ -1,13 +1,13 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Reactions;
-using Havit.Blazor.StateManagement.Mobx.StoreAccessors;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Reactions;
+using Havit.Blazor.Mobx.StoreAccessors;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.Lifestyles
+namespace Havit.Blazor.Mobx.Lifestyles
 {
     public class MobxStoreRegistration<TStore>
         where TStore : class

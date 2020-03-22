@@ -1,12 +1,12 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Abstractions.Exceptions;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Abstractions.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy
+namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 {
     #region helper
     internal delegate IRuntimeProxyManager CreateRuntimeManager(IObservableProperty observableProperty, bool readOnly);

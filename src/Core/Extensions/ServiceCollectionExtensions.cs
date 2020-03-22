@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Lifestyles;
-using Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions;
-using Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Extensions;
+﻿using Havit.Blazor.Mobx.Lifestyles;
+using Havit.Blazor.Mobx.Observables.Default.Extensions;
+using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Havit.Blazor.StateManagement.Mobx.Extensions
+namespace Havit.Blazor.Mobx.Extensions
 {
     public static class ServiceCollectionExtensions
     {

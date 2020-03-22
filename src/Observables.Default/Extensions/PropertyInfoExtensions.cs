@@ -1,7 +1,7 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions.Attributes;
+﻿using Havit.Blazor.Mobx.Abstractions.Attributes;
 using System.Reflection;
 
-namespace Havit.Blazor.StateManagement.Mobx.Observables.Default.Extensions
+namespace Havit.Blazor.Mobx.Observables.Default.Extensions
 {
     internal static class PropertyInfoExtensions
     {

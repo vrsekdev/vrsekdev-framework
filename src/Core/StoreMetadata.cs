@@ -1,13 +1,13 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
-using Havit.Blazor.StateManagement.Mobx.Extensions;
-using Havit.Blazor.StateManagement.Mobx.Reactions;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Extensions;
+using Havit.Blazor.Mobx.Reactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx
+namespace Havit.Blazor.Mobx
 {
     internal class StoreMetadata<TStore> : IStoreMetadata<TStore>
         where TStore : class

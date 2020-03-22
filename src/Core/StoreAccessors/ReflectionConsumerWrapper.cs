@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.StateManagement.Mobx.StoreAccessors
+namespace Havit.Blazor.Mobx.StoreAccessors
 {
     internal class ReflectionConsumerWrapper : IConsumerWrapper
     {

@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.StateManagement.Mobx.Abstractions;
+﻿using Havit.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.StateManagement.Mobx.Proxies.RuntimeProxy.Tests.Fakes
+namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Fakes
 {
     public class FakeProperyAccessedObserver : IObserver<PropertyAccessedArgs>
     {
