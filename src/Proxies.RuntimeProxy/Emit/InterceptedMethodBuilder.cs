@@ -15,15 +15,16 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         private readonly FieldInfo capturedContexts;
         private readonly DelegateWrapperTypeContainer wrapperContainer;
         private readonly TypeBuilder typeBuilder;
+
+        private bool provideInterceptedTarget;
         private MethodInfo interceptedMethod;
         private Type returnType;
         private Type[] parameterTypes;
 
-        private Delegate interceptor;
         private MethodInfo interceptorMethod;
-
+        private object interceptorTarget;
         private ILGenerator methodGenerator;
-        private LocalBuilder delegateLocal;
+        private LocalBuilder targetLocal;
 
         public InterceptedMethodBuilder(
             DelegateWrapperTypeContainer wrapperContainer,
@@ -37,46 +38,50 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 
         public void DefineInterceptedMethod(KeyValuePair<int, MethodInterception> methodInterception)
         {
-            interceptedMethod = methodInterception.Value.InterceptedMethod;
-            interceptor = methodInterception.Value.Interceptor;
-            interceptorMethod = interceptor.GetType().GetMethod("Invoke");
+            Initialize(methodInterception);
+            Validate();
 
-            if (!interceptedMethod.IsVirtual)
-            {
-                throw new ArgumentException("Intercepted method must be virtual.");
-            }
-
-            returnType = interceptedMethod.ReturnType;
-            parameterTypes = interceptedMethod.GetParameters().Select(x => x.ParameterType).ToArray();
+            MethodBuilder invokeMethod = AddInvokeMethod();
 
             MethodBuilder methodBuilder = typeBuilder.DefineMethod(
                 interceptedMethod.Name,
                 MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.NewSlot,
                 returnType,
-                parameterTypes);
+                interceptedMethod.GetParameters().Select(x => x.ParameterType).ToArray());
 
             methodGenerator = methodBuilder.GetILGenerator();
-            delegateLocal = methodGenerator.DeclareLocal(typeof(Delegate));
+            targetLocal = methodGenerator.DeclareLocal(typeof(object));
             methodGenerator.Emit(OpCodes.Ldarg_0);
             methodGenerator.Emit(OpCodes.Ldfld, capturedContexts);
             methodGenerator.Emit(OpCodes.Ldc_I4, methodInterception.Key);
             methodGenerator.Emit(OpCodes.Callvirt, capturedContexts.FieldType.GetMethod("get_Item") ?? throw new MethodAccessException()); // indexer
-            methodGenerator.Emit(OpCodes.Stloc, delegateLocal);
-            if (interceptedMethod.ReturnType != typeof(void))
+            if (!interceptedMethod.IsAbstract)
             {
-                AddInterceptedFunction();
+                methodGenerator.Emit(OpCodes.Stloc, targetLocal);
+                var baseDelegateLocal = methodGenerator.DeclareLocal(typeof(Delegate));
+                var delegateWrapperLocal = methodGenerator.DeclareLocal(wrapperContainer.TypeBuilder);
+                methodGenerator.Emit(OpCodes.Ldtoken, returnType == typeof(void) ? GetActionType() : GetFuncType());
+                methodGenerator.Emit(OpCodes.Ldarg_0);
+                methodGenerator.Emit(OpCodes.Ldtoken, interceptedMethod);
+                methodGenerator.Emit(OpCodes.Newobj, wrapperContainer.Constructor);
+                methodGenerator.Emit(OpCodes.Stloc, delegateWrapperLocal);
+                methodGenerator.Emit(OpCodes.Ldloc, delegateWrapperLocal);
+                methodGenerator.Emit(OpCodes.Ldtoken, invokeMethod);
+                methodGenerator.Emit(OpCodes.Callvirt, wrapperContainer.CreateDelegateMethod);
+                methodGenerator.Emit(OpCodes.Stloc, baseDelegateLocal);
+                if (interceptorTarget != null)
+                {
+                    methodGenerator.Emit(OpCodes.Ldloc, targetLocal);
+                }
+                methodGenerator.Emit(OpCodes.Ldloc, baseDelegateLocal);
             }
-            else
-            {
-                AddInterceptedAction();
-            }
+            methodGenerator.Emit(OpCodes.Callvirt, interceptorMethod);
             methodGenerator.Emit(OpCodes.Ret);
 
             typeBuilder.DefineMethodOverride(methodBuilder, interceptedMethod);
-
         }
 
-        private void AddInterceptedFunction()
+        private MethodBuilder AddInvokeMethod()
         {
             // TODO: Add caching
             MethodBuilder invokeMethod = wrapperContainer.TypeBuilder.DefineMethod(
@@ -85,8 +90,11 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
                 returnType,
                 parameterTypes);
             ILGenerator invokeGenerator = invokeMethod.GetILGenerator();
-            invokeGenerator.Emit(OpCodes.Ldarg_0);
-            invokeGenerator.Emit(OpCodes.Ldfld, wrapperContainer.TargetField);
+            if (provideInterceptedTarget)
+            {
+                invokeGenerator.Emit(OpCodes.Ldarg_0);
+                invokeGenerator.Emit(OpCodes.Ldfld, wrapperContainer.TargetField);
+            }
             for (int i = 1; i < parameterTypes.Length + 1; i++)
             {
                 invokeGenerator.Emit(OpCodes.Ldarg, i);
@@ -94,31 +102,51 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             invokeGenerator.Emit(OpCodes.Call, interceptedMethod);
             invokeGenerator.Emit(OpCodes.Ret);
 
-            var baseDelegateLocal = methodGenerator.DeclareLocal(typeof(Delegate));
-            var delegateWrapperLocal = methodGenerator.DeclareLocal(wrapperContainer.TypeBuilder);
-            methodGenerator.Emit(OpCodes.Ldtoken, GetFuncType());
-            methodGenerator.Emit(OpCodes.Ldarg_0);
-            methodGenerator.Emit(OpCodes.Ldtoken, interceptedMethod);
-            methodGenerator.Emit(OpCodes.Newobj, wrapperContainer.Constructor);
-            methodGenerator.Emit(OpCodes.Stloc, delegateWrapperLocal);
-            methodGenerator.Emit(OpCodes.Ldloc, delegateWrapperLocal);
-            methodGenerator.Emit(OpCodes.Ldtoken, invokeMethod);
-            methodGenerator.Emit(OpCodes.Callvirt, wrapperContainer.CreateDelegateMethod);
-            methodGenerator.Emit(OpCodes.Stloc, baseDelegateLocal);
-            methodGenerator.Emit(OpCodes.Ldloc, delegateLocal);
-            methodGenerator.Emit(OpCodes.Ldloc, baseDelegateLocal);
-            methodGenerator.Emit(OpCodes.Callvirt, interceptorMethod);
+            return invokeMethod;
         }
 
-        private void AddInterceptedAction()
+        private void Initialize(KeyValuePair<int, MethodInterception> methodInterception)
         {
-            methodGenerator.Emit(OpCodes.Ldloc, delegateLocal);
-            methodGenerator.Emit(OpCodes.Callvirt, interceptorMethod);
-            if (!interceptedMethod.IsAbstract)
+            provideInterceptedTarget = methodInterception.Value.ShouldProvideInterceptedTarget();
+            interceptedMethod = methodInterception.Value.GetInterceptedMethod();
+            returnType = interceptedMethod.ReturnType;
+
+            if (!provideInterceptedTarget)
             {
-                methodGenerator.Emit(OpCodes.Ldarg_0);
-                methodGenerator.Emit(OpCodes.Call, interceptedMethod);
+                parameterTypes = new List<Type> { interceptedMethod.DeclaringType }
+                    .Concat(interceptedMethod.GetParameters().Select(x => x.ParameterType)).ToArray();
             }
+            else
+            {
+                parameterTypes = interceptedMethod.GetParameters().Select(x => x.ParameterType).ToArray();
+            }
+
+            interceptorMethod = methodInterception.Value.GetInterceptorMethod();
+            interceptorTarget = methodInterception.Value.GetInterceptorTarget();
+        }
+
+        private void Validate()
+        {
+            /*var interceptorParameters = interceptorMethod.GetParameters();
+            if (provideInterceptedTarget && interceptorParameters.Length == 0)
+            {
+                throw new ArgumentException("ProvideInterceptedTarget is set to true, but there are no parameters on interceptor. One parameter expected.");
+            }*/
+
+            if (!interceptedMethod.IsVirtual)
+            {
+                throw new ArgumentException("Intercepted method must be virtual.");
+            }
+        }
+
+        private Type GetActionType()
+        {
+            if (parameterTypes.Length == 0)
+            {
+                return typeof(Action);
+            }
+
+            return Expression.GetActionType(parameterTypes);
         }
 
         private Type GetFuncType()

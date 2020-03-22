@@ -28,5 +28,10 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Classes
         {
             return 10;
         }
+
+        public virtual ClassWithVirtualMethod FunctionReturningThis()
+        {
+            return this;
+        }
     }
 }

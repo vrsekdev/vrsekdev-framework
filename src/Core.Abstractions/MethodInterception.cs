@@ -5,10 +5,14 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Abstractions
 {
-    public struct MethodInterception
+    public abstract class MethodInterception
     {
-        public MethodInfo InterceptedMethod { get; set; }
+        public abstract MethodInfo GetInterceptedMethod();
 
-        public Delegate Interceptor { get; set; }
+        public abstract MethodInfo GetInterceptorMethod();
+
+        public abstract object GetInterceptorTarget();
+
+        public abstract bool ShouldProvideInterceptedTarget();
     }
 }

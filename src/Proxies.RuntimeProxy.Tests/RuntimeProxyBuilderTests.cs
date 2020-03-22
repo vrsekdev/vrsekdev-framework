@@ -15,6 +15,40 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
     public class RuntimeProxyBuilderTests
     {
         [TestMethod]
+        public void BuildRuntimeType_MethodInterceptors_Function_ProvideOwnInterceptedTargetInstance()
+        {
+            // Arrange
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            ClassWithVirtualMethod expectedThisValue = new ClassWithVirtualMethod();
+            Func<Func<ClassWithVirtualMethod, ClassWithVirtualMethod>, ClassWithVirtualMethod> interceptor = baseMethod => baseMethod(expectedThisValue);
+
+            MethodInterceptions interceptions = new MethodInterceptions
+            {
+                Interceptions = new MethodInterception[]
+                {
+                    new DelegateMethodInterception
+                    {
+                        InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.FunctionReturningThis)),
+                        Delegate = interceptor,
+                        ProvideInterceptedTarget = false
+                    }
+                }
+            };
+
+            // Act
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
+            ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
+            ClassWithVirtualMethod returnedValue = impl.FunctionReturningThis();
+
+            // Assert
+            Assert.AreEqual(expectedThisValue, returnedValue);
+        }
+
+        [TestMethod]
         public void BuildRuntimeType_MethodInterceptors_Function_MultipleParameters_InterceptClassMethod()
         {
             // Arrange
@@ -30,10 +64,10 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.FunctionWithParameterToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     }
                 }
             };
@@ -57,17 +91,16 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             string expectedValue = "base";
-            Func<Func<string>, string> interceptor = (Func<string> baseMethod) =>
-            baseMethod();
+            Func<Func<string>, string> interceptor = baseMethod => baseMethod();
 
             MethodInterceptions interceptions = new MethodInterceptions
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.FunctionToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     }
                 }
             };
@@ -91,24 +124,25 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             string expectedValue = "interceptor";
-            Func<Func<string>, string> interceptor = (Func<string> baseMethod) => expectedValue;
+            Func<Func<string>, string> interceptor = baseMethod => expectedValue;
 
             MethodInterceptions interceptions = new MethodInterceptions
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.FunctionToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     }
                 }
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
-            string returnedValue = impl.FunctionToIntercept();
+            string returnedValue = returnedValue = impl.FunctionToIntercept();
 
             // Assert
             Assert.AreEqual(expectedValue, returnedValue);
@@ -124,23 +158,23 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             bool interceptorCalled = false;
-            Action interceptor = () => interceptorCalled = true;
+            Action<Action> interceptor = baseAction => interceptorCalled = true;
             bool interceptor2Called = false;
-            Action interceptor2 = () => interceptor2Called = true;
+            Action<Action> interceptor2 = baseAction => interceptor2Called = true;
 
             MethodInterceptions interceptions = new MethodInterceptions
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.ActionToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     },
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.ActionToIntercept2)),
-                        Interceptor = interceptor2
+                        Delegate = interceptor2
                     }
                 }
             };
@@ -157,7 +191,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
         }
 
         [TestMethod]
-        public void BuildRuntimeType_MethodInterceptors_InterceptClassMethodAndCallBase()
+        public void BuildRuntimeType_MethodInterceptors_CallBase()
         {
             // Arrange
             Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
@@ -165,17 +199,15 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
-            bool interceptorCalled = false;
-
-            Action interceptor = () => interceptorCalled = true;
+            Action<Action> interceptor = baseAction => baseAction();
             MethodInterceptions interceptions = new MethodInterceptions
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.ActionToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     }
                 }
             };
@@ -186,7 +218,6 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             impl.ActionToIntercept();
 
             // Assert
-            Assert.IsTrue(interceptorCalled);
             Assert.IsTrue(impl.InterceptedMethodCalled);
         }
 
@@ -200,16 +231,16 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             bool interceptorCalled = false;
-            Action interceptor = () => interceptorCalled = true;
+            Action<Action> interceptor = (Action baseAction) => interceptorCalled = true;
 
             MethodInterceptions interceptions = new MethodInterceptions
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.ActionToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     }
                 }
             };
@@ -239,10 +270,10 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             {
                 Interceptions = new MethodInterception[]
                 {
-                    new MethodInterception
+                    new DelegateMethodInterception
                     {
                         InterceptedMethod = typeof(IInterfaceWithMethod).GetMethod(nameof(IInterfaceWithMethod.MethodToIntercept)),
-                        Interceptor = interceptor
+                        Delegate = interceptor
                     }
                 }
             };

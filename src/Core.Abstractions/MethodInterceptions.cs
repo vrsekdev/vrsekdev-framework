@@ -11,11 +11,11 @@ namespace Havit.Blazor.Mobx.Abstractions
     {
         private readonly Dictionary<int, MethodInterception> hashDictionary = new Dictionary<int, MethodInterception>();
 
-        public Delegate this[int hash]
+        public object this[int hash]
         {
             get
             {
-                return hashDictionary[hash].Interceptor;
+                return hashDictionary[hash].GetInterceptorTarget();
             }
         }
 
