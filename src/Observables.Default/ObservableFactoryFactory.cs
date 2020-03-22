@@ -8,7 +8,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 {
     internal class ObservableFactoryFactory : IObservableFactoryFactory
     {
-        public IObservableFactory Create(
+        public IObservableFactory CreateFactory(
             EventHandler<ObservablePropertyStateChangedEventArgs> observablePropertyStateChangedEventArgs, 
             EventHandler<ObservableCollectionItemsChangedEventArgs> observableCollectionItemsChangedEventArgs)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Interfaces
 {
-    public interface IMockableRuntimeTypePropertyManager : IRuntimeProxyManager
+    internal interface IMockableRuntimeTypePropertyManager : IRuntimeProxyManager
     {
         object GetValue(string name);
 

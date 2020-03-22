@@ -1,4 +1,5 @@
 using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Classes;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Models;

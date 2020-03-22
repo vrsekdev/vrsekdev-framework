@@ -1,5 +1,6 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
 using Havit.Blazor.Mobx.Abstractions.Exceptions;
+using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
     }
     #endregion helper
 
-    public class RuntimeProxyManager<TInterface> : IRuntimeProxyManager
+    internal class RuntimeProxyManager<TInterface> : IRuntimeProxyManager
         where TInterface : class
     {
         #region static

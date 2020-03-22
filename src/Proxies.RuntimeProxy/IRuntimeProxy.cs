@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 {
-    public interface IRuntimeProxy
+    internal interface IRuntimeProxy
     {
         IRuntimeProxyManager Manager { get; }
     }
