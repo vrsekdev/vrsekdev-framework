@@ -46,7 +46,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             runtimeTypeWithoutInterceptions = new Lazy<Type>(() => RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, null));
         }
 
-        private static Type GetRuntimeType(MethodInterception[] interceptions)
+        private static Type GetRuntimeType(MethodInterceptions interceptions)
         {
             if (interceptions == null)
             {
@@ -115,8 +115,8 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 
                 if (implementation == null)
                 {
-                    Type runtimeType = GetRuntimeType(methodInterceptions?.Interceptions);
-                    impl = (TInterface)Activator.CreateInstance(runtimeType, new object[] { this, methodInterceptions?.CapturedContext });
+                    Type runtimeType = GetRuntimeType(methodInterceptions);
+                    impl = (TInterface)Activator.CreateInstance(runtimeType, new object[] { this, methodInterceptions });
                     implementation = new WeakReference<TInterface>(impl);
                     return impl;
                 }

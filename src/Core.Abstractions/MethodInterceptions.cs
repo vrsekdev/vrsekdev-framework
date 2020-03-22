@@ -7,20 +7,45 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Abstractions
 {
-    public class MethodInterceptions : IEnumerable<MethodInterception>
+    public class MethodInterceptions : IEnumerable<KeyValuePair<int, MethodInterception>>
     {
-        public object CapturedContext { get; set; }
+        private readonly Dictionary<int, MethodInterception> hashDictionary = new Dictionary<int, MethodInterception>();
 
-        public MethodInterception[] Interceptions { get; set; }
-
-        public IEnumerator<MethodInterception> GetEnumerator()
+        public Delegate this[int hash]
         {
-            return ((IEnumerable<MethodInterception>)Interceptions).GetEnumerator();
+            get
+            {
+                return hashDictionary[hash].Interceptor;
+            }
+        }
+
+        private MethodInterception[] interceptions;
+        public MethodInterception[] Interceptions
+        {
+            get
+            {
+                return interceptions;
+            }
+            set
+            {
+                hashDictionary.Clear();
+                foreach(var interception in value)
+                {
+                    hashDictionary.Add(interception.GetHashCode(), interception);
+                }
+
+                interceptions = value;
+            }
+        }
+
+        IEnumerator<KeyValuePair<int, MethodInterception>> IEnumerable<KeyValuePair<int, MethodInterception>>.GetEnumerator()
+        {
+            return hashDictionary.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Interceptions.GetEnumerator();
+            return hashDictionary.GetEnumerator();
         }
     }
 }

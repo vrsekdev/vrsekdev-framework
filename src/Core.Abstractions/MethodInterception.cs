@@ -9,6 +9,6 @@ namespace Havit.Blazor.Mobx.Abstractions
     {
         public MethodInfo InterceptedMethod { get; set; }
 
-        public MethodInfo Interceptor { get; set; }
+        public Delegate Interceptor { get; set; }
     }
 }
