@@ -1,6 +1,8 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.Abstractions.Components;
 using Havit.Blazor.Mobx.Abstractions.Events;
 using Havit.Blazor.Mobx.Components;
+using Havit.Blazor.Mobx.Reactables.ComputedValues;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -33,7 +35,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             this.propertyProxyFactory = propertyProxyFactory;
             this.propertyProxyWrapper = propertyProxyWrapper;
 
-            IPropertyProxy propertyProxy = propertyProxyFactory.Create(storeHolder.RootObservableProperty);
+            IPropertyProxy propertyProxy = propertyProxyFactory.Create(storeHolder.RootObservableProperty, storeHolder.StoreReactables);
             Store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
 
             PropertyAccessedEvent += InjectedStoreAccessor_PropertyAccessedEvent;
@@ -45,7 +47,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         public TStore Store { get; }
 
-        public void SetConsumer(BlazorMobxComponentBase consumer)
+        public void SetConsumer(IBlazorMobxComponent consumer)
         {
             Contract.Requires(consumer == null);
 
@@ -55,7 +57,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
         public void SetConsumer(ComponentBase consumer)
         {
             Contract.Requires(consumer == null);
-            if (consumer is BlazorMobxComponentBase<TStore> mobxConsumer)
+            if (consumer is IBlazorMobxComponent mobxConsumer)
             {
                 SetConsumer(mobxConsumer);
                 return;

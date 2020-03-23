@@ -1,4 +1,5 @@
-﻿using Havit.Blazor.Mobx.Components;
+﻿using Havit.Blazor.Mobx.Abstractions.Components;
+using Havit.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 
@@ -9,7 +10,7 @@ namespace Havit.Blazor.Mobx
     {
         TStore Store { get; }
 
-        void SetConsumer(BlazorMobxComponentBase consumer);
+        void SetConsumer(IBlazorMobxComponent consumer);
 
         void SetConsumer(ComponentBase consumer);
 

@@ -1,4 +1,5 @@
-﻿using Havit.Blazor.Mobx.Components;
+﻿using Havit.Blazor.Mobx.Abstractions.Components;
+using Havit.Blazor.Mobx.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,18 +9,18 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 {
     internal class MobxConsumerWrapper : IConsumerWrapper
     {
-        private readonly WeakReference<BlazorMobxComponentBase> consumerReference;
+        private readonly WeakReference<IBlazorMobxComponent> consumerReference;
         private readonly string componentName;
 
-        public MobxConsumerWrapper(BlazorMobxComponentBase consumer)
+        public MobxConsumerWrapper(IBlazorMobxComponent consumer)
         {
-            this.consumerReference = new WeakReference<BlazorMobxComponentBase>(consumer);
+            this.consumerReference = new WeakReference<IBlazorMobxComponent>(consumer);
             this.componentName = consumer.GetType().Name;
         }
 
         public Task ForceUpdate()
         {
-            if (!consumerReference.TryGetTarget(out BlazorMobxComponentBase consumer))
+            if (!consumerReference.TryGetTarget(out IBlazorMobxComponent consumer))
             {
 #if DEBUG
                 throw new Exception("Component is dead");
@@ -38,7 +39,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         public bool IsRendered()
         {
-            if (!consumerReference.TryGetTarget(out BlazorMobxComponentBase consumer))
+            if (!consumerReference.TryGetTarget(out IBlazorMobxComponent consumer))
             {
 #if DEBUG
                 throw new Exception("Component is dead");
