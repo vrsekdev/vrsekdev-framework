@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Reactions
+namespace Havit.Blazor.Mobx.Reactables.Reactions
 {
     public abstract class ReactionRegistrator<TStore>
     {

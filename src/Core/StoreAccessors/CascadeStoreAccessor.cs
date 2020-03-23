@@ -1,4 +1,5 @@
-﻿using Havit.Blazor.Mobx.Components;
+﻿using Havit.Blazor.Mobx.Abstractions.Components;
+using Havit.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             throw CreateException();
         }
 
-        public void SetConsumer(BlazorMobxComponentBase consumer)
+        public void SetConsumer(IBlazorMobxComponent consumer)
         {
             //throw CreateException();
         }

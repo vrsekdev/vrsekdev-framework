@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx
 {
-    internal interface IObservableContainer
+    public interface IObservableContainer
     {
         void OnPropertyAccessed(string propertyName);
 

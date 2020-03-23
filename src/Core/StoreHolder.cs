@@ -1,6 +1,7 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
 using Havit.Blazor.Mobx.Abstractions.Events;
-using Havit.Blazor.Mobx.Reactions;
+using Havit.Blazor.Mobx.Reactables;
+using Havit.Blazor.Mobx.Reactables.ComputedValues;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,28 +15,68 @@ namespace Havit.Blazor.Mobx
         where TStore : class
     {
         private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-
         private readonly IObservableFactory observableFactory;
-        private readonly ILookup<PropertyInfo, ReactionWrapper<TStore>> reactionsLookup;
+        private readonly IPropertyProxyFactory propertyProxyFactory;
+        private readonly IPropertyProxyWrapper propertyProxyWrapper;
 
         public IObservableProperty RootObservableProperty { get; }
+
+        private readonly IStoreMetadata<TStore> storeMetadata;
+
+        public MethodInterceptions StoreReactables { get; private set; } = new MethodInterceptions();
 
         public event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
         public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
 
         public StoreHolder(
             IStoreMetadata<TStore> storeMetadata,
+            IPropertyProxyFactory propertyProxyFactory,
+            IPropertyProxyWrapper propertyProxyWrapper,
             IObservableFactoryFactory observableFactoryFactory)
         {
+            this.storeMetadata = storeMetadata;
+            this.propertyProxyFactory = propertyProxyFactory;
+            this.propertyProxyWrapper = propertyProxyWrapper;
             this.observableFactory = observableFactoryFactory.CreateFactory(
                 OnStatePropertyChanged,
                 OnCollectionItemsChanged);
 
-            reactionsLookup = storeMetadata.GetReactions()
-                .SelectMany(action => action.ObservedProperties.Select(prop => new { PropertyInfo = prop, Action = action }))
-                .ToLookup(x => x.PropertyInfo, x => x.Action);
-
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
+            InitializeReactables();
+        }
+
+        private void InitializeReactables()
+        {
+            List<MethodInterception> methodInterceptions = new List<MethodInterception>();
+            methodInterceptions.AddRange(GetComputedValueInterceptions());
+            StoreReactables = new MethodInterceptions
+            {
+                Interceptions = methodInterceptions.ToArray()
+            };
+        }
+
+        private IEnumerable<MethodInterception> GetComputedValueInterceptions()
+        {
+            var computedValues = storeMetadata.GetComputedValues();
+            return computedValues.Select(computedValueMethod =>
+            {
+                Type containerType = typeof(ComputedValueContainer<,>).MakeGenericType(typeof(TStore), computedValueMethod.ReturnType);
+                IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
+                var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
+
+                IInvokableReactable target = (IInvokableReactable)Activator.CreateInstance(containerType, store);
+                ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);
+                invoker.PlantSubscriber(propertyProxy);
+
+                MethodInfo interceptorMethod = containerType.GetMethod("OnMethodInvoke");
+                return new ClassMethodInterception
+                {
+                    InterceptedMethod = computedValueMethod,
+                    InterceptorMethod = interceptorMethod,
+                    InterceptorTarget = target,
+                    ProvideInterceptedTarget = false
+                };
+            });
         }
 
         public IObservableProperty CreateObservableProperty(Type type)
@@ -47,11 +88,6 @@ namespace Havit.Blazor.Mobx
         {
             ExecuteWithWriteLock(() =>
             {
-                foreach (var action in reactionsLookup[e.PropertyInfo])
-                {
-                    action.Invoke(RootObservableProperty);
-                }
-
                 StatePropertyChangedEvent?.Invoke(sender, e);
             });
         }
@@ -64,6 +100,8 @@ namespace Havit.Blazor.Mobx
             });
         }
 
+        // TODO: move this to store accessor to allow reactables to be invoked multiple times, 
+        // but component should be rendered just once
         private void ExecuteWithWriteLock(Action action)
         {
             if (!readerWriterLock.TryEnterWriteLock(0))

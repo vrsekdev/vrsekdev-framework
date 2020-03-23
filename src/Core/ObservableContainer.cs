@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx
 {
-    internal class ObservableContainer : IObservableContainer
+    public class ObservableContainer : IObservableContainer
     {
-        private HashSet<string> subscribedProperties = new HashSet<string>();
+        protected HashSet<string> subscribedProperties = new HashSet<string>();
 
-        public void OnPropertyAccessed(string propertyName)
+        public virtual void OnPropertyAccessed(string propertyName)
         {
             if (!subscribedProperties.Contains(propertyName))
             {
@@ -17,7 +17,7 @@ namespace Havit.Blazor.Mobx
             }
         }
 
-        public bool IsSubscribed(string propertyName)
+        public virtual bool IsSubscribed(string propertyName)
         {
             return subscribedProperties.Contains(propertyName);
         }

@@ -15,6 +15,11 @@ namespace Havit.Blazor.Mobx
         public Type ElementType => throw new NotImplementedException();
         public bool ElementObserved => throw new NotImplementedException();
 
+        public void AddDefaultElements(IEnumerable<T> items)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Reset()
         {
             throw new NotImplementedException();

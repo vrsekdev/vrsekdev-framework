@@ -78,7 +78,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
         private static void AddConstructors(Type baseType, TypeBuilder typeBuilder, FieldBuilder managerField, FieldBuilder capturedContextsField, IEnumerable<PropertyInfo> properties)
         {
             MethodInfo setDefaultValueMethod = null;
-            if (properties.Any())
+            if (properties.Any() && baseType.IsClass)
             {
                 setDefaultValueMethod = managerField.FieldType.GetMethod(nameof(IRuntimeProxyManager.SetDefaultValue));
             }
@@ -103,22 +103,23 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             ctorGenerator.Emit(OpCodes.Ldarg_0);
             ctorGenerator.Emit(OpCodes.Ldnull);
             ctorGenerator.Emit(OpCodes.Stfld, capturedContextsField);
-            foreach (var prop in properties)
-            {
-                var valueLocal = ctorGenerator.DeclareLocal(prop.PropertyType);
-                ctorGenerator.Emit(OpCodes.Ldarg_0);
-                ctorGenerator.Emit(OpCodes.Call, prop.GetMethod);
-                ctorGenerator.Emit(OpCodes.Stloc, valueLocal);
-                ctorGenerator.Emit(OpCodes.Ldarg_0);
-                ctorGenerator.Emit(OpCodes.Ldfld, managerField);
-                ctorGenerator.Emit(OpCodes.Ldstr, prop.Name);
-                ctorGenerator.Emit(OpCodes.Ldloc, valueLocal);
-                if (prop.PropertyType.IsValueType)
+            if (setDefaultValueMethod != null)
+                foreach (var prop in properties)
                 {
-                    ctorGenerator.Emit(OpCodes.Box, prop.PropertyType);
+                    var valueLocal = ctorGenerator.DeclareLocal(prop.PropertyType);
+                    ctorGenerator.Emit(OpCodes.Ldarg_0);
+                    ctorGenerator.Emit(OpCodes.Call, prop.GetMethod);
+                    ctorGenerator.Emit(OpCodes.Stloc, valueLocal);
+                    ctorGenerator.Emit(OpCodes.Ldarg_0);
+                    ctorGenerator.Emit(OpCodes.Ldfld, managerField);
+                    ctorGenerator.Emit(OpCodes.Ldstr, prop.Name);
+                    ctorGenerator.Emit(OpCodes.Ldloc, valueLocal);
+                    if (prop.PropertyType.IsValueType)
+                    {
+                        ctorGenerator.Emit(OpCodes.Box, prop.PropertyType);
+                    }
+                    ctorGenerator.Emit(OpCodes.Callvirt, setDefaultValueMethod);
                 }
-                ctorGenerator.Emit(OpCodes.Callvirt, setDefaultValueMethod);
-            }
             ctorGenerator.Emit(OpCodes.Ret);
 
             /*** ctor(manager, capturedContext) ***/

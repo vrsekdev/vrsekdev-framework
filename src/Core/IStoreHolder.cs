@@ -10,6 +10,8 @@ namespace Havit.Blazor.Mobx
     internal interface IStoreHolder<TStore>
         where TStore : class
     {
+        MethodInterceptions StoreReactables { get; }
+
         IObservableProperty RootObservableProperty { get; }
 
         event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
