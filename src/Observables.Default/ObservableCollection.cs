@@ -71,16 +71,17 @@ namespace Havit.Blazor.Mobx.Observables.Default
             });
         }
 
+        public void AddDefaultElements(IEnumerable<T> items)
+        {
+            AddRangeInternal(items);
+        }
+
         public void AddRange(IEnumerable<T> items)
         {
             int oldCount = Count;
             var removedItems = Enumerable.Empty<object>();
 
-            foreach (T item in items)
-            {
-                T innerItem = item;
-                list.Add(innerItem);
-            }
+            AddRangeInternal(items);
 
             collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
@@ -89,6 +90,15 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 OldCount = oldCount,
                 NewCount = Count
             });
+        }
+
+        private void AddRangeInternal(IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
+                T innerItem = item;
+                list.Add(innerItem);
+            }
         }
 
         public void Clear()

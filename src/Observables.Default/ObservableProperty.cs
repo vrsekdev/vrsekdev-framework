@@ -1,6 +1,7 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
 using Havit.Blazor.Mobx.Abstractions.Attributes;
 using Havit.Blazor.Mobx.Abstractions.Events;
+using Havit.Blazor.Mobx.Abstractions.Utils;
 using Havit.Blazor.Mobx.Observables.Default.Extensions;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
         private Dictionary<string, ObservableProperty> observedProperties;
         private Dictionary<string, ObservableCollection> observedCollections;
         private Dictionary<string, PropertyInfo> allPropertiesByName;
-        private Dictionary<string, object> normalProperties;
+        private Dictionary<string, LazyDefault<object>> normalProperties;
         private bool disposed;
 
         public Type ObservedType { get; }
@@ -32,6 +33,11 @@ namespace Havit.Blazor.Mobx.Observables.Default
             this.statePropertyChangedEvent = statePropertyChangedEvent;
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
             Initialize();
+        }
+
+        public bool TrySetDefaultValue(string name, object value)
+        {
+            return TrySetMemberInternal(name, value, false);
         }
 
         public bool TryGetMember(string name, out object result)
@@ -59,7 +65,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             if (normalProperties.ContainsKey(name))
             {
-                result = normalProperties[name];
+                result = normalProperties[name].Value;
 
                 return true;
             }
@@ -70,6 +76,11 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
         public bool TrySetMember(string name, object value)
         {
+            return TrySetMemberInternal(name, value, true);
+        }
+
+        private bool TrySetMemberInternal(string name, object value, bool notify)
+        {
             if (!allPropertiesByName.ContainsKey(name))
             {
                 return false;
@@ -79,11 +90,14 @@ namespace Havit.Blazor.Mobx.Observables.Default
             {
                 observedProperties[name].OverwriteFrom(value);
 
-                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                if (notify)
                 {
-                    PropertyInfo = allPropertiesByName[name],
-                    PropertyName = name
-                });
+                    statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                    {
+                        PropertyInfo = allPropertiesByName[name],
+                        PropertyName = name
+                    });
+                }
 
                 return true;
             }
@@ -115,13 +129,16 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 int oldArrayCount = oldArray.CountElements;
                 oldArray.OverwriteElements(observableArray);
 
-                collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                if (notify)
                 {
-                    ItemsAdded = addedItems,
-                    ItemsRemoved = removedItems,
-                    OldCount = oldArrayCount,
-                    NewCount = oldArray.CountElements
-                });
+                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                    {
+                        ItemsAdded = addedItems,
+                        ItemsRemoved = removedItems,
+                        OldCount = oldArrayCount,
+                        NewCount = oldArray.CountElements
+                    });
+                }
 
                 return true;
             }
@@ -133,13 +150,16 @@ namespace Havit.Blazor.Mobx.Observables.Default
                     return false;
                 }
 
-                normalProperties[name] = value;
+                normalProperties[name].Value = value;
 
-                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                if (notify)
                 {
-                    PropertyInfo = allPropertiesByName[name],
-                    PropertyName = name
-                });
+                    statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                    {
+                        PropertyInfo = allPropertiesByName[name],
+                        PropertyName = name
+                    });
+                }
 
                 return true;
             }
@@ -260,7 +280,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
             allPropertiesByName = ObservedType.GetProperties().ToDictionary(x => x.Name);
             observedProperties = new Dictionary<string, ObservableProperty>();
             observedCollections = new Dictionary<string, ObservableCollection>();
-            normalProperties = new Dictionary<string, object>();
+            normalProperties = new Dictionary<string, LazyDefault<object>>();
 
             foreach (var propertyKvp in allPropertiesByName)
             {
@@ -277,7 +297,8 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 }
                 else
                 {
-                    normalProperties.Add(propertyKvp.Key, GetDefault(propertyKvp.Value.PropertyType));
+                    // TODO: preserve default values?
+                    normalProperties.Add(propertyKvp.Key, new LazyDefault<object>(() => GetDefault(propertyKvp.Value.PropertyType)));
                 }
             }
         }

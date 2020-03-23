@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C405AE1D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxies.RuntimeProxy.Tests", "Proxies.RuntimeProxy.Tests\Proxies.RuntimeProxy.Tests.csproj", "{2B766694-A199-42C9-BEC5-472A2043EBE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{A9848528-2B41-49E3-91A4-9B39B8BEF7FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B766694-A199-42C9-BEC5-472A2043EBE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9848528-2B41-49E3-91A4-9B39B8BEF7FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9848528-2B41-49E3-91A4-9B39B8BEF7FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9848528-2B41-49E3-91A4-9B39B8BEF7FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9848528-2B41-49E3-91A4-9B39B8BEF7FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +82,7 @@ Global
 		{E4B9EEAB-75E1-4A8B-8D7C-FF3107DB89B8} = {EDBE713D-E921-470F-AD07-54378F82619F}
 		{AE94E805-9FCB-421F-9576-13CFABADC3DD} = {EDBE713D-E921-470F-AD07-54378F82619F}
 		{2B766694-A199-42C9-BEC5-472A2043EBE5} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
+		{A9848528-2B41-49E3-91A4-9B39B8BEF7FB} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE564A88-644F-4961-8BA1-FDE397F17DF8}

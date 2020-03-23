@@ -8,6 +8,7 @@ namespace Havit.Blazor.Mobx.Abstractions
     {
         Type ObservedType { get; }
 
+        bool TrySetDefaultValue(string name, object value);
         bool TryGetMember(string name, out object result);
         bool TrySetMember(string name, object value);
         void OverwriteFrom(object source);

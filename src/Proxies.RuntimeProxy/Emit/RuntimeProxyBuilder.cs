@@ -20,9 +20,9 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             });
         }
 
-        public static Type BuildRuntimeType(Type type, MethodInfo getMethod, MethodInfo setMethod, MethodInterceptions methodInterceptions = null)
+        public static Type BuildRuntimeType(Type baseType, MethodInfo getMethod, MethodInfo setMethod, MethodInterceptions methodInterceptions = null)
         {
-            return BuildRuntimeTypeInternal(type, getMethod, setMethod, methodInterceptions);
+            return BuildRuntimeTypeInternal(baseType, getMethod, setMethod, methodInterceptions);
         }
 
         private static Type BuildRuntimeTypeInternal(Type baseType, MethodInfo getMethod, MethodInfo setMethod, MethodInterceptions methodInterceptions = null)
@@ -32,11 +32,13 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             FieldBuilder capturedContextsField = AddCapturedContextsField(typeBuilder);
 
             bool isClass = baseType.IsClass;
-            AddConstructors(typeBuilder, managerField, capturedContextsField);
-            foreach (var propertyInfo in GetPublicProperties(baseType).Where(x => x.GetMethod.IsAbstract || (isClass && x.GetMethod.IsVirtual)))
+            var properties = GetPublicProperties(baseType).Where(x => x.GetMethod.IsAbstract || (isClass && x.GetMethod.IsVirtual));
+            foreach (var propertyInfo in properties)
             {
                 AddProperty(typeBuilder, propertyInfo, managerField, getMethod, setMethod);
             }
+
+            AddConstructors(baseType, typeBuilder, managerField, capturedContextsField, properties);
 
             if (methodInterceptions != null)
             {
@@ -73,8 +75,16 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             return typeBuilder;
         }
 
-        private static void AddConstructors(TypeBuilder typeBuilder, FieldBuilder managerField, FieldBuilder capturedContextsField)
+        private static void AddConstructors(Type baseType, TypeBuilder typeBuilder, FieldBuilder managerField, FieldBuilder capturedContextsField, IEnumerable<PropertyInfo> properties)
         {
+            MethodInfo setDefaultValueMethod = null;
+            if (properties.Any())
+            {
+                setDefaultValueMethod = managerField.FieldType.GetMethod(nameof(IRuntimeProxyManager.SetDefaultValue));
+            }
+
+            ConstructorInfo baseCtor = baseType.GetConstructor(Type.EmptyTypes);
+
             /*** ctor(manager) ***/
             ConstructorBuilder ctorBuilder = typeBuilder.DefineConstructor(
                 MethodAttributes.Public | MethodAttributes.SpecialName,
@@ -82,12 +92,33 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
                 new Type[] { managerField.FieldType });
 
             ILGenerator ctorGenerator = ctorBuilder.GetILGenerator();
+            if (baseCtor != null)
+            {
+                ctorGenerator.Emit(OpCodes.Ldarg_0);
+                ctorGenerator.Emit(OpCodes.Call, baseCtor);
+            }
             ctorGenerator.Emit(OpCodes.Ldarg_0);
             ctorGenerator.Emit(OpCodes.Ldarg_1);
             ctorGenerator.Emit(OpCodes.Stfld, managerField);
             ctorGenerator.Emit(OpCodes.Ldarg_0);
             ctorGenerator.Emit(OpCodes.Ldnull);
             ctorGenerator.Emit(OpCodes.Stfld, capturedContextsField);
+            foreach (var prop in properties)
+            {
+                var valueLocal = ctorGenerator.DeclareLocal(prop.PropertyType);
+                ctorGenerator.Emit(OpCodes.Ldarg_0);
+                ctorGenerator.Emit(OpCodes.Call, prop.GetMethod);
+                ctorGenerator.Emit(OpCodes.Stloc, valueLocal);
+                ctorGenerator.Emit(OpCodes.Ldarg_0);
+                ctorGenerator.Emit(OpCodes.Ldfld, managerField);
+                ctorGenerator.Emit(OpCodes.Ldstr, prop.Name);
+                ctorGenerator.Emit(OpCodes.Ldloc, valueLocal);
+                if (prop.PropertyType.IsValueType)
+                {
+                    ctorGenerator.Emit(OpCodes.Box, prop.PropertyType);
+                }
+                ctorGenerator.Emit(OpCodes.Callvirt, setDefaultValueMethod);
+            }
             ctorGenerator.Emit(OpCodes.Ret);
 
             /*** ctor(manager, capturedContext) ***/
@@ -99,9 +130,14 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             // TODO: Capturing a context in a runtime proxy probably creates memory leak
             // because the context can also have a reference to this proxy
             ILGenerator ctor2Generator = ctor2Builder.GetILGenerator();
+            if (baseCtor != null)
+            {
+                ctor2Generator.Emit(OpCodes.Ldarg_0);
+                ctor2Generator.Emit(OpCodes.Call, baseCtor);
+            }
             ctor2Generator.Emit(OpCodes.Ldarg_0);
             ctor2Generator.Emit(OpCodes.Ldarg_1);
-            ctor2Generator.Emit(OpCodes.Stfld, managerField);
+            ctor2Generator.Emit(OpCodes.Call, ctorBuilder);
             ctor2Generator.Emit(OpCodes.Ldarg_0);
             ctor2Generator.Emit(OpCodes.Ldarg_2);
             ctor2Generator.Emit(OpCodes.Stfld, capturedContextsField);

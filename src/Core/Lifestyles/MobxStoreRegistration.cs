@@ -1,5 +1,5 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Reactions;
+using Havit.Blazor.Mobx.Reactables.Reactions;
 using Havit.Blazor.Mobx.StoreAccessors;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -40,6 +40,7 @@ namespace Havit.Blazor.Mobx.Lifestyles
 
         public IServiceCollection LifestyleScoped()
         {
+            services.AddScoped<StoreHolder<TStore>>();
             services.AddScoped<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, StoreAccessor<TStore>>();
 
@@ -50,6 +51,7 @@ namespace Havit.Blazor.Mobx.Lifestyles
 
         public IServiceCollection LifestyleTransient()
         {
+            services.AddTransient<StoreHolder<TStore>>();
             services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, StoreAccessor<TStore>>();
 
@@ -60,6 +62,7 @@ namespace Havit.Blazor.Mobx.Lifestyles
 
         public IServiceCollection LifestyleCascading()
         {
+            services.AddTransient<StoreHolder<TStore>>();
             services.AddTransient<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
             services.AddTransient<IStoreAccessor<TStore>, CascadeStoreAccessor<TStore>>();
 
@@ -78,9 +81,7 @@ namespace Havit.Blazor.Mobx.Lifestyles
 
         private IStoreHolder<TStore> GetStoreHolder(IServiceProvider provider)
         {
-            IObservableFactoryFactory observableFactoryFactory = provider.GetRequiredService<IObservableFactoryFactory>();
-            IStoreMetadata<TStore> storeMetadata = provider.GetRequiredService<IStoreMetadata<TStore>>();
-            var storeHolder = new StoreHolder<TStore>(storeMetadata, observableFactoryFactory);
+            StoreHolder<TStore> storeHolder = provider.GetRequiredService<StoreHolder<TStore>>();
             if (defaultState != null)
             {
                 storeHolder.RootObservableProperty.OverwriteFrom(defaultState);

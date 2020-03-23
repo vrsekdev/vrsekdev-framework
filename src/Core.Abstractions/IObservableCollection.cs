@@ -14,6 +14,8 @@ namespace Havit.Blazor.Mobx.Abstractions
 
     public interface IObservableCollection<T> : IObservableCollection, IList<T>
     {
+        void AddDefaultElements(IEnumerable<T> items);
+
         void AddRange(IEnumerable<T> items);
     }
 }

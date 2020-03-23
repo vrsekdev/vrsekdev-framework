@@ -1,4 +1,4 @@
-﻿using Havit.Blazor.Mobx.Reactions;
+﻿using Havit.Blazor.Mobx.Reactables.Reactions;
 using System;
 using System.Collections.Generic;
 using System.Text;

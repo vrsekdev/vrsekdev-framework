@@ -2,6 +2,7 @@
 using Havit.Blazor.Mobx.Abstractions.Exceptions;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +10,13 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 {
+    internal interface IRuntimeProxyManager : IPropertyProxy
+    {
+        void SetDefaultValue(string propertyName, object value);
+
+        object Implementation { get; }
+    }
+
     #region helper
     internal delegate IRuntimeProxyManager CreateRuntimeManager(IObservableProperty observableProperty, MethodInterceptions methodInterceptions, bool readOnly);
     internal static class RuntimeProxyManagerHelper
@@ -132,6 +140,24 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         }
 
         object IRuntimeProxyManager.Implementation => Implementation;
+
+        public void SetDefaultValue(string propertyName, object value)
+        {
+            if (runtimeProxies.TryGetValue(propertyName, out IRuntimeProxy runtimeProxy))
+            {
+                runtimeProxy.Manager.ObservableProperty.OverwriteFrom(value);
+            }
+
+            if (collectionProxies.TryGetValue(propertyName, out ICollectionProxy collectionProxy))
+            {
+                collectionProxy.AddDefaultElements((IEnumerable)value);
+            }
+
+            if (!ObservableProperty.TrySetDefaultValue(propertyName, value))
+            {
+                throw new NotSupportedException(propertyName);
+            }
+        }
 
         public object GetValue(string propertyName)
         {

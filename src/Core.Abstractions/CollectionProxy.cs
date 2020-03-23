@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Havit.Blazor.Mobx.Abstractions
@@ -129,6 +130,16 @@ namespace Havit.Blazor.Mobx.Abstractions
             }
 
             observableCollection.Add(item);
+        }
+
+        public void AddDefaultElements(IEnumerable elements)
+        {
+            AddDefaultElements(elements.Cast<T>());
+        }
+
+        public void AddDefaultElements(IEnumerable<T> items)
+        {
+            observableCollection.AddDefaultElements(items);
         }
 
         public void AddRange(IEnumerable<T> items)

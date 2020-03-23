@@ -53,7 +53,7 @@ namespace Havit.Blazor.Mobx.Components
         protected override void OnParametersSet()
         {
             storeAccessor = CascadeStoreAccessor ?? InjectedStoreAccessor ?? throw new ArgumentException("Store accessor is not available");
-            storeAccessor.SetConsumer(this);
+            storeAccessor.SetConsumer((IBlazorMobxComponent)this);
 
             base.OnParametersSet();
         }

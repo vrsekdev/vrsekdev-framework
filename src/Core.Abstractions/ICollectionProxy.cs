@@ -11,6 +11,12 @@ namespace Havit.Blazor.Mobx.Abstractions
 
         bool ElementObserved { get; }
 
+        /// <summary>
+        /// Add default elements from base class without event invocation
+        /// </summary>
+        /// <param name="elements">Default elements from base class</param>
+        void AddDefaultElements(IEnumerable elements);
+
         void Reset();
     }
 }

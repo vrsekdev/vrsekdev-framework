@@ -52,5 +52,10 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Fakes
         {
             throw new NotImplementedException();
         }
+
+        public bool TrySetMember(string name, object value, bool notify = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

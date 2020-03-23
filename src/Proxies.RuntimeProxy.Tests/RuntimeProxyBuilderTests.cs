@@ -311,6 +311,30 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
         }
 
         [TestMethod]
+        public void BuildRuntimeType_Property_PreserveDefaultValue()
+        {
+            string propertyName = nameof(ClassWithDefaultValue.PropertyWithDefaultValue);
+            string defaultValue = new ClassWithDefaultValue().PropertyWithDefaultValue;
+            bool setDefaultInvoked = false;
+
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            managerMock.Setup(x => x.GetValue(propertyName))
+                .Returns(null);
+            managerMock.Setup(x => x.SetDefaultValue(propertyName, defaultValue)).Callback(() => setDefaultInvoked = true);
+
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            // Act
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithDefaultValue), getMethod, setMethod);
+            ClassWithDefaultValue impl = (ClassWithDefaultValue)Activator.CreateInstance(runtimeType, manager);
+
+            // Assert
+            Assert.IsTrue(setDefaultInvoked);
+        }
+
+        [TestMethod]
         public void BuildRuntimeType_DefaultProperties_DontOverride()
         {
             // Arrange
