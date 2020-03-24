@@ -15,12 +15,11 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.StoreAccessors
 {
-    internal class StoreAccessor<TStore> : IStoreAccessor<TStore>
+    internal class StoreAccessor<TStore> : StoreObserverBase<TStore>, IStoreAccessor<TStore>
         where TStore : class
     {
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
 
-        private Dictionary<IObservableProperty, IObservableContainer> observableContainers = new Dictionary<IObservableProperty, IObservableContainer>();
 
         private readonly ReaderWriterLockSlim renderLock = new ReaderWriterLockSlim();
         private readonly IStoreHolder<TStore> storeHolder;
@@ -32,7 +31,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
         public StoreAccessor(
             IStoreHolder<TStore> storeHolder,
             IPropertyProxyFactory propertyProxyFactory,
-            IPropertyProxyWrapper propertyProxyWrapper)
+            IPropertyProxyWrapper propertyProxyWrapper) : base(storeHolder)
         {
             this.storeHolder = storeHolder;
             this.propertyProxyFactory = propertyProxyFactory;
@@ -40,10 +39,6 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
             IPropertyProxy propertyProxy = propertyProxyFactory.Create(storeHolder.RootObservableProperty, storeHolder.StoreReactables);
             Store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
-
-            PropertyAccessedEvent += InjectedStoreAccessor_PropertyAccessedEvent;
-            storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
-            storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
 
             PlantSubscriber(propertyProxy);
         }
@@ -90,70 +85,71 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             propertyProxyWrapper.UnwrapPropertyObservable(Store).ObservableProperty.ResetValues();
         }
 
-        public void Dispose()
-        {
-            PropertyAccessedEvent -= InjectedStoreAccessor_PropertyAccessedEvent;
-            storeHolder.StatePropertyChangedEvent -= StoreHolder_StatePropertyChangedEvent;
-            storeHolder.CollectionItemsChangedEvent -= StoreHolder_CollectionItemsChangedEvent;
-
-            consumer = null;
-            observableContainers = null;
-        }
-
         private void PlantSubscriber(IPropertyProxy propertyProxy)
         {
             propertyProxy.Subscribe(new PropertyAccessedSubscriber(PropertyAccessedEvent));
         }
 
-        private void InjectedStoreAccessor_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
+        protected override void OnPropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
-            if (!consumer.IsAlive())
+            if (consumer?.IsAlive() != true)
             {
                 Dispose();
                 return;
             }
 
-            IObservableProperty observableProperty = e.PropertyProxy.ObservableProperty;
-            if (!observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
-            {
-                container = new ObservableContainer();
-                observableContainers.Add(observableProperty, container);
-            }
-
-            container.OnPropertyAccessed(e.PropertyName);
+            base.OnPropertyAccessedEvent(sender, e);
         }
 
-        private async void StoreHolder_StatePropertyChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
+        protected override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
-            if (!consumer.IsAlive())
+            if (consumer?.IsAlive() != true)
             {
                 Dispose();
-                return;
+                return new ValueTask<bool>(true);
             }
 
-            await renderLock.TryExecuteWithWriteLockAsync(async () =>
+            return renderLock.TryExecuteWithWriteLockAsync(async () =>
             {
-                IObservableProperty observableProperty = (IObservableProperty)sender;
-                string propertyName = e.PropertyName;
+                IObservableProperty observableProperty = e.ObservableProperty;
+                string propertyName = e.PropertyInfo.Name;
                 if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
                 {
                     if (container.IsSubscribed(propertyName))
                     {
                         await consumer.ForceUpdate();
+                        return true;
                     }
                 }
+
+                return false;
             });
         }
 
-        private async void StoreHolder_CollectionItemsChangedEvent(object sender, ObservableCollectionItemsChangedEventArgs e)
+        protected override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
-            await renderLock.TryExecuteWithWriteLockAsync(async () =>
+            if (consumer?.IsAlive() != true)
+            {
+                Dispose();
+                return new ValueTask<bool>(true);
+            }
+
+            return renderLock.TryExecuteWithWriteLockAsync(async () =>
             {
                 if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
                 {
                     await consumer.ForceUpdate();
+                    return true;
                 }
+
+                return false;
             });
+        }
+
+        public void Dispose()
+        {
+            consumer = null;
+            observableContainers = null;
         }
     }
 }

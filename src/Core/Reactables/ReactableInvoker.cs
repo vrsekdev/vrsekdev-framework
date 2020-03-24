@@ -4,72 +4,62 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.Reactables
 {
-    internal class ReactableInvoker<TStore>
+    internal class ReactableInvoker<TStore> : StoreObserverBase<TStore>
         where TStore : class
     {
-        private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
-
         private readonly IInvokableReactable reactable;
-
-        private Dictionary<IObservableProperty, IObservableContainer> observableContainers = new Dictionary<IObservableProperty, IObservableContainer>();
 
         public ReactableInvoker(
             IInvokableReactable reactable,
-            IStoreHolder<TStore> storeHolder)
+            IStoreHolder<TStore> storeHolder) : base(storeHolder)
         {
             this.reactable = reactable;
-
-            // no memory leak, because we dont store a reference to store holder
-            storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
-            storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
-            PropertyAccessedEvent += ReactableInvoker_PropertyAccessedEvent;
         }
 
         public void PlantSubscriber(IPropertyProxy propertyProxy)
         {
-            propertyProxy.Subscribe(new PropertyAccessedSubscriber(PropertyAccessedEvent));
+            propertyProxy.Subscribe(new PropertyAccessedSubscriber(OnPropertyAccessed));
         }
 
-        private void ReactableInvoker_PropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
-        {
-            IObservableProperty observableProperty = e.PropertyProxy.ObservableProperty;
-            if (!observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
-            {
-                container = new ObservableContainer();
-                observableContainers.Add(observableProperty, container);
-            }
-
-            container.OnPropertyAccessed(e.PropertyName);
-        }
-
-        private void StoreHolder_StatePropertyChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
+        protected override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
             if (reactable.ShouldInvoke())
             {
                 reactable.Invoke();
-                return;
+                return new ValueTask<bool>(true);
             }
 
-            IObservableProperty observableProperty = (IObservableProperty)sender;
-            string propertyName = e.PropertyName;
-            if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
+            if (observableContainers.TryGetValue(e.ObservableProperty, out IObservableContainer container))
             {
-                if (container.IsSubscribed(propertyName))
+                if (container.IsSubscribed(e.PropertyInfo.Name))
                 {
                     reactable.Invoke();
+                    return new ValueTask<bool>(true);
                 }
             }
+
+            return new ValueTask<bool>(false);
         }
 
-        private void StoreHolder_CollectionItemsChangedEvent(object sender, ObservableCollectionItemsChangedEventArgs e)
+        protected override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
+            if (reactable.ShouldInvoke())
+            {
+                reactable.Invoke();
+                return new ValueTask<bool>(true);
+            }
+
             if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
             {
                 reactable.Invoke();
+                return new ValueTask<bool>(true);
             }
+
+            return new ValueTask<bool>(false);
         }
     }
 }

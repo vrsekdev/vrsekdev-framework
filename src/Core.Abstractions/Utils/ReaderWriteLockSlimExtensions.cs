@@ -47,7 +47,7 @@ namespace Havit.Blazor.Mobx.Abstractions.Utils
             }
         }
 
-        public static async Task TryExecuteWithWriteLockAsync(this ReaderWriterLockSlim readerWriterLock, Func<Task> func)
+        public static async ValueTask TryExecuteWithWriteLockAsync(this ReaderWriterLockSlim readerWriterLock, Func<ValueTask> func)
         {
             if (readerWriterLock.IsWriteLockHeld || !readerWriterLock.TryEnterWriteLock(0))
             {
@@ -58,6 +58,24 @@ namespace Havit.Blazor.Mobx.Abstractions.Utils
             try
             {
                 await func();
+            }
+            finally
+            {
+                readerWriterLock.ExitWriteLock();
+            }
+        }
+
+        public static async ValueTask<TValue> TryExecuteWithWriteLockAsync<TValue>(this ReaderWriterLockSlim readerWriterLock, Func<ValueTask<TValue>> func)
+        {
+            if (readerWriterLock.IsWriteLockHeld || !readerWriterLock.TryEnterWriteLock(0))
+            {
+                // Already being invoked. All changes are going to be rendered.
+                // Possibly this call is from an invoked reaction
+                return default;
+            }
+            try
+            {
+                return await func();
             }
             finally
             {

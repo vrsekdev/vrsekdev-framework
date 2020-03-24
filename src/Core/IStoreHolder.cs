@@ -15,8 +15,8 @@ namespace Havit.Blazor.Mobx
         IObservableProperty RootObservableProperty { get; }
 
         event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
-
         event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
+        event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
         IObservableProperty CreateObservableProperty(Type type);
     }

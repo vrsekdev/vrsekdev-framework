@@ -19,19 +19,19 @@ namespace Havit.Blazor.Mobx.Tests.Stores
 
         public virtual int AnotherValue { get; set; }
 
-
         [Action]
         public virtual void ActionMethod(string param)
         {
             Value = 50;
             Value = 60;
+            AnotherValue = 88;
         }
 
         [Autorun]
         public virtual void AutorunMethod()
         {
-            Trace.WriteLine(Value);
-            Trace.WriteLine(AnotherValue);
+            _ = Value;
+            _ = AnotherValue;
             AutorunInvokeCount++;
         }
     }

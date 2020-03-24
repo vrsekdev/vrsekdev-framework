@@ -6,6 +6,8 @@ namespace Havit.Blazor.Mobx.Abstractions.Events
 {
     public class ObservableCollectionItemsChangedEventArgs
     {
+        public IObservableCollection ObservableCollection { get; set; }
+
         public int OldCount { get; set; }
 
         public int NewCount { get; set; }

@@ -7,8 +7,8 @@ namespace Havit.Blazor.Mobx.Abstractions.Events
 {
     public class ObservablePropertyStateChangedEventArgs
     {
-        public PropertyInfo PropertyInfo { get; set; }
+        public IObservableProperty ObservableProperty { get; set; }
 
-        public string PropertyName { get; set; }
+        public PropertyInfo PropertyInfo { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Havit.Blazor.Mobx.Reactables.Autoruns;
 using Havit.Blazor.Mobx.Reactables.ComputedValues;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -18,8 +19,8 @@ namespace Havit.Blazor.Mobx
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
-        private readonly Queue<PropertyStateChangedQueueItem> propertyStateChangedQueue = new Queue<PropertyStateChangedQueueItem>();
-        private readonly Queue<CollectienQueueItem> collectionChangedQueue =new Queue<CollectienQueueItem>();
+        private readonly Queue<ObservablePropertyStateChangedEventArgs> propertyStateChangedQueue = new Queue<ObservablePropertyStateChangedEventArgs>();
+        private readonly Queue<ObservableCollectionItemsChangedEventArgs> collectionChangedQueue =new Queue<ObservableCollectionItemsChangedEventArgs>();
 
         private readonly ReaderWriterLockSlim transactionLock = new ReaderWriterLockSlim();
         private readonly IObservableFactory observableFactory;
@@ -34,6 +35,7 @@ namespace Havit.Blazor.Mobx
 
         public event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
         public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
+        public event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
         public StoreHolder(
             IStoreMetadata<TStore> storeMetadata,
@@ -135,11 +137,7 @@ namespace Havit.Blazor.Mobx
 
             if (!executed)
             {
-                propertyStateChangedQueue.Enqueue(new PropertyStateChangedQueueItem
-                {
-                    Sender = sender,
-                    Args = e
-                });
+                propertyStateChangedQueue.Enqueue(e);
                 return;
             }
 
@@ -155,66 +153,65 @@ namespace Havit.Blazor.Mobx
 
             if (!executed)
             {
-                collectionChangedQueue.Enqueue(new CollectienQueueItem
-                {
-                    Sender = sender,
-                    Args = e
-                });
+                collectionChangedQueue.Enqueue(e);
                 return;
             }
 
             DequeueAll();
         }
 
-        private void DequeuProperties()
+        private List<ObservablePropertyStateChangedEventArgs> DequeuProperties()
         {
-            if (propertyStateChangedQueue.Count == 0)
-                return;
+            List<ObservablePropertyStateChangedEventArgs> batch = new List<ObservablePropertyStateChangedEventArgs>();
 
-            HashSet<(object, string)> hashset = new HashSet<(object, string)>();
-            while (propertyStateChangedQueue.TryDequeue(out PropertyStateChangedQueueItem item))
+            if (propertyStateChangedQueue.Count == 0)
+                return batch;
+
+            HashSet<(IObservableProperty, string)> hashset = new HashSet<(IObservableProperty, string)>();
+            while (propertyStateChangedQueue.TryDequeue(out ObservablePropertyStateChangedEventArgs item))
             {
-                if (hashset.Add((item.Sender, item.Args.PropertyName)))
+                if (hashset.Add((item.ObservableProperty, item.PropertyInfo.Name)))
                 {
-                    StatePropertyChangedEvent?.Invoke(item.Sender, item.Args);
+                    batch.Add(item);
                 }
             }
+
+            return batch;
         }
 
         private void DequeueAll()
         {
-            DequeuProperties();
-            DequeueCollections();
+            var propertyBatch = DequeuProperties();
+            var collectionBatch = DequeueCollections();
+
+            if (propertyBatch.Count > 0 || collectionBatch.Count > 0)
+            {
+                BatchObservableChangeEvent?.Invoke(this, new BatchObservableChangeEventArgs
+                {
+                    PropertyChanges = propertyBatch,
+                    CollectionChanges = collectionBatch
+                });
+            }
         }
 
-        private void DequeueCollections()
+        private List<ObservableCollectionItemsChangedEventArgs> DequeueCollections()
         {
-            if (collectionChangedQueue.Count == 0)
-                return;
+            List<ObservableCollectionItemsChangedEventArgs> batch = new List<ObservableCollectionItemsChangedEventArgs>();
 
-            HashSet<CollectienQueueItem> hashset = new HashSet<CollectienQueueItem>();
-            while (collectionChangedQueue.TryDequeue(out CollectienQueueItem item))
+            if (collectionChangedQueue.Count == 0)
+                return batch;
+
+            HashSet<ObservableCollectionItemsChangedEventArgs> hashset = new HashSet<ObservableCollectionItemsChangedEventArgs>();
+            while (collectionChangedQueue.TryDequeue(out ObservableCollectionItemsChangedEventArgs item))
             {
                 if (hashset.Add(item))
                 {
                     // TODO: basically sending every change. Maybe group it?
-                    CollectionItemsChangedEvent?.Invoke(item.Sender, item.Args);
+                    batch.Add(item);
                 }
             }
-        }
 
-        private struct PropertyStateChangedQueueItem
-        {
-            public object Sender { get; set; }
-
-            public ObservablePropertyStateChangedEventArgs Args { get; set; }
-        }
-
-        private struct CollectienQueueItem
-        {
-            public object Sender { get; set; }
-
-            public ObservableCollectionItemsChangedEventArgs Args { get; set; }
+            return batch;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace TestProfiler
             var tests = new StoreAccessorTests();
             tests.TestInitialize();
 
-            for (int i =0; i < 1; i++)
+            for (int i = 0; i < 1; i++)
             {
                 tests.Store_Action_BatchMutations();
             }

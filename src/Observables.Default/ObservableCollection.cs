@@ -64,6 +64,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
+                ObservableCollection = this,
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
                 OldCount = oldCount,
@@ -85,6 +86,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
+                ObservableCollection = this,
                 ItemsAdded = (IEnumerable<object>)items,
                 ItemsRemoved = Enumerable.Empty<object>(),
                 OldCount = oldCount,
@@ -112,6 +114,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
+                ObservableCollection = this,
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
                 OldCount = oldCount,
@@ -150,6 +153,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
+                ObservableCollection = this,
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
                 OldCount = Count,
@@ -171,6 +175,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
             {
+                ObservableCollection = this,
                 ItemsAdded = addedItems,
                 ItemsRemoved = removedItems,
                 OldCount = oldCount,

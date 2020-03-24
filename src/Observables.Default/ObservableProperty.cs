@@ -94,8 +94,8 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 {
                     statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                     {
-                        PropertyInfo = allPropertiesByName[name],
-                        PropertyName = name
+                        ObservableProperty = this,
+                        PropertyInfo = allPropertiesByName[name]
                     });
                 }
 
@@ -133,6 +133,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 {
                     collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
                     {
+                        ObservableCollection = oldArray,
                         ItemsAdded = addedItems,
                         ItemsRemoved = removedItems,
                         OldCount = oldArrayCount,
@@ -156,8 +157,8 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 {
                     statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                     {
-                        PropertyInfo = allPropertiesByName[name],
-                        PropertyName = name
+                        ObservableProperty = this,
+                        PropertyInfo = allPropertiesByName[name]
                     });
                 }
 
@@ -236,8 +237,8 @@ namespace Havit.Blazor.Mobx.Observables.Default
             {
                 statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
                 {
+                    ObservableProperty = this,
                     PropertyInfo = allPropertiesByName[propertyName],
-                    PropertyName = propertyName
                 });
             }
         }
