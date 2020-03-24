@@ -8,6 +8,7 @@ using Moq;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
 {
@@ -60,8 +61,9 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
-            int expectedValue = 50;
-            Func<Func<string, int>, int> interceptor = (Func<string, int> baseMethod) => expectedValue;
+            string expectedValue = "parameterValue";
+            Func<Func<string, string>, string, string> interceptor = (Func<string, string> baseMethod, string param) => 
+            baseMethod(param);
 
             MethodInterceptions interceptions = new MethodInterceptions
             {
@@ -79,7 +81,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
-            int returnedValue = impl.FunctionWithParameterToIntercept(String.Empty);
+            string returnedValue = impl.FunctionWithParameterToIntercept(expectedValue);
             sw.Stop();
             Trace.WriteLine(sw.ElapsedMilliseconds);
 
@@ -158,6 +160,43 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             // Assert
             Assert.AreEqual(expectedValue, returnedValue);
         }
+
+        [TestMethod]
+        public void BuildRuntimeType_MethodInterceptors_Action_ReceiveParameter()
+        {
+            // Arrange
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            string expectedValue = "parameterValue";
+            Action<Action<string>, string> interceptor = (Action<string> baseMethod, string param) => baseMethod(param);
+
+            MethodInterceptions interceptions = new MethodInterceptions
+            {
+                Interceptions = new MethodInterception[]
+                {
+                    new DelegateMethodInterception
+                    {
+                        InterceptedMethod = typeof(ClassWithVirtualMethod).GetMethod(nameof(ClassWithVirtualMethod.FunctionWithParameterToIntercept)),
+                        Delegate = interceptor
+                    }
+                }
+            };
+
+            // Act
+            Stopwatch sw = Stopwatch.StartNew();
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
+            ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
+            impl.ActionWithParameter(expectedValue);
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
+
+            // Assert
+            Assert.AreEqual(expectedValue, impl.ActionParameter);
+        }
+
 
         [TestMethod]
         public void BuildRuntimeType_MethodInterceptors_InterceptMultipleClassMethods()

@@ -2,10 +2,12 @@
 using Havit.Blazor.Mobx.Abstractions.Events;
 using Havit.Blazor.Mobx.Abstractions.Utils;
 using Havit.Blazor.Mobx.Reactables;
+using Havit.Blazor.Mobx.Reactables.Actions;
 using Havit.Blazor.Mobx.Reactables.Autoruns;
 using Havit.Blazor.Mobx.Reactables.ComputedValues;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -81,21 +83,9 @@ namespace Havit.Blazor.Mobx
             var actions = storeMetadata.GetActions();
             return actions.Select(actionMethod =>
             {
-                Action<Action> interceptor = interceptedAction =>
-                {
-                    transactionLock.EnterWriteLock();
-                    try
-                    {
-                        interceptedAction();
-                    }
-                    finally
-                    {
-                        transactionLock.ExitWriteLock();
-                    }
+                Contract.Requires(actionMethod.ReturnType == typeof(void));
 
-                    DequeuProperties();
-                    DequeueCollections();
-                };
+                Delegate interceptor = ActionDelegate.GetFactoryForMethod(actionMethod)(transactionLock, DequeueAll);
 
                 return new DelegateMethodInterception
                 {
@@ -104,6 +94,8 @@ namespace Havit.Blazor.Mobx
                 };
             });
         }
+
+
 
         private IEnumerable<MethodInterception> GetComputedValueInterceptions()
         {
@@ -151,8 +143,7 @@ namespace Havit.Blazor.Mobx
                 return;
             }
 
-            DequeuProperties();
-            DequeueCollections();
+            DequeueAll();
         }
 
         private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedEventArgs e)
@@ -172,8 +163,7 @@ namespace Havit.Blazor.Mobx
                 return;
             }
 
-            DequeuProperties();
-            DequeueCollections();
+            DequeueAll();
         }
 
         private void DequeuProperties()
@@ -189,6 +179,12 @@ namespace Havit.Blazor.Mobx
                     StatePropertyChangedEvent?.Invoke(item.Sender, item.Args);
                 }
             }
+        }
+
+        private void DequeueAll()
+        {
+            DequeuProperties();
+            DequeueCollections();
         }
 
         private void DequeueCollections()

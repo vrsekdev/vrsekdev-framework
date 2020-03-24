@@ -43,11 +43,13 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
 
             MethodBuilder invokeMethod = AddInvokeMethod();
 
+            Type[] baseMethodParameterTypes = interceptedMethod.GetParameters().Select(x => x.ParameterType).ToArray();
+
             MethodBuilder methodBuilder = typeBuilder.DefineMethod(
                 interceptedMethod.Name,
                 MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.NewSlot,
                 returnType,
-                interceptedMethod.GetParameters().Select(x => x.ParameterType).ToArray());
+                baseMethodParameterTypes); // same signature as base method
 
             methodGenerator = methodBuilder.GetILGenerator();
             targetLocal = methodGenerator.DeclareLocal(typeof(object));
@@ -74,6 +76,11 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
                     methodGenerator.Emit(OpCodes.Ldloc, targetLocal);
                 }
                 methodGenerator.Emit(OpCodes.Ldloc, baseDelegateLocal);
+                for (int i = 1; i < baseMethodParameterTypes.Length + 1; i++)
+                {
+                    // push received parameters
+                    methodGenerator.Emit(OpCodes.Ldarg, i);
+                }
             }
             methodGenerator.Emit(OpCodes.Callvirt, interceptorMethod);
             methodGenerator.Emit(OpCodes.Ret);

@@ -21,7 +21,7 @@ namespace Havit.Blazor.Mobx.Tests.Stores
 
 
         [Action]
-        public virtual void ActionMethod()
+        public virtual void ActionMethod(string param)
         {
             Value = 50;
             Value = 60;

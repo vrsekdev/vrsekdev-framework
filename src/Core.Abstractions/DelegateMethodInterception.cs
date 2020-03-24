@@ -26,7 +26,7 @@ namespace Havit.Blazor.Mobx.Abstractions
 			}
 		}
 
-		public MulticastDelegate Delegate
+		public Delegate Delegate
 		{
 			set 
 			{

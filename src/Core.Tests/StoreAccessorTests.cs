@@ -38,7 +38,7 @@ namespace Havit.Blazor.Mobx.Tests
 
             // Act
             Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
-            store.ActionMethod(); invokeCount++;
+            store.ActionMethod(String.Empty); invokeCount++;
 
             // Assert
             Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);

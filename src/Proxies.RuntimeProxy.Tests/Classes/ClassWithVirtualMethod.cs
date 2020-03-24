@@ -6,6 +6,8 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Classes
 {
     public class ClassWithVirtualMethod
     {
+        public string ActionParameter { get; private set; }
+
         public bool InterceptedMethodCalled { get; private set; }
         public bool InterceptedMethod2Called { get; private set; }
 
@@ -24,14 +26,19 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Classes
             return "base";
         }
 
-        public virtual int FunctionWithParameterToIntercept(string param)
+        public virtual string FunctionWithParameterToIntercept(string param)
         {
-            return 10;
+            return param;
         }
 
         public virtual ClassWithVirtualMethod FunctionReturningThis()
         {
             return this;
+        }
+
+        public virtual void ActionWithParameter(string parameter)
+        {
+            ActionParameter = parameter;
         }
     }
 }
