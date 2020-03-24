@@ -180,6 +180,11 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
         public void OverwriteFrom(object source)
         {
+            if (source == null)
+            {
+                return;
+            }
+
             if (source is ObservableProperty observableProperty)
             {
                 OverwriteFrom(observableProperty);
