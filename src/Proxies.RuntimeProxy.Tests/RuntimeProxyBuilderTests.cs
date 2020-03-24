@@ -40,9 +40,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             ClassWithVirtualMethod returnedValue = impl.FunctionReturningThis();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(expectedThisValue, returnedValue);
@@ -73,9 +76,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             int returnedValue = impl.FunctionWithParameterToIntercept(String.Empty);
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(expectedValue, returnedValue);
@@ -106,9 +112,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             string returnedValue = impl.FunctionToIntercept();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(expectedValue, returnedValue);
@@ -143,6 +152,8 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             string returnedValue = returnedValue = impl.FunctionToIntercept();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(expectedValue, returnedValue);
@@ -180,10 +191,13 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             impl.ActionToIntercept();
             impl.ActionToIntercept2();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.IsTrue(interceptorCalled);
@@ -213,9 +227,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             impl.ActionToIntercept();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.IsTrue(impl.InterceptedMethodCalled);
@@ -246,9 +263,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithVirtualMethod), getMethod, setMethod, interceptions);
             ClassWithVirtualMethod impl = (ClassWithVirtualMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             impl.ActionToIntercept();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.IsTrue(interceptorCalled);
@@ -279,9 +299,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             };
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(IInterfaceWithMethod), getMethod, setMethod, interceptions);
             IInterfaceWithMethod impl = (IInterfaceWithMethod)Activator.CreateInstance(runtimeType, new object[] { manager, interceptions });
             impl.MethodToIntercept();
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.IsTrue(interceptorCalled);
@@ -302,9 +325,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(IInterfaceWithReadonlyProperty), getMethod, setMethod);
             IInterfaceWithReadonlyProperty impl = (IInterfaceWithReadonlyProperty)Activator.CreateInstance(runtimeType, manager);
             string returnedValue = impl.ReadonlyStringProperty;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(value, returnedValue);
@@ -327,8 +353,11 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ClassWithDefaultValue), getMethod, setMethod);
             ClassWithDefaultValue impl = (ClassWithDefaultValue)Activator.CreateInstance(runtimeType, manager);
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.IsTrue(setDefaultInvoked);
@@ -349,9 +378,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(IInterfaceWithDefaultProperty), getMethod, setMethod);
             IInterfaceWithDefaultProperty impl = (IInterfaceWithDefaultProperty)Activator.CreateInstance(runtimeType, manager);
             string returnedValue = impl.DefaultProperty;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(value, returnedValue);
@@ -372,8 +404,11 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(IInterfaceWithAncestor), getMethod, setMethod);
             IInterfaceWithAncestor impl = (IInterfaceWithAncestor)Activator.CreateInstance(runtimeType, manager);
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(value, impl.StringValue);
@@ -394,8 +429,11 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
             ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(value, impl.ValueTypeValue);
@@ -418,9 +456,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
             ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
             impl.ValueTypeValue = value;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(value, impl.ValueTypeValue);
@@ -441,9 +482,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
             ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
             string returnedValue = impl.StringValue;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(value, returnedValue);
@@ -467,10 +511,13 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
             ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
             impl.StringValue = value;
-            
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
+
             // Assert
             Assert.AreEqual(value, impl.StringValue);
         }
@@ -494,8 +541,11 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(InterfaceWithSimpleStruct), getMethod, setMethod);
             InterfaceWithSimpleStruct impl = (InterfaceWithSimpleStruct)Activator.CreateInstance(runtimeType, manager);
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(defaultStruct, impl.DefaultStruct);
@@ -524,9 +574,12 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
 
             // Act
+            Stopwatch sw = Stopwatch.StartNew();
             Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(InterfaceWithSimpleStruct), getMethod, setMethod);
             InterfaceWithSimpleStruct impl = (InterfaceWithSimpleStruct)Activator.CreateInstance(runtimeType, manager);
             impl.DefaultStruct = defaultStruct;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
 
             // Assert
             Assert.AreEqual(defaultStruct, impl.DefaultStruct);
