@@ -1,6 +1,8 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
 using Havit.Blazor.Mobx.Abstractions.Events;
+using Havit.Blazor.Mobx.Abstractions.Utils;
 using Havit.Blazor.Mobx.Reactables;
+using Havit.Blazor.Mobx.Reactables.Autoruns;
 using Havit.Blazor.Mobx.Reactables.ComputedValues;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,10 @@ namespace Havit.Blazor.Mobx
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
-        private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+        private readonly Queue<PropertyStateChangedQueueItem> propertyStateChangedQueue = new Queue<PropertyStateChangedQueueItem>();
+        private readonly Queue<CollectienQueueItem> collectionChangedQueue =new Queue<CollectienQueueItem>();
+
+        private readonly ReaderWriterLockSlim transactionLock = new ReaderWriterLockSlim();
         private readonly IObservableFactory observableFactory;
         private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
@@ -47,12 +52,57 @@ namespace Havit.Blazor.Mobx
 
         private void InitializeReactables()
         {
+            RegisterAutoruns();
+
             List<MethodInterception> methodInterceptions = new List<MethodInterception>();
             methodInterceptions.AddRange(GetComputedValueInterceptions());
+            methodInterceptions.AddRange(GetActionInterceptions());
             StoreReactables = new MethodInterceptions
             {
                 Interceptions = methodInterceptions.ToArray()
             };
+        }
+
+        private void RegisterAutoruns()
+        {
+            foreach (var autorunMethod in storeMetadata.GetAutoruns())
+            {
+                IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
+                var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
+
+                IInvokableReactable target = new AutorunContainer<TStore>(autorunMethod, store);
+                ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);
+                invoker.PlantSubscriber(propertyProxy);
+            }
+        }
+
+        private IEnumerable<MethodInterception> GetActionInterceptions()
+        {
+            var actions = storeMetadata.GetActions();
+            return actions.Select(actionMethod =>
+            {
+                Action<Action> interceptor = interceptedAction =>
+                {
+                    transactionLock.EnterWriteLock();
+                    try
+                    {
+                        interceptedAction();
+                    }
+                    finally
+                    {
+                        transactionLock.ExitWriteLock();
+                    }
+
+                    DequeuProperties();
+                    DequeueCollections();
+                };
+
+                return new DelegateMethodInterception
+                {
+                    InterceptedMethod = actionMethod,
+                    Delegate = interceptor
+                };
+            });
         }
 
         private IEnumerable<MethodInterception> GetComputedValueInterceptions()
@@ -86,38 +136,89 @@ namespace Havit.Blazor.Mobx
 
         private void OnStatePropertyChanged(object sender, ObservablePropertyStateChangedEventArgs e)
         {
-            ExecuteWithWriteLock(() =>
+            bool executed = transactionLock.TryExecuteWithWriteLock(() =>
             {
                 StatePropertyChangedEvent?.Invoke(sender, e);
             });
+
+            if (!executed)
+            {
+                propertyStateChangedQueue.Enqueue(new PropertyStateChangedQueueItem
+                {
+                    Sender = sender,
+                    Args = e
+                });
+                return;
+            }
+
+            DequeuProperties();
+            DequeueCollections();
         }
 
         private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedEventArgs e)
         {
-            ExecuteWithWriteLock(() =>
+            bool executed = transactionLock.TryExecuteWithWriteLock(() =>
             {
                 CollectionItemsChangedEvent?.Invoke(sender, e);
             });
-        }
 
-        // TODO: move this to store accessor to allow reactables to be invoked multiple times, 
-        // but component should be rendered just once
-        private void ExecuteWithWriteLock(Action action)
-        {
-            if (!readerWriterLock.TryEnterWriteLock(0))
+            if (!executed)
             {
-                // Already being invoked. All changes are going to be rendered.
-                // Possibly this call is from an invoked reaction
+                collectionChangedQueue.Enqueue(new CollectienQueueItem
+                {
+                    Sender = sender,
+                    Args = e
+                });
                 return;
             }
-            try
+
+            DequeuProperties();
+            DequeueCollections();
+        }
+
+        private void DequeuProperties()
+        {
+            if (propertyStateChangedQueue.Count == 0)
+                return;
+
+            HashSet<(object, string)> hashset = new HashSet<(object, string)>();
+            while (propertyStateChangedQueue.TryDequeue(out PropertyStateChangedQueueItem item))
             {
-                action();
+                if (hashset.Add((item.Sender, item.Args.PropertyName)))
+                {
+                    StatePropertyChangedEvent?.Invoke(item.Sender, item.Args);
+                }
             }
-            finally
+        }
+
+        private void DequeueCollections()
+        {
+            if (collectionChangedQueue.Count == 0)
+                return;
+
+            HashSet<CollectienQueueItem> hashset = new HashSet<CollectienQueueItem>();
+            while (collectionChangedQueue.TryDequeue(out CollectienQueueItem item))
             {
-                readerWriterLock.ExitWriteLock();
+                if (hashset.Add(item))
+                {
+                    // TODO: basically sending every change. Maybe group it?
+                    CollectionItemsChangedEvent?.Invoke(item.Sender, item.Args);
+                }
             }
+        }
+
+        private struct PropertyStateChangedQueueItem
+        {
+            public object Sender { get; set; }
+
+            public ObservablePropertyStateChangedEventArgs Args { get; set; }
+        }
+
+        private struct CollectienQueueItem
+        {
+            public object Sender { get; set; }
+
+            public ObservableCollectionItemsChangedEventArgs Args { get; set; }
         }
     }
 }

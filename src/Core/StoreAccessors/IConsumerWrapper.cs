@@ -10,7 +10,5 @@ namespace Havit.Blazor.Mobx.StoreAccessors
         Task ForceUpdate();
 
         bool IsAlive();
-
-        bool IsRendered();
     }
 }

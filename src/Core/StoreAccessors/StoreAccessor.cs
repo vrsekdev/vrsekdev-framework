@@ -1,6 +1,7 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
 using Havit.Blazor.Mobx.Abstractions.Components;
 using Havit.Blazor.Mobx.Abstractions.Events;
+using Havit.Blazor.Mobx.Abstractions.Utils;
 using Havit.Blazor.Mobx.Components;
 using Havit.Blazor.Mobx.Reactables.ComputedValues;
 using Microsoft.AspNetCore.Components;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.StoreAccessors
@@ -20,6 +22,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         private Dictionary<IObservableProperty, IObservableContainer> observableContainers = new Dictionary<IObservableProperty, IObservableContainer>();
 
+        private readonly ReaderWriterLockSlim renderLock = new ReaderWriterLockSlim();
         private readonly IStoreHolder<TStore> storeHolder;
         private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
@@ -128,29 +131,29 @@ namespace Havit.Blazor.Mobx.StoreAccessors
                 return;
             }
 
-            if (!consumer.IsRendered())
-                return;
-
-            IObservableProperty observableProperty = (IObservableProperty)sender;
-            string propertyName = e.PropertyName;
-            if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
+            await renderLock.TryExecuteWithWriteLockAsync(async () =>
             {
-                if (container.IsSubscribed(propertyName))
+                IObservableProperty observableProperty = (IObservableProperty)sender;
+                string propertyName = e.PropertyName;
+                if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
                 {
-                    await consumer.ForceUpdate();
+                    if (container.IsSubscribed(propertyName))
+                    {
+                        await consumer.ForceUpdate();
+                    }
                 }
-            }
+            });
         }
 
         private async void StoreHolder_CollectionItemsChangedEvent(object sender, ObservableCollectionItemsChangedEventArgs e)
         {
-            if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
+            await renderLock.TryExecuteWithWriteLockAsync(async () =>
             {
-                if (consumer.IsRendered())
+                if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
                 {
                     await consumer.ForceUpdate();
                 }
-            }
+            });
         }
     }
 }

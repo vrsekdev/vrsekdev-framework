@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Reactables.ComputedValues
 {
-    public class ComputedValueContainer<TStore, TValue> : ObservableContainer, IInvokableReactable
+    public class ComputedValueContainer<TStore, TValue> : IInvokableReactable
     {
         private bool isInitialized, isInvalidated = true;
         private TValue cachedValue;
@@ -16,15 +16,9 @@ namespace Havit.Blazor.Mobx.Reactables.ComputedValues
             this.store = store;
         }
 
-        public override bool IsSubscribed(string propertyName)
+        public bool ShouldInvoke()
         {
-            if (!isInitialized)
-            {
-                // behave promiscous when not initialized
-                return true;
-            }
-
-            return base.IsSubscribed(propertyName);
+            return !isInitialized;
         }
 
         public void Invoke()

@@ -12,25 +12,6 @@ namespace Havit.Blazor.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase, IBlazorMobxComponent
     {
-        private bool isRendered;
-
-        public async override Task SetParametersAsync(ParameterView parameters)
-        {
-            await base.SetParametersAsync(parameters);
-            isRendered = false;
-        }
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            isRendered = true;
-            base.OnAfterRender(firstRender);
-        }
-
-        public bool IsRendered()
-        {
-            return isRendered;
-        }
-
         public Task ForceUpdate()
         {
             return InvokeAsync(StateHasChanged);

@@ -15,6 +15,18 @@ namespace Havit.Blazor.Mobx
     internal class StoreMetadata<TStore> : IStoreMetadata<TStore>
         where TStore : class
     {
+        public MethodInfo[] GetAutoruns()
+        {
+            return typeof(TStore).GetMethods()
+                .Where(x => x.GetCustomAttribute<AutorunAttribute>() != null).ToArray();
+        }
+
+        public virtual MethodInfo[] GetActions()
+        {
+            return typeof(TStore).GetMethods()
+                .Where(x => x.GetCustomAttribute<ActionAttribute>() != null).ToArray();
+        }
+
         public virtual MethodInfo[] GetComputedValues()
         {
             return typeof(TStore).GetMethods()

@@ -6,6 +6,8 @@ namespace Havit.Blazor.Mobx.Reactables
 {
     public interface IInvokableReactable
     {
+        bool ShouldInvoke();
+
         void Invoke();
     }
 }

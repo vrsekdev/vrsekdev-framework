@@ -7,8 +7,6 @@ namespace Havit.Blazor.Mobx.Abstractions.Components
 {
     public interface IBlazorMobxComponent
     {
-        bool IsRendered();
-
         Task ForceUpdate();
     }
 }

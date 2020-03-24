@@ -37,20 +37,6 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             return consumerReference.TryGetTarget(out _);
         }
 
-        public bool IsRendered()
-        {
-            if (!consumerReference.TryGetTarget(out IBlazorMobxComponent consumer))
-            {
-#if DEBUG
-                throw new Exception("Component is dead");
-#else
-                return Task.CompletedTask;
-#endif
-            }
-
-            return consumer.IsRendered();
-        }
-
         public override string ToString()
         {
             return componentName;

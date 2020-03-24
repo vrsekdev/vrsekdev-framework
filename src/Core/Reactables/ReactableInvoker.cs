@@ -47,6 +47,12 @@ namespace Havit.Blazor.Mobx.Reactables
 
         private void StoreHolder_StatePropertyChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
         {
+            if (reactable.ShouldInvoke())
+            {
+                reactable.Invoke();
+                return;
+            }
+
             IObservableProperty observableProperty = (IObservableProperty)sender;
             string propertyName = e.PropertyName;
             if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))

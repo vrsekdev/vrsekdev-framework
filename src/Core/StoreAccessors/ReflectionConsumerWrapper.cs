@@ -55,11 +55,6 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             return ComponentBaseInvokeAsync(consumer, () => ComponentBaseStateHasChanged(consumer));
         }
 
-        public bool IsRendered()
-        {
-            return true;
-        }
-
         public bool IsAlive()
         {
             return consumerReference.TryGetTarget(out _);

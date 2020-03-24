@@ -21,21 +21,45 @@ namespace Havit.Blazor.Mobx.Tests
             services.UseDefaultMobxProperties();
             services.AddMobxStore<ClassStoreWithDefaultValue>().LifestyleTransient();
             services.AddMobxStore<ClassStoreWithComputed>().LifestyleTransient();
+            services.AddMobxStore<ClassStoreWithAction>().LifestyleTransient();
 
             serviceProvider = services.BuildServiceProvider();
         }
 
         [TestMethod]
-        public void Store_PropertyHasDefaultValue_PreserveDefaultValue()
+        public void Store_Action_BatchMutations()
         {
             // Arrange
-            string defaultValue = new ClassStoreWithDefaultValue().PropertyWithDefaultValue;
-            IStoreAccessor<ClassStoreWithDefaultValue> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithDefaultValue>>();
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
             var consumer = new FakeBlazorComponent();
             storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0;
+
+            // Act
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+            store.ActionMethod(); invokeCount++;
 
             // Assert
-            Assert.AreEqual(defaultValue, storeAccessor.Store.PropertyWithDefaultValue);
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+        }
+
+        [TestMethod]
+        public void Store_Autorun_BehavePromiscous()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0;
+
+            // Act
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+            store.AnotherValue = 65; invokeCount++;
+
+            // Assert
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
         }
 
         [TestMethod]
@@ -76,6 +100,19 @@ namespace Havit.Blazor.Mobx.Tests
 
             // Assert
             Assert.AreEqual(invokeCount, ClassStoreWithComputed.InvokeCount);
+        }
+
+        [TestMethod]
+        public void Store_PropertyHasDefaultValue_PreserveDefaultValue()
+        {
+            // Arrange
+            string defaultValue = new ClassStoreWithDefaultValue().PropertyWithDefaultValue;
+            IStoreAccessor<ClassStoreWithDefaultValue> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithDefaultValue>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+
+            // Assert
+            Assert.AreEqual(defaultValue, storeAccessor.Store.PropertyWithDefaultValue);
         }
     }
 }
