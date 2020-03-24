@@ -41,6 +41,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
     {
         #region static
         private readonly static Lazy<Type> runtimeTypeWithoutInterceptions;
+        private readonly static Dictionary<MethodInterceptions, Type> typeCache = new Dictionary<MethodInterceptions, Type>();
 
         private readonly static MethodInfo getMethod;
         private readonly static MethodInfo setMethod;
@@ -62,7 +63,13 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
                 return runtimeTypeWithoutInterceptions.Value;
             }
 
-            return RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, interceptions);
+            if (!typeCache.TryGetValue(interceptions, out Type type))
+            {
+                type = RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, interceptions);
+                typeCache.Add(interceptions, type);
+            }
+
+            return type;
         }
         #endregion static
 

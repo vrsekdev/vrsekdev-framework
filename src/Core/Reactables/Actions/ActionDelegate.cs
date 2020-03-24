@@ -31,7 +31,7 @@ namespace Havit.Blazor.Mobx.Reactables.Actions
             Type[] parameterTypes = targetMethod.GetParameters().Select(x => x.ParameterType).ToArray();
             Type baseMethodDelegateType = Expression.GetActionType(parameterTypes);
 
-            Type[] interceptorParameterTypes = new[] { baseMethodDelegateType }.Concat(parameterTypes).ToArray();
+            Type[] interceptorParameterTypes = new List<Type>{ baseMethodDelegateType }.Concat(parameterTypes).ToArray();
             Type delegateType = Expression.GetActionType(interceptorParameterTypes);
 
             MethodInfo callBaseMethod = GetCallBaseMethod(parameterTypes);

@@ -47,5 +47,25 @@ namespace Havit.Blazor.Mobx.Abstractions
         {
             return hashDictionary.GetEnumerator();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            if (!(obj is MethodInterceptions interceptions)) return false;
+
+            return GetHashCode() == interceptions.GetHashCode();
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 9109;
+
+            for (int i = 0; i < Interceptions.Length; i++)
+            {
+                hash ^= Interceptions[i].GetHashCode();
+            }
+
+            return hash;
+        }
     }
 }
