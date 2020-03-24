@@ -21,23 +21,27 @@ namespace Havit.Blazor.Mobx.Components
     public abstract class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
         where TStore : class
     {
-        protected TStore Store => storeAccessor.Store;
-
         private IStoreAccessor<TStore> storeAccessor;
+
+        protected TStore Store
+        {
+            get
+            {
+                if (storeAccessor == null)
+                {
+                    storeAccessor = CascadeStoreAccessor ?? InjectedStoreAccessor ?? throw new ArgumentException("Store accessor is not available");
+                    storeAccessor.SetConsumer((IBlazorMobxComponent)this);
+                }
+
+                return storeAccessor.Store;
+            }
+        }
 
         [Inject]
         private IStoreAccessor<TStore> InjectedStoreAccessor { get; set; }
 
         [CascadingParameter(Name = CascadeStoreHolder.CascadingParameterName)]
         private IStoreAccessor<TStore> CascadeStoreAccessor { get; set; }
-
-        protected override void OnParametersSet()
-        {
-            storeAccessor = CascadeStoreAccessor ?? InjectedStoreAccessor ?? throw new ArgumentException("Store accessor is not available");
-            storeAccessor.SetConsumer((IBlazorMobxComponent)this);
-
-            base.OnParametersSet();
-        }
 
         public void ResetStore()
         {
