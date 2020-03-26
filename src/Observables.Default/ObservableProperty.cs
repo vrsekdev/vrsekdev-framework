@@ -104,41 +104,58 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             if (observedCollections.ContainsKey(name))
             {
-                if (!(value is IObservableCollection observableArray))
-                {
-                    throw new Exception("Unsupported type of array.");
-                }
-
                 var oldArray = observedCollections[name];
                 if (oldArray == value)
                 {
                     // Do nothing when collection is identical
                     return true;
                 }
-
-                // TODO: Check logic
-                var items = ((IEnumerable<object>)oldArray).FullOuterJoin((IEnumerable<object>)observableArray, (oldItem, newItem) => new
-                {
-                    NewItem = newItem,
-                    OldItem = oldItem
-                });
-
-                IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
-                IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
-
                 int oldArrayCount = oldArray.CountElements;
-                oldArray.OverwriteElements(observableArray);
 
-                if (notify)
+                if (value != null)
                 {
-                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                    if (!(value is IObservableCollection observableArray))
                     {
-                        ObservableCollection = oldArray,
-                        ItemsAdded = addedItems,
-                        ItemsRemoved = removedItems,
-                        OldCount = oldArrayCount,
-                        NewCount = oldArray.CountElements
+                        throw new Exception("Unsupported type of array.");
+                    }
+
+                    // TODO: Check logic
+                    var items = ((IEnumerable<object>)oldArray).FullOuterJoin((IEnumerable<object>)observableArray, (oldItem, newItem) => new
+                    {
+                        NewItem = newItem,
+                        OldItem = oldItem
                     });
+
+                    IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
+                    IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
+
+                    oldArray.OverwriteElements(observableArray);
+
+                    if (notify)
+                    {
+                        collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                        {
+                            ObservableCollection = oldArray,
+                            ItemsAdded = addedItems,
+                            ItemsRemoved = removedItems,
+                            OldCount = oldArrayCount,
+                            NewCount = oldArray.CountElements
+                        });
+                    }
+                }
+                else
+                {
+                    if (notify)
+                    {
+                        collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                        {
+                            ObservableCollection = oldArray,
+                            ItemsAdded = Enumerable.Empty<object>(),
+                            ItemsRemoved = (IEnumerable<object>)oldArray,
+                            OldCount = oldArrayCount,
+                            NewCount = 0
+                        });
+                    }
                 }
 
                 return true;

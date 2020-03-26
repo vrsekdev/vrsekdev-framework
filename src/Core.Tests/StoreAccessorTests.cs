@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.Tests
 {
@@ -22,8 +23,38 @@ namespace Havit.Blazor.Mobx.Tests
             services.AddMobxStore<ClassStoreWithDefaultValue>().LifestyleTransient();
             services.AddMobxStore<ClassStoreWithComputed>().LifestyleTransient();
             services.AddMobxStore<ClassStoreWithAction>().LifestyleTransient();
+            services.AddMobxStore<ClassWithDependency>().WithDependency<FakeDependency>().LifestyleTransient();
+            services.AddMobxStore<AsyncStoreWithComputed>().LifestyleTransient();
 
             serviceProvider = services.BuildServiceProvider();
+        }
+
+        [TestMethod]
+        public async Task AsyncStore_TaskCompleted_ShouldRender()
+        {
+            // Arrange
+            IStoreAccessor<AsyncStoreWithComputed> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<AsyncStoreWithComputed>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+
+            store.GetValueAsync();
+
+            await Task.Delay(1000);
+            // Assert
+        }
+
+        [TestMethod]
+        public void Store_Dependencies_DependencyInjected()
+        {
+            // Arrange
+            IStoreAccessor<ClassWithDependency> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassWithDependency>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+
+            // Assert
+            Assert.IsNotNull(store.Dependency);
         }
 
         [TestMethod]
@@ -60,6 +91,24 @@ namespace Havit.Blazor.Mobx.Tests
 
             // Assert
             Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+        }
+
+        [TestMethod]
+        public void Store_ComputedValue_IsProperty()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithComputed> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithComputed>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0;
+
+            // Act
+            Assert.AreEqual(invokeCount, ClassStoreWithComputed.InvokeCount);
+            _ = store.ComputedProperty; invokeCount++;
+
+            // Assert
+            Assert.AreEqual(invokeCount, ClassStoreWithComputed.InvokeCount);
         }
 
         [TestMethod]

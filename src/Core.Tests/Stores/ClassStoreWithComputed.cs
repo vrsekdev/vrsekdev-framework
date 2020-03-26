@@ -19,6 +19,17 @@ namespace Havit.Blazor.Mobx.Tests.Stores
         public virtual int Value { get; set; }
 
         [ComputedValue]
+        public virtual int ComputedProperty
+        {
+            get
+            {
+                Console.WriteLine(Value);
+
+                return ++InvokeCount;
+            }
+        }
+
+        [ComputedValue]
         public virtual int ComputedMethodIncerceptingValue()
         {
             Console.WriteLine(Value);

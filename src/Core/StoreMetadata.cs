@@ -29,8 +29,13 @@ namespace Havit.Blazor.Mobx
 
         public virtual MethodInfo[] GetComputedValues()
         {
-            return typeof(TStore).GetMethods()
-                .Where(x => x.GetCustomAttribute<ComputedValueAttribute>() != null).ToArray();
+            var methods = typeof(TStore).GetMethods()
+                .Where(x => x.GetCustomAttribute<ComputedValueAttribute>() != null).ToList();
+            var properties = typeof(TStore).GetProperties()
+                .Where(x => x.GetCustomAttribute<ComputedValueAttribute>() != null)
+                .Select(x => x.GetGetMethod());
+
+            return methods.Concat(properties).ToArray();
         }
 
         public virtual ReactionWrapper<TStore>[] GetReactions()

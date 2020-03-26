@@ -39,6 +39,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
             IPropertyProxy propertyProxy = propertyProxyFactory.Create(storeHolder.RootObservableProperty, storeHolder.StoreReactables);
             Store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
+            storeHolder.DependencyInjector.InjectDependency(Store);
 
             PlantSubscriber(propertyProxy);
         }
@@ -101,16 +102,15 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             base.OnPropertyAccessedEvent(sender, e);
         }
 
-        protected override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
+        protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
             if (consumer?.IsAlive() != true)
             {
                 Dispose();
-                return new ValueTask<bool>(true);
+                return true;
             }
 
-            return renderLock.TryExecuteWithWriteLockAsync(async () =>
-            {
+            
                 IObservableProperty observableProperty = e.ObservableProperty;
                 string propertyName = e.PropertyInfo.Name;
                 if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
@@ -123,27 +123,34 @@ namespace Havit.Blazor.Mobx.StoreAccessors
                 }
 
                 return false;
-            });
         }
 
-        protected override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
+        protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
             if (consumer?.IsAlive() != true)
             {
                 Dispose();
-                return new ValueTask<bool>(true);
+                return true;
             }
 
-            return renderLock.TryExecuteWithWriteLockAsync(async () =>
+            if (e.ObservableCollection.ElementType == typeof(Task))
             {
-                if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
+                foreach (var task in e.ItemsAdded.Cast<Task>())
                 {
-                    await consumer.ForceUpdate();
-                    return true;
+                    _ = task.ContinueWith(t => { 
+                        consumer?.ForceUpdate(); 
+                    });
                 }
+                return true;
+            }
 
-                return false;
-            });
+            if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
+            {
+                await consumer.ForceUpdate();
+                return true;
+            }
+
+            return false;
         }
 
         public void Dispose()

@@ -1,4 +1,5 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
+using Havit.Blazor.Mobx.DependencyInjection;
 using Havit.Blazor.Mobx.Reactables.Reactions;
 using Havit.Blazor.Mobx.StoreAccessors;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,10 +18,28 @@ namespace Havit.Blazor.Mobx.Lifestyles
         private TStore defaultState;
 
         private bool storeMetadataRegistered;
+        private bool dependencyRegistered;
 
         public MobxStoreRegistration(IServiceCollection services)
         {
             this.services = services;
+        }
+
+        public MobxStoreRegistration<TStore> WithDependency<TDependency>(bool register = true)
+        {
+            if (storeMetadataRegistered)
+            {
+                throw new InvalidOperationException("Class containing reactions was already registered for this store");
+            }
+
+            if (register)
+            {
+                services.AddTransient(typeof(TDependency));
+            }
+            services.AddTransient<IStoreDependencyInjector<TStore>, StoreDependencyInjector<TStore, TDependency>>();
+            dependencyRegistered = true;
+
+            return this;
         }
 
         public MobxStoreRegistration<TStore> WithReactions<TImpl>()
@@ -76,6 +95,11 @@ namespace Havit.Blazor.Mobx.Lifestyles
             if (!storeMetadataRegistered)
             {
                 services.AddTransient<IStoreMetadata<TStore>, StoreMetadata<TStore>>();
+            }
+
+            if (!dependencyRegistered)
+            {
+                services.AddTransient<IStoreDependencyInjector<TStore>, NoActionStoreDependencyInjector<TStore>>();
             }
         }
 

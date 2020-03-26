@@ -32,7 +32,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             FieldBuilder capturedContextsField = AddCapturedContextsField(typeBuilder);
 
             bool isClass = baseType.IsClass;
-            var properties = GetPublicProperties(baseType).Where(x => x.GetMethod.IsAbstract || (isClass && x.GetMethod.IsVirtual));
+            var properties = GetPublicProperties(baseType).Where(x => x.GetMethod.IsAbstract || (isClass && x.GetMethod.IsVirtual && x.SetMethod != null));
             foreach (var propertyInfo in properties)
             {
                 AddProperty(typeBuilder, propertyInfo, managerField, getMethod, setMethod);

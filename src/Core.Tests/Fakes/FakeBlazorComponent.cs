@@ -15,10 +15,5 @@ namespace Havit.Blazor.Mobx.Tests.Fakes
         {
             return Task.CompletedTask;
         }
-
-        public bool IsRendered()
-        {
-            return true;
-        }
     }
 }

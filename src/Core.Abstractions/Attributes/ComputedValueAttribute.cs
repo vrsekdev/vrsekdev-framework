@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Havit.Blazor.Mobx.Abstractions.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false)]
     public class ComputedValueAttribute : Attribute
     {
     }

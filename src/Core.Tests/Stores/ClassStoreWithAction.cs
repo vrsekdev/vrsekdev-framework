@@ -15,6 +15,9 @@ namespace Havit.Blazor.Mobx.Tests.Stores
             AutorunInvokeCount = 0;
         }
 
+        [Observable]
+        public virtual PagingInfo PagingInfo { get; set; }
+
         public virtual int Value { get; set; }
 
         public virtual int AnotherValue { get; set; }

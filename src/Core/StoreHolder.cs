@@ -1,6 +1,7 @@
 ﻿using Havit.Blazor.Mobx.Abstractions;
 using Havit.Blazor.Mobx.Abstractions.Events;
 using Havit.Blazor.Mobx.Abstractions.Utils;
+using Havit.Blazor.Mobx.DependencyInjection;
 using Havit.Blazor.Mobx.Reactables;
 using Havit.Blazor.Mobx.Reactables.Actions;
 using Havit.Blazor.Mobx.Reactables.Autoruns;
@@ -28,6 +29,7 @@ namespace Havit.Blazor.Mobx
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
 
         public IObservableProperty RootObservableProperty { get; }
+        public IStoreDependencyInjector<TStore> DependencyInjector { get; }
 
         private readonly IStoreMetadata<TStore> storeMetadata;
 
@@ -38,11 +40,13 @@ namespace Havit.Blazor.Mobx
         public event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
         public StoreHolder(
+            IStoreDependencyInjector<TStore> dependencyInjector,
             IStoreMetadata<TStore> storeMetadata,
             IPropertyProxyFactory propertyProxyFactory,
             IPropertyProxyWrapper propertyProxyWrapper,
             IObservableFactoryFactory observableFactoryFactory)
         {
+            DependencyInjector = dependencyInjector;
             this.storeMetadata = storeMetadata;
             this.propertyProxyFactory = propertyProxyFactory;
             this.propertyProxyWrapper = propertyProxyWrapper;
@@ -73,6 +77,7 @@ namespace Havit.Blazor.Mobx
             {
                 IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
                 var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
+                DependencyInjector.InjectDependency(store);
 
                 IInvokableReactable target = new AutorunContainer<TStore>(autorunMethod, store);
                 ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);
@@ -107,6 +112,7 @@ namespace Havit.Blazor.Mobx
                 Type containerType = typeof(ComputedValueContainer<,>).MakeGenericType(typeof(TStore), computedValueMethod.ReturnType);
                 IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
                 var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
+                DependencyInjector.InjectDependency(store);
 
                 IInvokableReactable target = (IInvokableReactable)Activator.CreateInstance(containerType, store);
                 ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);

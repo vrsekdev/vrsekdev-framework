@@ -53,11 +53,11 @@ namespace Havit.Blazor.Mobx.Reactables
                 return new ValueTask<bool>(true);
             }
 
-            if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
+            /*if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
             {
                 reactable.Invoke();
                 return new ValueTask<bool>(true);
-            }
+            }*/
 
             return new ValueTask<bool>(false);
         }

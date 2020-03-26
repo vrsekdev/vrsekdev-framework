@@ -33,6 +33,7 @@ namespace Havit.Blazor.Mobx.Samples
             services.AddMobxStore<IHomeStore>().WithReactions<HomeStoreActions>().LifestyleScoped();
             services.AddMobxStore<ICounterStore>().LifestyleTransient();
             services.AddMobxStore<ITodoStore>().WithReactions<TodoStoreActions>().LifestyleCascading();
+            services.AddMobxStore<AsyncCounterStore>().LifestyleScoped();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

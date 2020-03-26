@@ -134,7 +134,10 @@ namespace Havit.Blazor.Mobx.Abstractions
 
         public void AddDefaultElements(IEnumerable elements)
         {
-            AddDefaultElements(elements.Cast<T>());
+            if (elements != null)
+            {
+                AddDefaultElements(elements.Cast<T>());
+            }
         }
 
         public void AddDefaultElements(IEnumerable<T> items)
