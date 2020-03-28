@@ -9,8 +9,6 @@ namespace Havit.Blazor.Mobx.Reactables.Autoruns
     {
         private readonly Lazy<Action> autorunActionLazy;
 
-        private bool isInitialized;
-
 
         public AutorunContainer(
             MethodInfo storeAutorunMethod,
@@ -24,17 +22,13 @@ namespace Havit.Blazor.Mobx.Reactables.Autoruns
             return (Action)Delegate.CreateDelegate(typeof(Action), store, storeAutorunMethod);
         }
 
-        public bool ShouldInvoke()
+        public bool RequiresInitialInvoke()
         {
-            // behave promiscous when not initialized
-            return !isInitialized;
+            return true;
         }
 
         public void Invoke()
         {
-            if (!isInitialized)
-                isInitialized = true;
-
             autorunActionLazy.Value();
         }
     }

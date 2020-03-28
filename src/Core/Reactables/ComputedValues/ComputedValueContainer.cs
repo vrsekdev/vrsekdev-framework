@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Havit.Blazor.Mobx.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Havit.Blazor.Mobx.Reactables.ComputedValues
 {
-    public class ComputedValueContainer<TStore, TValue> : IInvokableReactable
+    public class ComputedValueContainer<TStore, TValue> : IComputedValueInvokable
     {
-        private bool isInitialized, isInvalidated = true;
+        private bool isInvalidated = true;
         private TValue cachedValue;
         private readonly TStore store;
 
@@ -16,9 +17,9 @@ namespace Havit.Blazor.Mobx.Reactables.ComputedValues
             this.store = store;
         }
 
-        public bool ShouldInvoke()
+        public bool RequiresInitialInvoke()
         {
-            return !isInitialized;
+            return true;
         }
 
         public void Invoke()
@@ -28,8 +29,6 @@ namespace Havit.Blazor.Mobx.Reactables.ComputedValues
 
         public TValue OnMethodInvoke(Func<TStore, TValue> storeFunc)
         {
-            if (!isInitialized)
-                isInitialized = true;
             if (!isInvalidated)
                 return cachedValue;
 

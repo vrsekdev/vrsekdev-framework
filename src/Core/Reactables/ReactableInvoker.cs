@@ -12,6 +12,7 @@ namespace Havit.Blazor.Mobx.Reactables
         where TStore : class
     {
         private readonly IInvokableReactable reactable;
+        private bool initialized = false;
 
         public ReactableInvoker(
             IInvokableReactable reactable,
@@ -25,19 +26,28 @@ namespace Havit.Blazor.Mobx.Reactables
             propertyProxy.Subscribe(new PropertyAccessedSubscriber(OnPropertyAccessed));
         }
 
+        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        {
+            return new ValueTask<bool>(false);
+        }
+
         protected override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
-            if (reactable.ShouldInvoke())
+            if (!initialized)
             {
-                reactable.Invoke();
-                return new ValueTask<bool>(true);
+                initialized = true;
+                if (reactable.RequiresInitialInvoke())
+                {
+                    InvokeInternal(true);
+                    return new ValueTask<bool>(true);
+                }
             }
 
             if (observableContainers.TryGetValue(e.ObservableProperty, out IObservableContainer container))
             {
                 if (container.IsSubscribed(e.PropertyInfo.Name))
                 {
-                    reactable.Invoke();
+                    InvokeInternal(false);
                     return new ValueTask<bool>(true);
                 }
             }
@@ -47,19 +57,28 @@ namespace Havit.Blazor.Mobx.Reactables
 
         protected override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
-            if (reactable.ShouldInvoke())
+            if (!initialized)
             {
-                reactable.Invoke();
-                return new ValueTask<bool>(true);
+                initialized = true;
+                if (reactable.RequiresInitialInvoke())
+                {
+                    InvokeInternal(true);
+                    return new ValueTask<bool>(true);
+                }
             }
 
             /*if (e.NewCount != e.OldCount || e.ItemsAdded.Any() || e.ItemsRemoved.Any())
             {
-                reactable.Invoke();
+                InvokeInternal(false);
                 return new ValueTask<bool>(true);
             }*/
 
             return new ValueTask<bool>(false);
+        }
+
+        protected virtual void InvokeInternal(bool isInitialInvoke)
+        {
+            reactable.Invoke();
         }
     }
 }
