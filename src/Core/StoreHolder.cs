@@ -20,6 +20,7 @@ namespace Havit.Blazor.Mobx
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
+        private readonly Queue<ComputedValueChangedEventArgs> computedValueChangedQueue = new Queue<ComputedValueChangedEventArgs>();
         private readonly Queue<ObservablePropertyStateChangedEventArgs> propertyStateChangedQueue = new Queue<ObservablePropertyStateChangedEventArgs>();
         private readonly Queue<ObservableCollectionItemsChangedEventArgs> collectionChangedQueue =new Queue<ObservableCollectionItemsChangedEventArgs>();
 
@@ -35,7 +36,8 @@ namespace Havit.Blazor.Mobx
 
         public MethodInterceptions StoreReactables { get; private set; } = new MethodInterceptions();
 
-        public event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
+        public event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
+        public event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
         public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
         public event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
@@ -51,7 +53,7 @@ namespace Havit.Blazor.Mobx
             this.propertyProxyFactory = propertyProxyFactory;
             this.propertyProxyWrapper = propertyProxyWrapper;
             this.observableFactory = observableFactoryFactory.CreateFactory(
-                OnStatePropertyChanged,
+                OnPropertyStateChanged,
                 OnCollectionItemsChanged);
 
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
@@ -102,8 +104,6 @@ namespace Havit.Blazor.Mobx
             });
         }
 
-
-
         private IEnumerable<MethodInterception> GetComputedValueInterceptions()
         {
             var computedValues = storeMetadata.GetComputedValues();
@@ -114,8 +114,8 @@ namespace Havit.Blazor.Mobx
                 var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
                 DependencyInjector.InjectDependency(store);
 
-                IInvokableReactable target = (IInvokableReactable)Activator.CreateInstance(containerType, store);
-                ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);
+                IComputedValueInvokable target = (IComputedValueInvokable)Activator.CreateInstance(containerType, store);
+                ComputedValueInvoker<TStore> invoker = new ComputedValueInvoker<TStore>(OnComputedValueChanged, target, this);
                 invoker.PlantSubscriber(propertyProxy);
 
                 MethodInfo interceptorMethod = containerType.GetMethod("OnMethodInvoke");
@@ -134,11 +134,27 @@ namespace Havit.Blazor.Mobx
             return observableFactory.CreateObservableProperty(type);
         }
 
-        private void OnStatePropertyChanged(object sender, ObservablePropertyStateChangedEventArgs e)
+        private void OnComputedValueChanged(object sender, ComputedValueChangedEventArgs e)
         {
             bool executed = transactionLock.TryExecuteWithWriteLock(() =>
             {
-                StatePropertyChangedEvent?.Invoke(sender, e);
+                ComputedValueChangedEvent?.Invoke(sender, e);
+            });
+
+            if (!executed)
+            {
+                computedValueChangedQueue.Enqueue(e);
+                return;
+            }
+
+            DequeueAll();
+        }
+
+        private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedEventArgs e)
+        {
+            bool executed = transactionLock.TryExecuteWithWriteLock(() =>
+            {
+                PropertyStateChangedEvent?.Invoke(sender, e);
             });
 
             if (!executed)
@@ -166,53 +182,52 @@ namespace Havit.Blazor.Mobx
             DequeueAll();
         }
 
-        private List<ObservablePropertyStateChangedEventArgs> DequeuProperties()
-        {
-            List<ObservablePropertyStateChangedEventArgs> batch = new List<ObservablePropertyStateChangedEventArgs>();
-
-            if (propertyStateChangedQueue.Count == 0)
-                return batch;
-
-            HashSet<(IObservableProperty, string)> hashset = new HashSet<(IObservableProperty, string)>();
-            while (propertyStateChangedQueue.TryDequeue(out ObservablePropertyStateChangedEventArgs item))
-            {
-                if (hashset.Add((item.ObservableProperty, item.PropertyInfo.Name)))
-                {
-                    batch.Add(item);
-                }
-            }
-
-            return batch;
-        }
-
         private void DequeueAll()
         {
-            var propertyBatch = DequeuProperties();
+            var computedValuesBatch = DequeueComputedValues();
+            var propertyBatch = DequeueProperties();
             var collectionBatch = DequeueCollections();
 
-            if (propertyBatch.Count > 0 || collectionBatch.Count > 0)
+            if (propertyBatch.Count > 0 || collectionBatch.Count > 0 || computedValuesBatch.Count > 0)
             {
                 BatchObservableChangeEvent?.Invoke(this, new BatchObservableChangeEventArgs
                 {
+                    ComputedValueChanges = computedValuesBatch,
                     PropertyChanges = propertyBatch,
                     CollectionChanges = collectionBatch
                 });
             }
         }
 
+        private List<ComputedValueChangedEventArgs> DequeueComputedValues()
+        {
+            return Dequeue(computedValueChangedQueue, x => x.ComputedValue);
+
+        }
+
+        private List<ObservablePropertyStateChangedEventArgs> DequeueProperties()
+        {
+            return Dequeue(propertyStateChangedQueue, x => (x.ObservableProperty, x.PropertyInfo.Name));
+
+        }
+
         private List<ObservableCollectionItemsChangedEventArgs> DequeueCollections()
         {
-            List<ObservableCollectionItemsChangedEventArgs> batch = new List<ObservableCollectionItemsChangedEventArgs>();
+            return Dequeue(collectionChangedQueue, x => x);
+        }
 
-            if (collectionChangedQueue.Count == 0)
+        private List<TArgs> Dequeue<TArgs, TKey>(Queue<TArgs> queue, Func<TArgs, TKey> getKeyFunc)
+        {
+            List<TArgs> batch = new List<TArgs>();
+
+            if (queue.Count == 0)
                 return batch;
 
-            HashSet<ObservableCollectionItemsChangedEventArgs> hashset = new HashSet<ObservableCollectionItemsChangedEventArgs>();
-            while (collectionChangedQueue.TryDequeue(out ObservableCollectionItemsChangedEventArgs item))
+            HashSet<TKey> hashset = new HashSet<TKey>();
+            while (queue.TryDequeue(out TArgs item))
             {
-                if (hashset.Add(item))
+                if (hashset.Add(getKeyFunc(item)))
                 {
-                    // TODO: basically sending every change. Maybe group it?
                     batch.Add(item);
                 }
             }

@@ -32,8 +32,6 @@ namespace Havit.Blazor.Mobx.Tests.Stores
             {
                 await Task.Delay(2000);
 
-
-
                 return true;
             }));
 		}

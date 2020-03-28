@@ -18,10 +18,6 @@ namespace Havit.Blazor.Mobx.StoreAccessors
     internal class StoreAccessor<TStore> : StoreObserverBase<TStore>, IStoreAccessor<TStore>
         where TStore : class
     {
-        private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
-
-
-        private readonly ReaderWriterLockSlim renderLock = new ReaderWriterLockSlim();
         private readonly IStoreHolder<TStore> storeHolder;
         private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
@@ -88,7 +84,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         private void PlantSubscriber(IPropertyProxy propertyProxy)
         {
-            propertyProxy.Subscribe(new PropertyAccessedSubscriber(PropertyAccessedEvent));
+            propertyProxy.Subscribe(new PropertyAccessedSubscriber(OnPropertyAccessed));
         }
 
         protected override void OnPropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
@@ -102,6 +98,18 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             base.OnPropertyAccessedEvent(sender, e);
         }
 
+        protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        {
+            if (consumer?.IsAlive() != true)
+            {
+                Dispose();
+                return true;
+            }
+
+            await consumer.ForceUpdate();
+            return true;
+        }
+
         protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
             if (consumer?.IsAlive() != true)
@@ -110,19 +118,18 @@ namespace Havit.Blazor.Mobx.StoreAccessors
                 return true;
             }
 
-            
-                IObservableProperty observableProperty = e.ObservableProperty;
-                string propertyName = e.PropertyInfo.Name;
-                if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
+            IObservableProperty observableProperty = e.ObservableProperty;
+            string propertyName = e.PropertyInfo.Name;
+            if (observableContainers.TryGetValue(observableProperty, out IObservableContainer container))
+            {
+                if (container.IsSubscribed(propertyName))
                 {
-                    if (container.IsSubscribed(propertyName))
-                    {
-                        await consumer.ForceUpdate();
-                        return true;
-                    }
+                    await consumer.ForceUpdate();
+                    return true;
                 }
+            }
 
-                return false;
+            return false;
         }
 
         protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)

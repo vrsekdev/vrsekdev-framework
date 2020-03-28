@@ -15,7 +15,8 @@ namespace Havit.Blazor.Mobx
         IObservableProperty RootObservableProperty { get; }
         IStoreDependencyInjector<TStore> DependencyInjector { get; }
 
-        event EventHandler<ObservablePropertyStateChangedEventArgs> StatePropertyChangedEvent;
+        event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
+        event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
         event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
         event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 

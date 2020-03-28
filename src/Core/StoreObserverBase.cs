@@ -18,8 +18,9 @@ namespace Havit.Blazor.Mobx
             IStoreHolder<TStore> storeHolder)
         {
             // no memory leak, because we dont store a reference to store holder
+            storeHolder.ComputedValueChangedEvent += StoreHolder_ComputedValueChangedEvent;
             storeHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
-            storeHolder.StatePropertyChangedEvent += StoreHolder_StatePropertyChangedEvent;
+            storeHolder.PropertyStateChangedEvent += StoreHolder_PropertyStateChangedEvent;
             storeHolder.BatchObservableChangeEvent += StoreHolder_BatchObservableChangeEvent;
             PropertyAccessedEvent += OnPropertyAccessedEvent;
         }
@@ -41,7 +42,12 @@ namespace Havit.Blazor.Mobx
             container.OnPropertyAccessed(e.PropertyName);
         }
 
-        private async void StoreHolder_StatePropertyChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
+        private async void StoreHolder_ComputedValueChangedEvent(object sender, ComputedValueChangedEventArgs e)
+        {
+            await TryInvokeAsync(e);
+        }
+
+        private async void StoreHolder_PropertyStateChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
         {
             await TryInvokeAsync(e);
         }
@@ -53,28 +59,21 @@ namespace Havit.Blazor.Mobx
 
         protected virtual async void StoreHolder_BatchObservableChangeEvent(object sender, BatchObservableChangeEventArgs e)
         {
+            int computedValueChanges = e.ComputedValueChanges.Count;
             int collectionslength = e.CollectionChanges.Count;
             int propertiesLength = e.PropertyChanges.Count;
 
             int index = 0;
             // Invoke only once for all changes
-            while ((index < propertiesLength && !await TryInvokeAsync(e.PropertyChanges[index])) 
+            while ((index < computedValueChanges && !await TryInvokeAsync(e.ComputedValueChanges[index]))
+                || (index < propertiesLength && !await TryInvokeAsync(e.PropertyChanges[index])) 
                 || (index < collectionslength && !await TryInvokeAsync(e.CollectionChanges[index]))) index++;
         }
 
-        protected virtual ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
-        {
-            return new ValueTask<bool>(false);
-        }
+        protected abstract ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e);
 
-        protected virtual ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
-        {
-            return new ValueTask<bool>(false);
-        }
+        protected abstract ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e);
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e);
     }
 }
