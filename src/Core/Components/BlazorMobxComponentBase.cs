@@ -21,21 +21,20 @@ namespace Havit.Blazor.Mobx.Components
     public abstract class BlazorMobxComponentBase<TStore> : BlazorMobxComponentBase
         where TStore : class
     {
-        private IStoreAccessor<TStore> storeAccessor;
+        private Lazy<IStoreAccessor<TStore>> storeAccessor;
 
-        protected TStore Store
+        public BlazorMobxComponentBase()
         {
-            get
+            storeAccessor = new Lazy<IStoreAccessor<TStore>>(() =>
             {
-                if (storeAccessor == null)
-                {
-                    storeAccessor = CascadeStoreAccessor ?? InjectedStoreAccessor ?? throw new ArgumentException("Store accessor is not available");
-                    storeAccessor.SetConsumer((IBlazorMobxComponent)this);
-                }
+                var storeAccessor = CascadeStoreAccessor ?? InjectedStoreAccessor ?? throw new ArgumentException("Store accessor is not available");
+                storeAccessor.SetConsumer((IBlazorMobxComponent)this);
 
-                return storeAccessor.Store;
-            }
+                return storeAccessor;
+            });
         }
+
+        protected TStore Store => storeAccessor.Value.Store;
 
         [Inject]
         private IStoreAccessor<TStore> InjectedStoreAccessor { get; set; }
@@ -45,13 +44,13 @@ namespace Havit.Blazor.Mobx.Components
 
         public void ResetStore()
         {
-            storeAccessor.ResetStore();
+            storeAccessor.Value.ResetStore();
         }
 
         protected virtual T CreateObservable<T>()
             where T : class
         {
-            return storeAccessor.CreateObservable<T>();
+            return storeAccessor.Value.CreateObservable<T>();
         }
     }
 }
