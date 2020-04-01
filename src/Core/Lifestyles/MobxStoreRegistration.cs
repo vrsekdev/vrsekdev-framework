@@ -57,6 +57,17 @@ namespace Havit.Blazor.Mobx.Lifestyles
             return this;
         }
 
+        public IServiceCollection LifestyleSingleton()
+        {
+            services.AddSingleton<StoreHolder<TStore>>();
+            services.AddSingleton<IStoreHolder<TStore>>(provider => GetStoreHolder(provider));
+            services.AddTransient<IStoreAccessor<TStore>, StoreAccessor<TStore>>();
+
+            RegisterStoreMetadata();
+
+            return services;
+        }
+
         public IServiceCollection LifestyleScoped()
         {
             services.AddScoped<StoreHolder<TStore>>();
