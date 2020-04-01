@@ -30,5 +30,15 @@ namespace Havit.Blazor.Mobx.Abstractions
                 return defaultValue;
             }
         }
+
+        internal void Wait()
+        {
+            underlyingTask.Wait();
+        }
+
+        public static implicit operator T(AsyncResult<T> asyncResult)
+        {
+            return asyncResult.Value;
+        }
     }
 }

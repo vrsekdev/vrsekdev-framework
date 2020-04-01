@@ -108,7 +108,7 @@ namespace Havit.Blazor.Mobx.Lifestyles
             StoreHolder<TStore> storeHolder = provider.GetRequiredService<StoreHolder<TStore>>();
             if (defaultState != null)
             {
-                storeHolder.RootObservableProperty.OverwriteFrom(defaultState);
+                storeHolder.RootObservableProperty.OverwriteFrom(defaultState, false);
             }
 
             return storeHolder;

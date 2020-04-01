@@ -152,7 +152,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
         {
             if (runtimeProxies.TryGetValue(propertyName, out IRuntimeProxy runtimeProxy))
             {
-                runtimeProxy.Manager.ObservableProperty.OverwriteFrom(value);
+                runtimeProxy.Manager.ObservableProperty.OverwriteFrom(value, false);
             }
 
             if (collectionProxies.TryGetValue(propertyName, out ICollectionProxy collectionProxy))

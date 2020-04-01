@@ -89,7 +89,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected override void OnPropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
-            if (consumer?.IsAlive() != true)
+            if (consumer.IsAlive())
             {
                 Dispose();
                 return;
@@ -100,7 +100,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
         {
-            if (consumer?.IsAlive() != true)
+            if (consumer.IsAlive())
             {
                 Dispose();
                 return true;
@@ -112,7 +112,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
-            if (consumer?.IsAlive() != true)
+            if (consumer.IsAlive())
             {
                 Dispose();
                 return true;
@@ -134,7 +134,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
-            if (consumer?.IsAlive() != true)
+            if (consumer.IsAlive())
             {
                 Dispose();
                 return true;
@@ -163,7 +163,6 @@ namespace Havit.Blazor.Mobx.StoreAccessors
         public void Dispose()
         {
             consumer = null;
-            observableContainers = null;
         }
     }
 }

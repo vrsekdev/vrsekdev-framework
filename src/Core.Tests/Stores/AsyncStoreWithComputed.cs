@@ -20,10 +20,10 @@ namespace Havit.Blazor.Mobx.Tests.Stores
             }));
         }
 
-        [ComputedValue]
-		public virtual bool PagingInfo => Questions.Value;
+        [Observable]
+        public virtual PagingInfo PagingInfo { get; set; } = new PagingInfo { PageSize = 30, PageIndex = 1 };
 
-		[ComputedValue]
+        [ComputedValue]
 		public virtual AsyncResult<bool> Questions => GetQuestionsAsync();
 
 		private AsyncResult<bool> GetQuestionsAsync()

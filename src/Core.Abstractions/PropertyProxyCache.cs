@@ -70,7 +70,7 @@ namespace Havit.Blazor.Mobx.Abstractions
                 IObservableProperty observableProperty = observableFactory.CreateObservableProperty(typeof(T));
                 if (item != null)
                 {
-                    observableProperty.OverwriteFrom(item);
+                    observableProperty.OverwriteFrom(item, true);
                 }
                 propertyProxy = proxyFactory.Create(observableProperty);
             }

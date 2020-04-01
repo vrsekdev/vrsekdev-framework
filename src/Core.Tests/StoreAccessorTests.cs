@@ -30,7 +30,7 @@ namespace Havit.Blazor.Mobx.Tests
         }
 
         [TestMethod]
-        public async Task AsyncStore_TaskCompleted_ShouldRender()
+        public void AsyncStore_AsyncResult_ReturnValueAfterAwaited()
         {
             // Arrange
             IStoreAccessor<AsyncStoreWithComputed> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<AsyncStoreWithComputed>>();
@@ -38,10 +38,29 @@ namespace Havit.Blazor.Mobx.Tests
             storeAccessor.SetConsumer(consumer);
             var store = storeAccessor.Store;
 
-            store.GetValueAsync();
+            var result = store.GetValueAsync();
 
-            await Task.Delay(1000);
+            result.Wait();
+
             // Assert
+            Assert.IsTrue(result.Value);
+        }
+
+        [TestMethod]
+        public void AsyncStore_CacheAsyncResult()
+        {
+            // Arrange
+            IStoreAccessor<AsyncStoreWithComputed> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<AsyncStoreWithComputed>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+
+            var result = store.GetValueAsync();
+
+            result.Wait();
+
+            // Assert
+            Assert.ReferenceEquals(result, store.GetValueAsync());
         }
 
         [TestMethod]
@@ -137,18 +156,12 @@ namespace Havit.Blazor.Mobx.Tests
             var consumer = new FakeBlazorComponent();
             storeAccessor.SetConsumer(consumer);
             var store = storeAccessor.Store;
-            int invokeCount = 0;
 
             // Act
-            Assert.AreEqual(invokeCount, ClassStoreWithComputed.InvokeCount);
-            store.Value = 55;
-            store.ComputedMethodIncerceptingValue(); invokeCount++;
-            store.ComputedMethodIncerceptingValue();
-            store.ComputedMethodIncerceptingValue();
-            store.ComputedMethodIncerceptingValue();
+            var result = store.ComputedMethodIncerceptingValue();
 
             // Assert
-            Assert.AreEqual(invokeCount, ClassStoreWithComputed.InvokeCount);
+            Assert.AreEqual(result, store.ComputedMethodIncerceptingValue());
         }
 
         [TestMethod]

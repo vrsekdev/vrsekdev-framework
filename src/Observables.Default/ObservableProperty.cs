@@ -88,7 +88,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             if (observedProperties.ContainsKey(name))
             {
-                observedProperties[name].OverwriteFrom(value);
+                observedProperties[name].OverwriteFrom(value, notify);
 
                 if (notify)
                 {
@@ -195,7 +195,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
             return observedCollections.ToDictionary(x => x.Key, x => (IObservableCollection)x.Value);
         }
 
-        public void OverwriteFrom(object source)
+        public void OverwriteFrom(object source, bool notify)
         {
             if (source == null)
             {
@@ -204,7 +204,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             if (source is ObservableProperty observableProperty)
             {
-                OverwriteFrom(observableProperty);
+                OverwriteFrom(observableProperty, notify);
                 observableProperty.Dispose();
                 return;
             }
@@ -217,14 +217,14 @@ namespace Havit.Blazor.Mobx.Observables.Default
                 }
 
                 object newValue = propertyKvp.Value.GetValue(source);
-                if (!TrySetMember(propertyKvp.Key, newValue))
+                if (!TrySetMemberInternal(propertyKvp.Key, newValue, notify))
                 {
                     throw new Exception($"Could not copy to target. Property name: {propertyKvp.Key}");
                 }
             }
         }
 
-        public void OverwriteFrom(IObservableProperty source)
+        public void OverwriteFrom(IObservableProperty source, bool notify)
         {
             object newValue;
             foreach (var propertyName in allPropertiesByName.Keys)
@@ -234,7 +234,7 @@ namespace Havit.Blazor.Mobx.Observables.Default
                     throw new Exception($"Could not copy from source. Property name: {propertyName}");
                 }
 
-                if (!TrySetMember(propertyName, newValue))
+                if (!TrySetMemberInternal(propertyName, newValue, notify))
                 {
                     throw new Exception($"Could not copy to target. Property name: {propertyName}");
                 }
