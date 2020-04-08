@@ -5,7 +5,7 @@ using System;
 
 namespace Havit.Blazor.Mobx
 {
-    public interface IStoreAccessor<TStore> : IDisposable
+    public interface IStoreAccessor<TStore>
         where TStore : class
     {
         TStore Store { get; }
