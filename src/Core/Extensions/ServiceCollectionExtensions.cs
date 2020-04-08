@@ -1,5 +1,6 @@
-﻿using Havit.Blazor.Mobx.Lifestyles;
+﻿using Havit.Blazor.Mobx.DependencyInjection;
 using Havit.Blazor.Mobx.Observables.Default.Extensions;
+using Havit.Blazor.Mobx.PropertyObservers;
 using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,8 @@ namespace Havit.Blazor.Mobx.Extensions
         {
             services.UseDefaultMobxObservableProperties();
             services.UseMobxRuntimeProxy();
+
+            services.AddTransient<IPropertyObserverFactory, PropertyObserverFactory>();
         }
     }
 }

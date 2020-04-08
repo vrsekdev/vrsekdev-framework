@@ -1,17 +1,26 @@
 ﻿using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.Extensions;
-using Havit.Blazor.Mobx.StoreAccessors;
+using Havit.Blazor.Mobx.PropertyObservers;
 using Microsoft.AspNetCore.Components;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase, IBlazorMobxComponent
     {
+        [Inject]
+        private IPropertyObserverFactory PropertyObserverFactory { get; set; }
+
+        public T CreateObservable<T>(T instance)
+            where T : class
+        {
+            var observer = PropertyObserverFactory.Create<T>();
+            observer.SetConsumer(this);
+            observer.InitializeValues(instance);
+
+            return observer.WrappedInstance;
+        }
+
         public Task ForceUpdate()
         {
             return InvokeAsync(StateHasChanged);

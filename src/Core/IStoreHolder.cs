@@ -8,17 +8,14 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx
 {
-    internal interface IStoreHolder<TStore>
+    internal interface IStoreHolder<TStore> : IObservableHolder<TStore>
         where TStore : class
     {
-        MethodInterceptions StoreReactables { get; }
-        IObservableProperty RootObservableProperty { get; }
-        IStoreDependencyInjector<TStore> DependencyInjector { get; }
-
         event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
-        event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
-        event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
         event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
+
+        MethodInterceptions StoreReactables { get; }
+        IStoreDependencyInjector<TStore> DependencyInjector { get; }
 
         IObservableProperty CreateObservableProperty(Type type);
     }

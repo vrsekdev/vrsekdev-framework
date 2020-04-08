@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.Reactables
 {
-    internal class ReactableInvoker<TStore> : StoreObserverBase<TStore>
+    internal class ReactableInvoker<TStore> : ObserverBase<TStore>
         where TStore : class
     {
         private readonly IInvokableReactable reactable;
@@ -24,11 +24,6 @@ namespace Havit.Blazor.Mobx.Reactables
         public void PlantSubscriber(IPropertyProxy propertyProxy)
         {
             propertyProxy.Subscribe(new PropertyAccessedSubscriber(OnPropertyAccessed));
-        }
-
-        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
-        {
-            return new ValueTask<bool>(false);
         }
 
         protected override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
