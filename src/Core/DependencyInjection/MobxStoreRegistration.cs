@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Lifestyles
+namespace Havit.Blazor.Mobx.DependencyInjection
 {
     public class MobxStoreRegistration<TStore>
         where TStore : class
