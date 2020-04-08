@@ -1,20 +1,20 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Havit.Blazor.Mobx.Reactables.ComputedValues
 {
     public class ComputedValueContainer<TStore, TValue> : IComputedValueInvokable
     {
+        private readonly TStore store;
+        private readonly bool isAsyncResultType;
+
         private bool isInvalidated = true;
         private TValue cachedValue;
-        private readonly TStore store;
 
         public ComputedValueContainer(
             TStore store)
         {
             this.store = store;
+            isAsyncResultType = typeof(Abstractions.IAsyncResult).IsAssignableFrom(typeof(TValue));
         }
 
         public bool RequiresInitialInvoke()
@@ -33,7 +33,13 @@ namespace Havit.Blazor.Mobx.Reactables.ComputedValues
                 return cachedValue;
 
             isInvalidated = false;
-            return cachedValue = storeFunc(store);
+            cachedValue = storeFunc(store);
+            if (isAsyncResultType)
+            {
+                ((Abstractions.IAsyncResult)cachedValue).UnderLyingTask.ContinueWith(x => isInvalidated = true);
+            }
+
+            return cachedValue;
         }
     }
 }

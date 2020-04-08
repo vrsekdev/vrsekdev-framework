@@ -5,10 +5,14 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.Abstractions
 {
-    public class AsyncResult<T>
+    internal interface IAsyncResult
     {
-        private Task<T> underlyingTask;
-        private T defaultValue;
+        Task UnderLyingTask { get; }
+    }
+
+    public class AsyncResult<T> : IAsyncResult
+    {
+        private readonly T defaultValue;
 
         public AsyncResult(
             Task<T> task,
@@ -17,6 +21,9 @@ namespace Havit.Blazor.Mobx.Abstractions
             underlyingTask = task;
             this.defaultValue = defaultValue; 
         }
+
+        private Task<T> underlyingTask;
+        public Task UnderLyingTask => underlyingTask;
 
         public T Value
         {
