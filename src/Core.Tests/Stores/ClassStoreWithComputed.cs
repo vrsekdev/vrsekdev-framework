@@ -32,7 +32,7 @@ namespace Havit.Blazor.Mobx.Tests.Stores
         [ComputedValue]
         public virtual int ComputedMethodIncerceptingValue()
         {
-            return new Random().Next();
+            return ++InvokeCount;
         }
     }
 }

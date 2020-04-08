@@ -11,8 +11,11 @@ namespace Havit.Blazor.Mobx.Tests.Fakes
 {
     public class FakeBlazorComponent : IBlazorMobxComponent
     {
+        internal int invokeCount = 0;
+
         public Task ForceUpdate()
         {
+            invokeCount++;
             return Task.CompletedTask;
         }
     }

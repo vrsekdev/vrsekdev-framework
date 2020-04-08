@@ -95,6 +95,48 @@ namespace Havit.Blazor.Mobx.Tests
         }
 
         [TestMethod]
+        public void Store_Autorun_DontInvokeOnNotObservedPropertyChange()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0;
+
+            // Act
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+            // Always invokes on first change
+            store.Value = 65; invokeCount++;
+            // Real invoke
+            store.AnotherValue = 65;
+
+            // Assert
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+        }
+
+        [TestMethod]
+        public void Store_Autorun_InvokeOnChange()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0;
+
+            // Act
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+            // Always invokes on first change
+            store.Value = 65; invokeCount++;
+            // Real invoke
+            store.Value = 65; invokeCount++;
+
+            // Assert
+            Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
+        }
+
+        [TestMethod]
         public void Store_Autorun_BehavePromiscous()
         {
             // Arrange

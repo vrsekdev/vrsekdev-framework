@@ -34,7 +34,6 @@ namespace Havit.Blazor.Mobx.Tests.Stores
         public virtual void AutorunMethod()
         {
             _ = Value;
-            _ = AnotherValue;
             AutorunInvokeCount++;
         }
     }
