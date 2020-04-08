@@ -142,6 +142,14 @@ namespace Havit.Blazor.Mobx.Abstractions
 
         public void AddDefaultElements(IEnumerable<T> items)
         {
+            if (ElementObserved)
+            {
+                foreach (T item in items)
+                {
+                    propertyProxyCache.Insert(item);
+                }
+            }
+
             observableCollection.AddDefaultElements(items);
         }
 
