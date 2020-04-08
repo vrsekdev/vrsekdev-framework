@@ -43,7 +43,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public void OverwriteFrom(object source)
+        public void OverwriteFrom(object source, bool notify)
         {
             throw new NotImplementedException();
         }

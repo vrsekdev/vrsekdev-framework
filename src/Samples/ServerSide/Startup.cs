@@ -29,8 +29,8 @@ namespace Havit.Blazor.Mobx.Samples
             services.AddServerSideBlazor();
 
             services.UseDefaultMobxProperties();
-            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleScoped();
-            services.AddMobxStore<IHomeStore>().WithReactions<HomeStoreActions>().LifestyleScoped();
+            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleSingleton();
+            services.AddMobxStore<IHomeStore>().LifestyleScoped();
             services.AddMobxStore<ICounterStore>().LifestyleTransient();
             services.AddMobxStore<ITodoStore>().WithReactions<TodoStoreActions>().LifestyleCascading();
             services.AddMobxStore<AsyncCounterStore>().LifestyleScoped();
