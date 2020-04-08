@@ -11,10 +11,10 @@ namespace Havit.Blazor.Mobx.Stores
     {
         public virtual IObservableCollection<Task> WaitingTasks { get; set; } = new List<Task>().ToObservableCollection();
 
-        protected AsyncResult<TResult> CompleteAsync<TResult>(Task<TResult> task)
+        protected AsyncResult<TResult> CompleteAsync<TResult>(Task<TResult> task, TResult defaultVal = default)
         {
             WaitingTasks.Add(task);
-            return new AsyncResult<TResult>(task, default);
+            return new AsyncResult<TResult>(task, defaultVal);
         }
     }
 }
