@@ -64,8 +64,16 @@ namespace Havit.Blazor.Mobx.StoreAccessors
         public T CreateObservable<T>()
              where T : class
         {
-            // TODO: Create observable array method
             IObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
+
+            return CreateObservable<T>(observableProperty);
+        }
+
+        public T CreateObservable<T>(T instance) 
+            where T : class
+        {
+            IObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
+            observableProperty.OverwriteFrom(instance, false);
 
             return CreateObservable<T>(observableProperty);
         }
@@ -74,6 +82,8 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             where T : class
         {
             IPropertyProxy propertyProxy = propertyProxyFactory.Create(observableProperty);
+            PlantSubscriber(propertyProxy);
+
             return propertyProxyWrapper.WrapPropertyObservable<T>(propertyProxy);
         }
 

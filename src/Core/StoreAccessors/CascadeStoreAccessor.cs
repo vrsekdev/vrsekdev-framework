@@ -17,6 +17,11 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             throw CreateException();
         }
 
+        public T CreateObservable<T>(T instance) where T : class
+        {
+            throw CreateException();
+        }
+
         public void SetConsumer(IBlazorMobxComponent consumer)
         {
             //throw CreateException();

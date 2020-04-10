@@ -22,6 +22,8 @@ namespace Havit.Blazor.Mobx.Reactables.ComputedValues
 
         protected override void InvokeInternal(bool isInitialInvoke)
         {
+            base.InvokeInternal(isInitialInvoke);
+
             if (!isInitialInvoke)
             {
                 computedValueChangedEvent(this, new ComputedValueChangedEventArgs
@@ -29,8 +31,6 @@ namespace Havit.Blazor.Mobx.Reactables.ComputedValues
                     ComputedValue = computedValue
                 });
             }
-
-            base.InvokeInternal(isInitialInvoke);
         }
     }
 }

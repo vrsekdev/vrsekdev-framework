@@ -11,7 +11,7 @@ namespace Havit.Blazor.Mobx.Components
         [Inject]
         private IPropertyObserverFactory PropertyObserverFactory { get; set; }
 
-        public T CreateObservable<T>(T instance)
+        public virtual T CreateObservable<T>(T instance)
             where T : class
         {
             var observer = PropertyObserverFactory.Create<T>();
@@ -60,6 +60,11 @@ namespace Havit.Blazor.Mobx.Components
             where T : class
         {
             return storeAccessor.Value.CreateObservable<T>();
+        }
+
+        public override T CreateObservable<T>(T instance)
+        {
+            return storeAccessor.Value.CreateObservable(instance);
         }
     }
 }
