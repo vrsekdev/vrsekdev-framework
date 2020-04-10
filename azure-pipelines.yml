@@ -18,7 +18,7 @@ steps:
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)' # Update this to match your need
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: Test
@@ -26,3 +26,20 @@ steps:
     command: test
     projects: '**/*Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: |
+      src/Core/Core.csproj
+      src/Core.Abstractions/Core.Abstractions.csproj
+      src/Observables.Default/Observables.Default.csproj
+      src/Proxies.RuntimeProxy/Proxies.RuntimeProxy.csproj
+    arguments: '--output $(Build.ArtifactStagingDirectory)'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'drop'
+    publishLocation: 'pipeline'
