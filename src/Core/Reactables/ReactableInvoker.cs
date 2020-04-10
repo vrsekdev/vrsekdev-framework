@@ -71,6 +71,22 @@ namespace Havit.Blazor.Mobx.Reactables
             return new ValueTask<bool>(false);
         }
 
+        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        {
+            if (!initialized)
+            {
+                initialized = true;
+                if (reactable.RequiresInitialInvoke())
+                {
+                    InvokeInternal(true);
+                    return new ValueTask<bool>(true);
+                }
+            }
+
+            InvokeInternal(false);
+            return new ValueTask<bool>(true);
+        }
+
         protected virtual void InvokeInternal(bool isInitialInvoke)
         {
             reactable.Invoke();

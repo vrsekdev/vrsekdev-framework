@@ -97,5 +97,10 @@ namespace Havit.Blazor.Mobx.PropertyObservers
 
             return false;
         }
+
+        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

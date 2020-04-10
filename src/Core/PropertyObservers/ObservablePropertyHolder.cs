@@ -11,6 +11,8 @@ namespace Havit.Blazor.Mobx.PropertyObservers
     {
         public event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
         public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
+        public event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
+        public event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
         public IObservableProperty RootObservableProperty { get; }
 

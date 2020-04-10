@@ -11,9 +11,6 @@ namespace Havit.Blazor.Mobx
     internal interface IStoreHolder<TStore> : IObservableHolder<TStore>
         where TStore : class
     {
-        event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
-        event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
-
         MethodInterceptions StoreReactables { get; }
         IStoreDependencyInjector<TStore> DependencyInjector { get; }
 

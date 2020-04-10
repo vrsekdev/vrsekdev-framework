@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.StoreAccessors
 {
-    internal class StoreAccessor<TStore> : StoreObserverBase<TStore>, IStoreAccessor<TStore>
+    internal class StoreAccessor<TStore> : ObserverBase<TStore>, IStoreAccessor<TStore>
         where TStore : class
     {
         private readonly IStoreHolder<TStore> storeHolder;
