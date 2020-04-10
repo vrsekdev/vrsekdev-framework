@@ -168,17 +168,13 @@ namespace Havit.Blazor.Mobx.Abstractions
 
         public void Clear()
         {
-            Reset();
-
             observableCollection.Clear();
+            propertyProxyCache.Clear();
         }
 
-        public void Reset()
+        public void Recycle()
         {
-            if (ElementObserved)
-            {
-                propertyProxyCache = cacheFactory.Value(proxyWrapper, proxyFactory, observableFactory);
-            }
+            propertyProxyCache.Recycle(observableCollection);
         }
 
         public bool Contains(T item)

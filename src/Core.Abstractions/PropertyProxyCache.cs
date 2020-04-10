@@ -22,7 +22,7 @@ namespace Havit.Blazor.Mobx.Abstractions
 
         // TODO: Concurrent dictionary
         private readonly List<IPropertyAccessedSubscriber> subscribers = new List<IPropertyAccessedSubscriber>();
-        private readonly Dictionary<T, T> boxedValuesDictionary = new Dictionary<T, T>();
+        private Dictionary<T, T> boxedValuesDictionary = new Dictionary<T, T>();
 
 
         public PropertyProxyCache(
@@ -53,6 +53,11 @@ namespace Havit.Blazor.Mobx.Abstractions
             return boxedValuesDictionary.Remove(boxedValue);
         }
 
+        public void Clear()
+        {
+            boxedValuesDictionary.Clear();
+        }
+
         void IPropertyProxyCache<T>.SubscribeAll(IPropertyAccessedSubscriber subscriber)
         {
             subscribers.Add(subscriber);
@@ -61,6 +66,21 @@ namespace Havit.Blazor.Mobx.Abstractions
                 IPropertyProxy proxy = proxyWrapper.UnwrapPropertyObservable((object)boxedValue);
                 proxy.Subscribe(subscriber);
             }
+        }
+
+        public void Recycle(IEnumerable newValues)
+        {
+            Dictionary<T, T> newDictionary = new Dictionary<T, T>();
+
+            foreach (T newValue in newValues)
+            {
+                if (boxedValuesDictionary.TryGetValue(newValue, out T boxedValue))
+                {
+                    newDictionary.Add(newValue, boxedValue);
+                }
+            }
+
+            boxedValuesDictionary = newDictionary;
         }
 
         private T BoxItem(T item)

@@ -17,6 +17,6 @@ namespace Havit.Blazor.Mobx.Abstractions
         /// <param name="elements">Default elements from base class</param>
         void AddDefaultElements(IEnumerable elements);
 
-        void Reset();
+        void Recycle();
     }
 }
