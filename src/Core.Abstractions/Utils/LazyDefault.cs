@@ -6,7 +6,6 @@ namespace Havit.Blazor.Mobx.Abstractions.Utils
 {
     public class LazyDefault<TValue>
     {
-        private bool isValueSet;
         private TValue value;
         private Lazy<TValue> lazyDefault;
 
@@ -15,11 +14,13 @@ namespace Havit.Blazor.Mobx.Abstractions.Utils
             lazyDefault = new Lazy<TValue>(lazyFunc);
         }
 
+        public bool IsValueSet { get; private set; }
+
         public TValue Value
         {
             get
             {
-                if (isValueSet)
+                if (IsValueSet)
                 {
                     return value;
                 }
@@ -27,7 +28,7 @@ namespace Havit.Blazor.Mobx.Abstractions.Utils
             }
             set
             {
-                isValueSet = true;
+                IsValueSet = true;
                 this.value = value;
             }
         }

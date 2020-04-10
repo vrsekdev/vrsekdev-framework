@@ -16,9 +16,10 @@ namespace Havit.Blazor.Mobx.Observables.Default
         private EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
         private EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
 
+        private Dictionary<string, PropertyInfo> allPropertiesByName;
+
         private Dictionary<string, ObservableProperty> observedProperties;
         private Dictionary<string, ObservableCollection> observedCollections;
-        private Dictionary<string, PropertyInfo> allPropertiesByName;
         private Dictionary<string, LazyDefault<object>> normalProperties;
         private bool disposed;
 
@@ -33,11 +34,6 @@ namespace Havit.Blazor.Mobx.Observables.Default
             this.statePropertyChangedEvent = statePropertyChangedEvent;
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
             Initialize();
-        }
-
-        public bool TrySetDefaultValue(string name, object value)
-        {
-            return TrySetMemberInternal(name, value, false);
         }
 
         public bool TryGetMember(string name, out object result)
@@ -74,6 +70,19 @@ namespace Havit.Blazor.Mobx.Observables.Default
             return false;
         }
 
+        public bool TrySetDefaultValue(string name, object value)
+        {
+            if (normalProperties.TryGetValue(name, out LazyDefault<object> currentValue))
+            {
+                if (currentValue.IsValueSet)
+                {
+                    return true;
+                }
+            }
+
+            return TrySetMemberInternal(name, value, false);
+        }
+
         public bool TrySetMember(string name, object value)
         {
             return TrySetMemberInternal(name, value, true);
@@ -88,101 +97,111 @@ namespace Havit.Blazor.Mobx.Observables.Default
 
             if (observedProperties.ContainsKey(name))
             {
-                observedProperties[name].OverwriteFrom(value, notify);
-
-                if (notify)
-                {
-                    statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
-                    {
-                        ObservableProperty = this,
-                        PropertyInfo = allPropertiesByName[name]
-                    });
-                }
+                DoSetObservedProperty(name, value, notify);
 
                 return true;
             }
 
             if (observedCollections.ContainsKey(name))
             {
-                var oldArray = observedCollections[name];
-                if (oldArray == value)
-                {
-                    // Do nothing when collection is identical
-                    return true;
-                }
-                int oldArrayCount = oldArray.CountElements;
-
-                if (value != null)
-                {
-                    if (!(value is IObservableCollection observableArray))
-                    {
-                        throw new Exception("Unsupported type of array.");
-                    }
-
-                    // TODO: Check logic
-                    var items = ((IEnumerable<object>)oldArray).FullOuterJoin((IEnumerable<object>)observableArray, (oldItem, newItem) => new
-                    {
-                        NewItem = newItem,
-                        OldItem = oldItem
-                    });
-
-                    IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
-                    IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
-
-                    oldArray.OverwriteElements(observableArray);
-
-                    if (notify)
-                    {
-                        collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
-                        {
-                            ObservableCollection = oldArray,
-                            ItemsAdded = addedItems,
-                            ItemsRemoved = removedItems,
-                            OldCount = oldArrayCount,
-                            NewCount = oldArray.CountElements
-                        });
-                    }
-                }
-                else
-                {
-                    if (notify)
-                    {
-                        collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
-                        {
-                            ObservableCollection = oldArray,
-                            ItemsAdded = Enumerable.Empty<object>(),
-                            ItemsRemoved = (IEnumerable<object>)oldArray,
-                            OldCount = oldArrayCount,
-                            NewCount = 0
-                        });
-                    }
-                }
+                DoSetObservedCollection(name, value, notify);
 
                 return true;
             }
 
             if (normalProperties.ContainsKey(name))
             {
-                if (value != null && !allPropertiesByName[name].PropertyType.IsAssignableFrom(value.GetType()))
-                {
-                    return false;
-                }
-
-                normalProperties[name].Value = value;
-
-                if (notify)
-                {
-                    statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
-                    {
-                        ObservableProperty = this,
-                        PropertyInfo = allPropertiesByName[name]
-                    });
-                }
+                DoSetNormalProperty(name, value, notify);
 
                 return true;
             }
 
             throw new Exception();
+        }
+
+        private void DoSetObservedProperty(string name, object value, bool notify)
+        {
+            observedProperties[name].OverwriteFrom(value, notify);
+
+            if (notify)
+            {
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                {
+                    ObservableProperty = this,
+                    PropertyInfo = allPropertiesByName[name]
+                });
+            }
+        }
+
+        private void DoSetObservedCollection(string name, object value, bool notify)
+        {
+            var oldArray = observedCollections[name];
+            if (oldArray == value)
+            {
+                // Do nothing when collection is identical
+                return;
+            }
+            int oldArrayCount = oldArray.CountElements;
+
+            if (value != null)
+            {
+                if (!(value is IObservableCollection observableArray))
+                {
+                    throw new Exception("Unsupported type of array.");
+                }
+
+                // TODO: Check logic
+                var items = ((IEnumerable<object>)oldArray).FullOuterJoin((IEnumerable<object>)observableArray, (oldItem, newItem) => new
+                {
+                    NewItem = newItem,
+                    OldItem = oldItem
+                });
+
+                IEnumerable<object> addedItems = items.Where(x => x.NewItem != null && x.OldItem == null).Select(x => x.NewItem);
+                IEnumerable<object> removedItems = items.Where(x => x.OldItem != null && x.NewItem == null).Select(x => x.OldItem);
+
+                oldArray.OverwriteElements(observableArray);
+
+                if (notify)
+                {
+                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                    {
+                        ObservableCollection = oldArray,
+                        ItemsAdded = addedItems,
+                        ItemsRemoved = removedItems,
+                        OldCount = oldArrayCount,
+                        NewCount = oldArray.CountElements
+                    });
+                }
+            }
+            else
+            {
+                if (notify)
+                {
+                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                    {
+                        ObservableCollection = oldArray,
+                        ItemsAdded = Enumerable.Empty<object>(),
+                        ItemsRemoved = (IEnumerable<object>)oldArray,
+                        OldCount = oldArrayCount,
+                        NewCount = 0
+                    });
+                }
+            }
+        }
+
+        private void DoSetNormalProperty(string name, object value, bool notify)
+        {
+            normalProperties[name].Value = value;
+
+            if (notify)
+            {
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                {
+                    ObservableProperty = this,
+                    PropertyInfo = allPropertiesByName[name]
+                });
+            }
         }
 
         public Dictionary<string, IObservableProperty> GetObservedProperties()
