@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxies.RuntimeProxy.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{A9848528-2B41-49E3-91A4-9B39B8BEF7FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProfiler", "TestProfiler\TestProfiler.csproj", "{E1AAAC28-89B6-46E7-A494-735259CD48DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProfiler", "TestProfiler\TestProfiler.csproj", "{E1AAAC28-89B6-46E7-A494-735259CD48DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Observables.Default.Tests", "Observables.Default.Tests\Observables.Default.Tests.csproj", "{B23E30DC-67FB-4B68-A4C2-9EF9AD3F9C2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +81,10 @@ Global
 		{E1AAAC28-89B6-46E7-A494-735259CD48DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1AAAC28-89B6-46E7-A494-735259CD48DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1AAAC28-89B6-46E7-A494-735259CD48DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B23E30DC-67FB-4B68-A4C2-9EF9AD3F9C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B23E30DC-67FB-4B68-A4C2-9EF9AD3F9C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B23E30DC-67FB-4B68-A4C2-9EF9AD3F9C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B23E30DC-67FB-4B68-A4C2-9EF9AD3F9C2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{2B766694-A199-42C9-BEC5-472A2043EBE5} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
 		{A9848528-2B41-49E3-91A4-9B39B8BEF7FB} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
 		{E1AAAC28-89B6-46E7-A494-735259CD48DD} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
+		{B23E30DC-67FB-4B68-A4C2-9EF9AD3F9C2B} = {C405AE1D-586F-4B3F-B1AA-6F09146512BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE564A88-644F-4961-8BA1-FDE397F17DF8}

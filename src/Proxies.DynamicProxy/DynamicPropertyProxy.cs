@@ -98,7 +98,7 @@ namespace Havit.Blazor.Mobx.Proxies.DynamicProxy
                 bool result;
                 if (result = ObservableProperty.TrySetMember(name, value))
                 {
-                    dynamicCollectionObservable.Reset();
+                    dynamicCollectionObservable.Recycle();
                 }
 
                 return result;

@@ -210,7 +210,7 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
             {
                 if (ObservableProperty.TrySetMember(propertyName, value))
                 {
-                    collectionProxy.Reset();
+                    collectionProxy.Recycle();
                 }
 #if DEBUG
                 else

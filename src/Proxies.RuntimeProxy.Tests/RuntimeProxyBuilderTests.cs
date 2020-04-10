@@ -532,6 +532,61 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
             Assert.AreEqual(value, returnedValue);
         }
 
+        /*[TestMethod]
+        public void BuildRuntimeType_Array_SetValue()
+        {
+            // Arrange
+            string[] arr = new string[0];
+            object setValue = null;
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            managerMock.SetupGet(x => x.Implementation).Returns(null);
+            managerMock.Setup(x => x.GetValue(nameof(ISimpleInterface.StringValue)))
+                .Returns(() => setValue);
+            managerMock.Setup(x => x.SetValue(nameof(ISimpleInterface.StringValue), It.IsAny<object>()))
+                .Callback<string, object>((name, value) => setValue = value);
+
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            // Act
+            Stopwatch sw = Stopwatch.StartNew();
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
+            ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
+            impl.StringValue = value;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
+
+            // Assert
+            Assert.AreEqual(value, impl.StringValue);
+        }
+
+        [TestMethod]
+        public void BuildRuntimeType_ReferenceType_GetValue()
+        {
+            // Arrange
+            string value = "test value";
+
+            Mock<IMockableRuntimeTypePropertyManager> managerMock = new Mock<IMockableRuntimeTypePropertyManager>(MockBehavior.Strict);
+            managerMock.Setup(x => x.GetValue(nameof(ISimpleInterface.StringValue)))
+                .Returns(value);
+
+            var manager = managerMock.Object;
+            MethodInfo getMethod = manager.GetType().GetMethod("GetValue");
+            MethodInfo setMethod = manager.GetType().GetMethod("SetValue");
+
+            // Act
+            Stopwatch sw = Stopwatch.StartNew();
+            Type runtimeType = RuntimeProxyBuilder.BuildRuntimeType(typeof(ISimpleInterface), getMethod, setMethod);
+            ISimpleInterface impl = (ISimpleInterface)Activator.CreateInstance(runtimeType, manager);
+            string returnedValue = impl.StringValue;
+            sw.Stop();
+            Trace.WriteLine(sw.ElapsedMilliseconds);
+
+            // Assert
+            Assert.AreEqual(value, returnedValue);
+        }*/
+
         [TestMethod]
         public void BuildRuntimeType_ReferenceType_SetValue()
         {
