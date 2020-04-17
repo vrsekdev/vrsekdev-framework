@@ -11,9 +11,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Authors>Daniel Vršek</Authors>
     <Product>VrsekDev.Blazor.Templates.MajesticAdmin</Product>
-    <Description>Template MajesticAdmin ported to Blazor as a Razor Class Library
-
-Original template repository: https://github.com/BootstrapDash/MajesticAdmin-Free-Bootstrap-Admin-Template</Description>
+    <Description>Template MajesticAdmin ported for Blazor as a Razor Class Library</Description>
     <Copyright>Daniel Vršek</Copyright>
     <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/MajesticAdminTemplate</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
