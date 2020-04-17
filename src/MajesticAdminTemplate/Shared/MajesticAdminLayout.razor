@@ -1,0 +1,53 @@
+﻿@inherits LayoutComponentBase
+
+@typeparam TNavBar
+@typeparam TSideBar
+@typeparam TFooter
+
+
+@inject IJSRuntime JSRuntime
+
+<div class="container-scroller">
+    @NavBar()
+    <div class="container-fluid page-body-wrapper">
+        @SideBar()
+        <div class="main-panel">
+            <div class="content-wrapper">
+                @Body
+            </div>
+            @Footer()
+        </div>
+    </div>
+</div>
+
+@functions {
+    private RenderFragment NavBar() => builder =>
+    {
+        builder.OpenComponent(0, typeof(TNavBar));
+        builder.CloseComponent();
+    };
+
+    private RenderFragment SideBar() => builder =>
+    {
+        builder.OpenComponent(0, typeof(TSideBar));
+        builder.CloseComponent();
+    };
+
+    private RenderFragment Footer() => builder =>
+    {
+        builder.OpenComponent(0, typeof(TFooter));
+        builder.CloseComponent();
+    };
+}
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("onAppLoad");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
