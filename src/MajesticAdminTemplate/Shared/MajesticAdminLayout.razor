@@ -20,6 +20,16 @@
 </div>
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("onAppLoad");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private RenderFragment NavBar() => builder =>
     {
         builder.OpenComponent<TNavBar>(0);
@@ -37,14 +47,4 @@
         builder.OpenComponent<TFooter>(0);
         builder.CloseComponent();
     };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("onAppLoad");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
 }
