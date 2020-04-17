@@ -4,7 +4,6 @@
 @typeparam TSideBar
 @typeparam TFooter
 
-
 @inject IJSRuntime JSRuntime
 
 <div class="container-scroller">
@@ -20,27 +19,25 @@
     </div>
 </div>
 
-@functions {
+@code {
     private RenderFragment NavBar() => builder =>
     {
-        builder.OpenComponent(0, typeof(TNavBar));
+        builder.OpenComponent<TNavBar>(0);
         builder.CloseComponent();
     };
 
     private RenderFragment SideBar() => builder =>
     {
-        builder.OpenComponent(0, typeof(TSideBar));
+        builder.OpenComponent<TSideBar>(0);
         builder.CloseComponent();
     };
 
     private RenderFragment Footer() => builder =>
     {
-        builder.OpenComponent(0, typeof(TFooter));
+        builder.OpenComponent<TFooter>(0);
         builder.CloseComponent();
     };
-}
 
-@code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
