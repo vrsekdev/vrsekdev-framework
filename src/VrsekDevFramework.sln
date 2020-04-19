@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MajesticAdminTemplate", "MajesticAdminTemplate\MajesticAdminTemplate.csproj", "{95BDBC8D-1E3A-4339-A392-72AA54CAA737}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{A0A8CE0F-BB1D-4304-9F8D-2A052A208904}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerSide.Core", "ServerSide.Core\ServerSide.Core.csproj", "{80B6559A-0C84-440A-824D-4DE1DF231DEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +21,18 @@ Global
 		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{95BDBC8D-1E3A-4339-A392-72AA54CAA737} = {A0A8CE0F-BB1D-4304-9F8D-2A052A208904}
+		{A0A8CE0F-BB1D-4304-9F8D-2A052A208904} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
+		{80B6559A-0C84-440A-824D-4DE1DF231DEF} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB3C3723-4118-461B-8D37-CD50A2552ABE}
