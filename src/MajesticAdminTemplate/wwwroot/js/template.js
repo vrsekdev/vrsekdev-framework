@@ -1,6 +1,4 @@
-window.onAppLoad = function() { inject(jQuery) }
-
-function inject($) {
+(function($) {
   'use strict';
   $(function() {
     var body = $('body');
@@ -56,4 +54,4 @@ function inject($) {
     //checkbox and radios
     $(".form-check label,.form-radio label").append('<i class="input-helper"></i>');
   });
-};
+})(jQuery);

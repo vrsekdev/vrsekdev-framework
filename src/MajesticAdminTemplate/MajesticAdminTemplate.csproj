@@ -31,4 +31,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ServerSide.Core\ServerSide.Core.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -24,7 +24,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("onAppLoad");
+            await JSRuntime.InvokeVoidAsync("appInitializer.onAppLoaded");
         }
 
         await base.OnAfterRenderAsync(firstRender);
