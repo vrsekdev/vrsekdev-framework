@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ServerSide.Core\Blazor.ServerSide.Core.csproj" />
+    <ProjectReference Include="..\Blazor.ServerSide.Core\Blazor.ServerSide.Core.csproj" />
   </ItemGroup>
-
+  
 </Project>
