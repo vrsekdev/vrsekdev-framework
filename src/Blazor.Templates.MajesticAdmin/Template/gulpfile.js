@@ -23,8 +23,8 @@ gulp.task('sass', function () {
     return gulp.src('./scss/**/style.scss')
         .pipe(sourcemaps.init())
         .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
-        .pipe(sourcemaps.write('./maps'))
-        .pipe(gulp.dest('./css'))
+        .pipe(sourcemaps.write('../wwwroot/maps'))
+        .pipe(gulp.dest('../wwwroot/css'))
         .pipe(browserSync.stream());
 });
 
