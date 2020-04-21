@@ -15,4 +15,5 @@ window.appInitializer.onAppLoaded = function () {
     for (var i = 0; i < callbacks.length; i++) {
         callbacks[i]();
     }
+    window.appInitializer.callback = [];
 }
