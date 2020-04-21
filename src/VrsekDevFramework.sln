@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Excel", "Excel", "{2E2F9E3D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.Abstractions", "Excel.Abstractions\Excel.Abstractions.csproj", "{AB6C5A55-BBDB-49FD-93E4-EA8AB288B98D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.EPP", "Excel.EPP\Excel.EPP.csproj", "{0FC132DA-D482-49A2-A11E-B68CE155B0B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.EPPlus", "Excel.EPP\Excel.EPPlus.csproj", "{0FC132DA-D482-49A2-A11E-B68CE155B0B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
