@@ -7,8 +7,27 @@
     <RootNamespace>VrsekDev.Blazor.ServerSide.Core</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>Daniel Vršek</Authors>
+    <Product>VrsekDev.Blazor.ServerSide.Core</Product>
+    <Description>Library containing core extensions for Blazor ServerSide</Description>
+    <Copyright>Daniel Vršek</Copyright>
+    <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/Blazor.ServerSide.Core</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
+    <Version>1.0.2</Version>
+  </PropertyGroup>
+  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   
 </Project>

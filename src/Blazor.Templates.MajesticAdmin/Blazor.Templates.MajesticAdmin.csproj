@@ -13,11 +13,11 @@
     <Product>VrsekDev.Blazor.Templates.MajesticAdmin</Product>
     <Description>Template MajesticAdmin ported for Blazor as a Razor Class Library</Description>
     <Copyright>Daniel Vršek</Copyright>
-    <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/MajesticAdminTemplate</RepositoryUrl>
+    <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/Blazor.Templates.MajesticAdmin</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
