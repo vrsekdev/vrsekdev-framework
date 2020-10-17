@@ -14,7 +14,7 @@ namespace Havit.Blazor.Mobx.Extensions
             return new MobxStoreRegistration<TState>(services);
         }
 
-        public static void UseDefaultMobxProperties(this IServiceCollection services)
+        public static void AddDefaultMobxProperties(this IServiceCollection services)
         {
             services.UseDefaultMobxObservableProperties();
             services.UseMobxRuntimeProxy();
