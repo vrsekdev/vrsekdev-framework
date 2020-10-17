@@ -5,6 +5,7 @@
             {
                 <h4 class="card-title">@Title</h4>
             }
+            <div class="card-description">@Description</div>
             @ChildContent
         </div>
     </div>
@@ -13,6 +14,9 @@
 @code {
     [Parameter]
     public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment Description { get; set; } 
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
