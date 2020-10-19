@@ -20,7 +20,7 @@ namespace Havit.Blazor.Mobx.Tests
         public void TestInitialize()
         {
             IServiceCollection services = new ServiceCollection();
-            services.UseDefaultMobxProperties();
+            services.AddDefaultMobxProperties();
 
             serviceProvider = services.BuildServiceProvider();
         }

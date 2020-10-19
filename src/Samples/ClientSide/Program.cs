@@ -22,7 +22,7 @@ namespace Havit.Blazor.Mobx.Samples.ClientSide
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.UseDefaultMobxProperties();
+            services.AddDefaultMobxProperties();
             services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleScoped();
             services.AddMobxStore<IHomeStore>().LifestyleScoped();
             services.AddMobxStore<ICounterStore>().LifestyleTransient();

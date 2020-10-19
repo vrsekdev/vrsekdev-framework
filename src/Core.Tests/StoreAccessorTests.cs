@@ -19,7 +19,7 @@ namespace Havit.Blazor.Mobx.Tests
         public void TestInitialize()
         {
             IServiceCollection services = new ServiceCollection();
-            services.UseDefaultMobxProperties();
+            services.AddDefaultMobxProperties();
             services.AddMobxStore<ClassStoreWithDefaultValue>().LifestyleTransient();
             services.AddMobxStore<ClassStoreWithComputed>().LifestyleTransient();
             services.AddMobxStore<ClassStoreWithAction>().LifestyleTransient();
