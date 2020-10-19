@@ -63,10 +63,14 @@ namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
                 return runtimeTypeWithoutInterceptions.Value;
             }
 
-            if (!typeCache.TryGetValue(interceptions, out Type type))
+            Type type;
+            lock (typeof(TInterface))
             {
-                type = RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, interceptions);
-                typeCache.Add(interceptions, type);
+                if (!typeCache.TryGetValue(interceptions, out type))
+                {
+                    type = RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface), getMethod, setMethod, interceptions);
+                    typeCache.Add(interceptions, type);
+                }
             }
 
             return type;
