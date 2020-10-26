@@ -7,16 +7,16 @@ using OfficeOpenXml;
 
 namespace VrsekDev.Excel.EPPlus
 {
-    public class EPPlusExcelParser : IExcelParser
+    internal class EPPlusExcelParser : IExcelParser
     {
-        public IExcelReader ParseFile(FileInfo fileInfo)
+        public IExcelWorkbookManager ParseFile(FileInfo fileInfo)
         {
-            return new EPPlusExcelReader(new ExcelPackage(fileInfo));
+            return new EPPlusExcelWorkbookManager(new ExcelPackage(fileInfo));
         }
 
-        public IExcelReader ParseStream(Stream stream)
+        public IExcelWorkbookManager ParseStream(Stream stream)
         {
-            return new EPPlusExcelReader(new ExcelPackage(stream));
+            return new EPPlusExcelWorkbookManager(new ExcelPackage(stream));
         }
     }
 }
