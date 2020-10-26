@@ -24,7 +24,7 @@ namespace Havit.Blazor.Mobx
         private readonly Queue<ObservablePropertyStateChangedEventArgs> propertyStateChangedQueue = new Queue<ObservablePropertyStateChangedEventArgs>();
         private readonly Queue<ObservableCollectionItemsChangedEventArgs> collectionChangedQueue =new Queue<ObservableCollectionItemsChangedEventArgs>();
 
-        private readonly ReaderWriterLockSlim transactionLock = new ReaderWriterLockSlim();
+        private readonly SemaphoreSlim transactionLock = new SemaphoreSlim(1, 1);
         private readonly IObservableFactory observableFactory;
         private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
@@ -58,6 +58,31 @@ namespace Havit.Blazor.Mobx
 
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
             InitializeReactables();
+        }
+
+        public IObservableProperty CreateObservableProperty(Type type)
+        {
+            return observableFactory.CreateObservableProperty(type);
+        }
+
+        public void ExecuteInTransaction(Action action)
+        {
+            if (!transactionLock.TryExecuteWithWriteLock(action))
+            {
+                throw new InvalidOperationException("Different transaction is already opened.");
+            }
+
+            DequeueAll();
+        }
+
+        public async Task ExecuteInTransactionAsync(Func<Task> action)
+        {
+            if (!(await transactionLock.TryExecuteWithWriteLockAsync(action)))
+            {
+                throw new InvalidOperationException("Different transaction is already opened.");
+            }
+
+            DequeueAll();
         }
 
         private void InitializeReactables()
@@ -127,11 +152,6 @@ namespace Havit.Blazor.Mobx
                     ProvideInterceptedTarget = false
                 };
             });
-        }
-
-        public IObservableProperty CreateObservableProperty(Type type)
-        {
-            return observableFactory.CreateObservableProperty(type);
         }
 
         private void OnComputedValueChanged(object sender, ComputedValueChangedEventArgs e)

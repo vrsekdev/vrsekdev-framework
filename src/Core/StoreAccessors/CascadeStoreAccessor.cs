@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.StoreAccessors
 {
@@ -18,6 +19,16 @@ namespace Havit.Blazor.Mobx.StoreAccessors
         }
 
         public T CreateObservable<T>(T instance) where T : class
+        {
+            throw CreateException();
+        }
+
+        public void ExecuteInAction(Action action)
+        {
+            throw CreateException();
+        }
+
+        public Task ExecuteInActionAsync(Func<Task> action)
         {
             throw CreateException();
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Havit.Blazor.Mobx.Abstractions.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,7 +10,7 @@ using System.Threading;
 
 namespace Havit.Blazor.Mobx.Reactables.Actions
 {
-    public delegate Delegate ActionInterceptorFactory(ReaderWriterLockSlim transactionLock, Action dequeue);
+    public delegate Delegate ActionInterceptorFactory(SemaphoreSlim transactionLock, Action dequeue);
 
     public class ActionDelegate
     {
@@ -23,9 +24,6 @@ namespace Havit.Blazor.Mobx.Reactables.Actions
 
         public static ActionInterceptorFactory GetFactoryForMethod(MethodInfo targetMethod)
         {
-            MethodInfo enterWriteLockMethod = typeof(ReaderWriterLockSlim).GetMethod(nameof(ReaderWriterLockSlim.EnterWriteLock));
-            MethodInfo exitWriteLockMethod = typeof(ReaderWriterLockSlim).GetMethod(nameof(ReaderWriterLockSlim.ExitWriteLock));
-
             MethodInfo createDelegateMethod = typeof(ActionDelegate).GetMethod(nameof(CreateDelegateHelper));
 
             Type[] parameterTypes = targetMethod.GetParameters().Select(x => x.ParameterType).ToArray();
@@ -36,7 +34,7 @@ namespace Havit.Blazor.Mobx.Reactables.Actions
 
             MethodInfo callBaseMethod = GetCallBaseMethod(parameterTypes);
 
-            DynamicMethod dynamicMethod = new DynamicMethod(Guid.NewGuid().ToString(), typeof(Delegate), new[] { typeof(ReaderWriterLockSlim), typeof(Action) });
+            DynamicMethod dynamicMethod = new DynamicMethod(Guid.NewGuid().ToString(), typeof(Delegate), new[] { typeof(SemaphoreSlim), typeof(Action) });
             ILGenerator methodGenerator = dynamicMethod.GetILGenerator();
             methodGenerator.Emit(OpCodes.Ldarg_0);
             methodGenerator.Emit(OpCodes.Ldarg_1);
@@ -57,11 +55,11 @@ namespace Havit.Blazor.Mobx.Reactables.Actions
 
         public class ActionDelegateWrapper
         {
-            private readonly ReaderWriterLockSlim transactionLock;
+            private readonly SemaphoreSlim transactionLock;
             private readonly Action dequeue;
 
             public ActionDelegateWrapper(
-                ReaderWriterLockSlim transactionLock,
+                SemaphoreSlim transactionLock,
                 Action dequeue)
             {
                 this.transactionLock = transactionLock;
@@ -70,14 +68,9 @@ namespace Havit.Blazor.Mobx.Reactables.Actions
 
             private void ExecuteWithLock(Action action)
             {
-                transactionLock.EnterWriteLock();
-                try
+                if (!transactionLock.TryExecuteWithWriteLock(action))
                 {
-                    action();
-                }
-                finally
-                {
-                    transactionLock.ExitWriteLock();
+                    throw new InvalidOperationException("Different transaction is already opened.");
                 }
 
                 dequeue();

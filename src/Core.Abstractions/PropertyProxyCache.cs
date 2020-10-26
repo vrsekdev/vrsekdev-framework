@@ -74,6 +74,7 @@ namespace Havit.Blazor.Mobx.Abstractions
 
             foreach (T newValue in newValues)
             {
+                // Leave it for lazy loading
                 if (boxedValuesDictionary.TryGetValue(newValue, out T boxedValue))
                 {
                     newDictionary.Add(newValue, boxedValue);
@@ -95,7 +96,7 @@ namespace Havit.Blazor.Mobx.Abstractions
                 propertyProxy = proxyFactory.Create(observableProperty);
             }
 
-            foreach(var subscriber in subscribers)
+            foreach (var subscriber in subscribers)
             {
                 propertyProxy.Subscribe(subscriber);
             }

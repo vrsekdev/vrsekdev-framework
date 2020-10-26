@@ -3,6 +3,7 @@ using Havit.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx
 {
@@ -14,5 +15,9 @@ namespace Havit.Blazor.Mobx
         event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
         IObservableProperty RootObservableProperty { get; }
+
+        public void ExecuteInTransaction(Action action);
+
+        public Task ExecuteInTransactionAsync(Func<Task> action);
     }
 }

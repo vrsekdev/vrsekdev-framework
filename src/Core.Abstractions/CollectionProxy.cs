@@ -106,12 +106,17 @@ namespace Havit.Blazor.Mobx.Abstractions
             get
             {
                 T originalValue = observableCollection[index];
-                if (!propertyProxyCache.TryGetValue(originalValue, out T boxedValue))
+                if (ElementObserved)
                 {
-                    return propertyProxyCache.Insert(originalValue);
+                    if (!propertyProxyCache.TryGetValue(originalValue, out T boxedValue))
+                    {
+                        return propertyProxyCache.Insert(originalValue);
+                    }
+
+                    return boxedValue;
                 }
 
-                return boxedValue;
+                return originalValue;
             }
             set => Insert(index, value);
         }
@@ -169,12 +174,18 @@ namespace Havit.Blazor.Mobx.Abstractions
         public void Clear()
         {
             observableCollection.Clear();
-            propertyProxyCache.Clear();
+            if (ElementObserved)
+            {
+                propertyProxyCache.Clear();
+            }
         }
 
         public void Recycle()
         {
-            propertyProxyCache.Recycle(observableCollection);
+            if (ElementObserved)
+            {
+                propertyProxyCache.Recycle(observableCollection);
+            }
         }
 
         public bool Contains(T item)
@@ -182,21 +193,29 @@ namespace Havit.Blazor.Mobx.Abstractions
             throw new NotImplementedException();
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int sourceIndex)
         {
-            int index = arrayIndex;
-            foreach (var boxedItem in propertyProxyCache)
-            {
-                array[index] = boxedItem;
-            }
+            CopyTo((Array)array, sourceIndex);
         }
 
-        public void CopyTo(Array array, int arrayIndex)
+        public void CopyTo(Array array, int sourceIndex)
         {
-            int index = arrayIndex;
-            foreach (var boxedItem in propertyProxyCache)
+            if (ElementObserved)
             {
-                array.SetValue(boxedItem, index);
+                int targetIndex = 0;
+                foreach (var boxedItem in propertyProxyCache.Skip(sourceIndex))
+                {
+                    targetIndex++;
+                    array.SetValue(boxedItem, targetIndex);
+                }
+            }
+            else
+            {
+                int count = observableCollection.Count - sourceIndex;
+                for (int targetIndex = 0; targetIndex < count; targetIndex++, sourceIndex++)
+                {
+                    array.SetValue(observableCollection[sourceIndex], targetIndex);
+                }
             }
         }
 

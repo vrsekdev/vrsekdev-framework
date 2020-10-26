@@ -2,6 +2,7 @@
 using Havit.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
+using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx
 {
@@ -17,6 +18,10 @@ namespace Havit.Blazor.Mobx
         T CreateObservable<T>() where T : class;
 
         T CreateObservable<T>(T instance) where T : class;
+
+        void ExecuteInAction(Action action);
+
+        Task ExecuteInActionAsync(Func<Task> action);
 
         void ResetStore();
     }

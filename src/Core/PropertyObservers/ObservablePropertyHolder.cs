@@ -3,6 +3,7 @@ using Havit.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Havit.Blazor.Mobx.PropertyObservers
 {
@@ -24,6 +25,16 @@ namespace Havit.Blazor.Mobx.PropertyObservers
                 OnCollectionItemsChanged);
 
             RootObservableProperty = observableFactory.CreateObservableProperty(typeof(T));
+        }
+
+        public void ExecuteInTransaction(Action action)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ExecuteInTransactionAsync(Func<Task> action)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedEventArgs e)

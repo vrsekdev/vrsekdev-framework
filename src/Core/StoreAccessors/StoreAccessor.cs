@@ -87,6 +87,16 @@ namespace Havit.Blazor.Mobx.StoreAccessors
             return propertyProxyWrapper.WrapPropertyObservable<T>(propertyProxy);
         }
 
+        public void ExecuteInAction(Action action)
+        {
+            storeHolder.ExecuteInTransaction(action);
+        }
+
+        public Task ExecuteInActionAsync(Func<Task> action)
+        {
+            return storeHolder.ExecuteInTransactionAsync(action);
+        }
+
         public void ResetStore()
         {
             propertyProxyWrapper.UnwrapPropertyObservable(Store).ObservableProperty.ResetValues();
@@ -99,7 +109,7 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected override void OnPropertyAccessedEvent(object sender, PropertyAccessedEventArgs e)
         {
-            if (!consumer.IsAlive())
+            if (consumer == null || !consumer.IsAlive())
             {
                 return;
             }
@@ -109,6 +119,11 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
         {
+            if (consumer == null)
+            {
+                return false;
+            }
+
             if (!consumer.IsAlive())
             {
                 return true;
@@ -120,6 +135,11 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
+            if (consumer == null)
+            {
+                return false;
+            }
+
             if (!consumer.IsAlive())
             {
                 return true;
@@ -141,6 +161,11 @@ namespace Havit.Blazor.Mobx.StoreAccessors
 
         protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
+            if (consumer == null)
+            {
+                return false;
+            }
+
             if (!consumer.IsAlive())
             {
                 return true;
