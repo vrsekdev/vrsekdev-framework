@@ -1,23 +1,40 @@
-﻿<div class="col-lg-12 grid-margin stretch-card">
+﻿@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public bool Collapsible { get; set; } = true;
+
+    [Parameter]
+    public RenderFragment Description { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             @if (Title != null)
             {
-                <h4 class="card-title">@Title</h4>
+                if (Collapsible)
+                {
+                    <h4 class="card-title" style="cursor: pointer;" @onclick="() => isCollapsed = !isCollapsed">@Title</h4>
+                }
+                else
+                {
+                    <h4 class="card-title">@Title</h4>
+                }
             }
-            <div class="card-description">@Description</div>
-            @ChildContent
+            @if (!isCollapsed)
+            {
+                <div class="card-description">@Description</div>
+                @ChildContent
+            }
         </div>
     </div>
 </div>
 
 @code {
-    [Parameter]
-    public string Title { get; set; }
-
-    [Parameter]
-    public RenderFragment Description { get; set; } 
-
-    [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    private bool isCollapsed;
 }
