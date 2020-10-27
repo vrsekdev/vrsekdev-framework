@@ -43,10 +43,9 @@ steps:
   displayName: Pack NuGet packages
   inputs:
     command: 'pack'
-    packagesToPack: 'src/Blazor.Mobx.Core/Blazor.Mobx.Core.csproj;src/Blazor.Mobx.Core.Abstractions/Blazor.Mobx.Core.Abstractions.csproj;src/Blazor.Mobx.Observables.Default/Blazor.Mobx.Observables.Default.csproj;src/Blazor.Mobx.Proxies.RuntimeProxy/Blazor.Mobx.Proxies.RuntimeProxy.csproj'
+    packagesToPack: '**/*.csproj'
     versioningScheme: 'off'
     includeSymbols: true
-    arguments: '-SymbolPackageFormat snupkg'
 
 - task: PublishPipelineArtifact@1
   displayName: Publish artifact
