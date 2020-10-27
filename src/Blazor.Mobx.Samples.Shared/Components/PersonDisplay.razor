@@ -1,0 +1,8 @@
+﻿@using VrsekDev.Blazor.Mobx.Components
+@using VrsekDev.Blazor.Mobx.Samples.Models
+
+@inherits BlazorMobxComponentBase<IHomeStore>
+
+<h3>PersonDisplay</h3>
+
+<p>@Store.Person.FirstName @Store.Person.LastName</p>

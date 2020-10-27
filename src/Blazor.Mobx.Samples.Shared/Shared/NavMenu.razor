@@ -1,0 +1,43 @@
+﻿@using VrsekDev.Blazor.Mobx
+
+@inject IStoreAccessor<IAppStore> AppStoreAccessor
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">BlazorMobxStateManagementTest</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        @foreach (var navItem in AppStore.NavigationItems)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="@navItem.Link">
+                    <span class="@(!String.IsNullOrEmpty(navItem.Glyph) ? navItem.Glyph : "oi oi-list-rich")" aria-hidden="true"></span> @navItem.Title
+                </NavLink>
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    private IAppStore AppStore => AppStoreAccessor.Store;
+
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        AppStoreAccessor.SetConsumer(this);
+
+        return base.SetParametersAsync(parameters);
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

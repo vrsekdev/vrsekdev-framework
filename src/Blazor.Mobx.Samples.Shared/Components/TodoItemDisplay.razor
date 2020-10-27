@@ -1,0 +1,44 @@
+﻿@using VrsekDev.Blazor.Mobx.Samples.Models
+@using VrsekDev.Blazor.Mobx.Components
+@using VrsekDev.Blazor.Mobx
+
+
+<div style="border: solid">
+    <div style="border-bottom: solid">
+        @TodoItem.Header.Value (@TodoItem.Id, @String.Join(", ", Store.Values) )
+    </div>
+    <div>
+        @TodoItem.Text.Value
+    </div>
+    <div>
+        <button @onclick="Increment">Increment</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ITodoItem TodoItem { get; set; }
+
+    [CascadingParameter(Name = CascadeStoreHolder.CascadingParameterName)]
+    private IStoreAccessor<ITodoStore> CascadeStoreAccessor { get; set; }
+
+    private ITodoStore Store => CascadeStoreAccessor.Store;
+
+    protected override void OnParametersSet()
+    {
+        CascadeStoreAccessor.SetConsumer(this);
+
+        base.OnParametersSet();
+    }
+
+    private void Increment()
+    {
+        Store.Value++;
+        Store.Values.Add(Store.Value.ToString());
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+}
