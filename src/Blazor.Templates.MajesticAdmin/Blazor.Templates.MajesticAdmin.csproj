@@ -3,21 +3,26 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <AssemblyName>VrsekDev.Blazor.Templates.MajesticAdmin</AssemblyName>
     <RootNamespace>VrsekDev.Blazor.Templates.MajesticAdmin</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <Version>1.0.2</Version>
     <Authors>Daniel Vršek</Authors>
     <Product>VrsekDev.Blazor.Templates.MajesticAdmin</Product>
     <Description>Template MajesticAdmin ported for Blazor as a Razor Class Library</Description>
     <Copyright>Daniel Vršek</Copyright>
     <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/Blazor.Templates.MajesticAdmin</RepositoryUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
-    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>

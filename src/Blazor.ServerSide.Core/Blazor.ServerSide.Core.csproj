@@ -8,15 +8,20 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>1.0.2</Version>
     <Authors>Daniel Vršek</Authors>
     <Product>VrsekDev.Blazor.ServerSide.Core</Product>
     <Description>Library containing core extensions for Blazor ServerSide</Description>
     <Copyright>Daniel Vršek</Copyright>
     <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/Blazor.ServerSide.Core</RepositoryUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
-    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   
   <ItemGroup>
