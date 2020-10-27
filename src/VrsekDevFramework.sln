@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.ServerSide.Core", "B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Excel", "Excel", "{2E2F9E3D-3E20-4173-A3B7-2A8F7C4EEC1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.Abstractions", "Excel.Abstractions\Excel.Abstractions.csproj", "{AB6C5A55-BBDB-49FD-93E4-EA8AB288B98D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Excel.Abstractions", "Excel.Abstractions\Excel.Abstractions.csproj", "{AB6C5A55-BBDB-49FD-93E4-EA8AB288B98D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel.EPPlus", "Excel.EPP\Excel.EPPlus.csproj", "{0FC132DA-D482-49A2-A11E-B68CE155B0B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Excel.EPPlus", "Excel.EPP\Excel.EPPlus.csproj", "{0FC132DA-D482-49A2-A11E-B68CE155B0B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Components", "Blazor.Components\Blazor.Components.csproj", "{AE85998B-D113-467D-A3C6-73449348A356}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{0FC132DA-D482-49A2-A11E-B68CE155B0B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FC132DA-D482-49A2-A11E-B68CE155B0B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FC132DA-D482-49A2-A11E-B68CE155B0B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE85998B-D113-467D-A3C6-73449348A356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE85998B-D113-467D-A3C6-73449348A356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE85998B-D113-467D-A3C6-73449348A356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE85998B-D113-467D-A3C6-73449348A356}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,6 +55,7 @@ Global
 		{80B6559A-0C84-440A-824D-4DE1DF231DEF} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 		{AB6C5A55-BBDB-49FD-93E4-EA8AB288B98D} = {2E2F9E3D-3E20-4173-A3B7-2A8F7C4EEC1B}
 		{0FC132DA-D482-49A2-A11E-B68CE155B0B5} = {2E2F9E3D-3E20-4173-A3B7-2A8F7C4EEC1B}
+		{AE85998B-D113-467D-A3C6-73449348A356} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB3C3723-4118-461B-8D37-CD50A2552ABE}
