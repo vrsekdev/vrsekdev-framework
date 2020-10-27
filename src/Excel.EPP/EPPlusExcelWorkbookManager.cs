@@ -1,18 +1,19 @@
-﻿using VrsekDev.Excel.Abstractions;
-using VrsekDev.Excel.Abstractions.Exceptions;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using VrsekDev.Excel.Abstractions;
+using VrsekDev.Excel.Abstractions.Exceptions;
 
 namespace VrsekDev.Excel.EPPlus
 {
-    public class EPPlusExcelReader : IExcelReader
+    internal class EPPlusExcelWorkbookManager : IExcelWorkbookManager
     {
         private readonly ExcelPackage excelPackage;
 
-        public EPPlusExcelReader(ExcelPackage excelPackage)
+        public EPPlusExcelWorkbookManager(ExcelPackage excelPackage)
         {
             this.excelPackage = excelPackage;
         }
@@ -37,6 +38,31 @@ namespace VrsekDev.Excel.EPPlus
             }
 
             return new EPPlusExcelWorksheetReader(worksheet);
+        }
+
+        public IExcelWorksheetWriter CreateWorksheet(string name)
+        {
+            var worksheet = excelPackage.Workbook.Worksheets[name];
+            if (worksheet != null)
+            {
+                throw new ExcelException($"Worksheet `{name}` already exists.");
+            }
+
+            worksheet = excelPackage.Workbook.Worksheets.Add(name);
+            return new EPPlusExcelWorksheetWriter(worksheet);
+        }
+
+        public Stream SaveWorkbook()
+        {
+            MemoryStream ms = new MemoryStream();
+            excelPackage.SaveAs(ms);
+
+            return ms;
+        }
+
+        public void SaveWorkbook(Stream stream)
+        {
+            excelPackage.SaveAs(stream);
         }
 
         public void Dispose()

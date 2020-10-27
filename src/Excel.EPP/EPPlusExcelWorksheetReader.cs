@@ -6,7 +6,7 @@ using VrsekDev.Excel.Abstractions;
 
 namespace VrsekDev.Excel.EPPlus
 {
-    public class EPPlusExcelWorksheetReader : IExcelWorksheetReader
+    internal class EPPlusExcelWorksheetReader : IExcelWorksheetReader
     {
         private readonly ExcelWorksheet worksheet;
 

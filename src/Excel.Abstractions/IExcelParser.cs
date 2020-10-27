@@ -7,8 +7,8 @@ namespace VrsekDev.Excel.Abstractions
 {
     public interface IExcelParser
     {
-        IExcelReader ParseFile(FileInfo fileInfo);
+        IExcelWorkbookManager ParseFile(FileInfo fileInfo);
 
-        IExcelReader ParseStream(Stream stream);
+        IExcelWorkbookManager ParseStream(Stream stream);
     }
 }

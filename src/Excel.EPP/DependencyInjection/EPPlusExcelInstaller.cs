@@ -11,6 +11,7 @@ namespace VrsekDev.Excel.EPPlus.DependencyInjection
         public static void AddEPPlusExcel(this IServiceCollection services)
         {
             services.AddTransient<IExcelParser, EPPlusExcelParser>();
+            services.AddTransient<IExcelWorkbookFactory, EPPlusExcelWorkbookFactory>();
         }
     }
 }
