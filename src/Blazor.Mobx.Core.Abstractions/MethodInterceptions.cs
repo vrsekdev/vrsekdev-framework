@@ -29,7 +29,7 @@ namespace VrsekDev.Blazor.Mobx.Abstractions
             set
             {
                 hashDictionary.Clear();
-                foreach(var interception in value)
+                foreach (var interception in value)
                 {
                     hashDictionary.Add(interception.GetHashCode(), interception);
                 }

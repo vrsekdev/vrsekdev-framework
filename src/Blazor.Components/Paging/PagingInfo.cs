@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Attributes;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace VrsekDev.MagSDOP.Web.Client.Components.Paging
+namespace VrsekDev.Blazor.Components.Paging
 {
     public class PagingInfo
     {
