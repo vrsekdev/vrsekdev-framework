@@ -1,0 +1,8 @@
+﻿@using Havit.Blazor.Mobx.Components
+@using Havit.Blazor.Mobx.Samples.Models
+
+@inherits BlazorMobxComponentBase<IHomeStore>
+
+<h3>PersonDisplay</h3>
+
+<p>@Store.Person.FirstName @Store.Person.LastName</p>

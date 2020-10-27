@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.Abstractions\Core.Abstractions.csproj" />
-    <ProjectReference Include="..\Observables.Default\Observables.Default.csproj" />
-    <ProjectReference Include="..\Proxies.RuntimeProxy\Proxies.RuntimeProxy.csproj" />
+    <ProjectReference Include="..\Core.Abstractions\Blazor.Mobx.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\Observables.Default\Blazor.Mobx.Observables.Default.csproj" />
+    <ProjectReference Include="..\Proxies.RuntimeProxy\Blazor.Mobx.Proxies.RuntimeProxy.csproj" />
   </ItemGroup>
 
 </Project>
