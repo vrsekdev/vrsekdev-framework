@@ -1,4 +1,4 @@
-﻿using Havit.Blazor.Mobx.Tests;
+﻿using VrsekDev.Blazor.Mobx.Tests;
 using System;
 
 namespace TestProfiler
