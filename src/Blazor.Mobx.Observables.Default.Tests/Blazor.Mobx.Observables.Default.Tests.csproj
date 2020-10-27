@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Observables.Default\Blazor.Mobx.Observables.Default.csproj" />
+    <ProjectReference Include="..\Blazor.Mobx.Observables.Default\Blazor.Mobx.Observables.Default.csproj" />
   </ItemGroup>
 
 </Project>

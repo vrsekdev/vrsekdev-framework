@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.Abstractions\Blazor.Mobx.Core.Abstractions.csproj" />
+    <ProjectReference Include="..\Blazor.Mobx.Core.Abstractions\Blazor.Mobx.Core.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

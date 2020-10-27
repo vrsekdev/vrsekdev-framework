@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core.Tests\Blazor.Mobx.Core.Tests.csproj" />
+    <ProjectReference Include="..\Blazor.Mobx.Core.Tests\Blazor.Mobx.Core.Tests.csproj" />
   </ItemGroup>
 
 </Project>
