@@ -32,10 +32,10 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: |
-      src/Core/Core.csproj
-      src/Core.Abstractions/Core.Abstractions.csproj
-      src/Observables.Default/Observables.Default.csproj
-      src/Proxies.RuntimeProxy/Proxies.RuntimeProxy.csproj
+      src/Blazor.Mobx.Core/Blazor.Mobx.Core.csproj
+      src/Blazor.Mobx.Core.Abstractions/Blazor.Mobx.Core.Abstractions.csproj
+      src/Blazor.Mobx.Observables.Default/Blazor.Mobx.Observables.Default.csproj
+      src/Blazor.Mobx.Proxies.RuntimeProxy/Blazor.Mobx.Proxies.RuntimeProxy.csproj
     arguments: '--output $(Build.ArtifactStagingDirectory)'
 
 - task: PublishPipelineArtifact@1
