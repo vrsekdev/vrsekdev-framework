@@ -28,7 +28,7 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: Create packages
+  displayName: Publish
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -37,10 +37,20 @@ steps:
       src/Blazor.Mobx.Core.Abstractions/Blazor.Mobx.Core.Abstractions.csproj
       src/Blazor.Mobx.Observables.Default/Blazor.Mobx.Observables.Default.csproj
       src/Blazor.Mobx.Proxies.RuntimeProxy/Blazor.Mobx.Proxies.RuntimeProxy.csproj
-    arguments: '--output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+- task: CopyFiles@2
+  displayName: 'Copy NuGet packages'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: |
+      **/*.nupkg
+      **/*.snupkg
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
 
 - task: PublishPipelineArtifact@1
-  displayName: Publish artifacts
+  displayName: Publish artifact
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)'
     artifact: 'drop'
