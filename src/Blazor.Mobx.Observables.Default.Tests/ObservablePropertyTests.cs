@@ -1,11 +1,11 @@
-using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Observables.Default.Extensions;
+using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Observables.Default.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Havit.Blazor.Mobx.Observables.Default.Tests.Models;
+using VrsekDev.Blazor.Mobx.Observables.Default.Tests.Models;
 using System;
 
-namespace Havit.Blazor.Mobx.Observables.Default.Tests
+namespace VrsekDev.Blazor.Mobx.Observables.Default.Tests
 {
     [TestClass]
     public class ObservablePropertyTests

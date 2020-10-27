@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Havit.Blazor.Mobx.Reactables.ComputedValues
+namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
 {
     public class ComputedValueContainer<TStore, TValue> : IComputedValueInvokable
     {

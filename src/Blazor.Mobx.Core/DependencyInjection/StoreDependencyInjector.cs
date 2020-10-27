@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.DependencyInjection
+namespace VrsekDev.Blazor.Mobx.DependencyInjection
 {
     internal interface IStoreDependencyInjector<TStore>
         where TStore : class

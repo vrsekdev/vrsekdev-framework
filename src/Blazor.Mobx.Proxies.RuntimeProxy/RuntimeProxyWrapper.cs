@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
+namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy
 {
     internal class RuntimeProxyWrapper : IPropertyProxyWrapper
     {

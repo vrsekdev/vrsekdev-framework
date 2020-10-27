@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Abstractions.Events
+namespace VrsekDev.Blazor.Mobx.Abstractions.Events
 {
     public class BatchObservableChangeEventArgs
     {

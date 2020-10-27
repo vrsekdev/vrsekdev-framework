@@ -1,14 +1,14 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.DependencyInjection;
-using Havit.Blazor.Mobx.Reactables.Reactions;
-using Havit.Blazor.Mobx.StoreAccessors;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.DependencyInjection;
+using VrsekDev.Blazor.Mobx.Reactables.Reactions;
+using VrsekDev.Blazor.Mobx.StoreAccessors;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.DependencyInjection
+namespace VrsekDev.Blazor.Mobx.DependencyInjection
 {
     public class MobxStoreRegistration<TStore>
         where TStore : class

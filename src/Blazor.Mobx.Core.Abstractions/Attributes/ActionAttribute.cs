@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Abstractions.Attributes
+namespace VrsekDev.Blazor.Mobx.Abstractions.Attributes
 {
     public class ActionAttribute : Attribute
     {

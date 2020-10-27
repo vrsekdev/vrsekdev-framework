@@ -1,12 +1,12 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Events;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Reactables
+namespace VrsekDev.Blazor.Mobx.Reactables
 {
     internal class ReactableInvoker<TStore> : ObserverBase<TStore>
         where TStore : class

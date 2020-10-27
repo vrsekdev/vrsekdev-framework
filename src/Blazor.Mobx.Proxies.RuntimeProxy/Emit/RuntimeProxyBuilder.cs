@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
+namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit
 {
     internal static class RuntimeProxyBuilder
     {

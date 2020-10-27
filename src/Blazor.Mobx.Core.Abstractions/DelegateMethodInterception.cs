@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Abstractions
+namespace VrsekDev.Blazor.Mobx.Abstractions
 {
     public class DelegateMethodInterception : MethodInterception
     {

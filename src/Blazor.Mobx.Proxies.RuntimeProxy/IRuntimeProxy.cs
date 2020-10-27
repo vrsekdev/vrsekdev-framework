@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
+namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy
 {
     internal interface IRuntimeProxy
     {

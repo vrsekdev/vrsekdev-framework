@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Reactables.Autoruns
+namespace VrsekDev.Blazor.Mobx.Reactables.Autoruns
 {
     internal class AutorunContainer<TStore> : IInvokableReactable
     {

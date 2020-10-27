@@ -1,11 +1,11 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Extensions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Stores
+namespace VrsekDev.Blazor.Mobx.Stores
 {
     public class AsyncMobxStore
     {

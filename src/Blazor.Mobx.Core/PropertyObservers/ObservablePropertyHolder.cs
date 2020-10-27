@@ -1,11 +1,11 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Events;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.PropertyObservers
+namespace VrsekDev.Blazor.Mobx.PropertyObservers
 {
     internal class ObservablePropertyHolder<T> : IObservableHolder<T>
         where T : class

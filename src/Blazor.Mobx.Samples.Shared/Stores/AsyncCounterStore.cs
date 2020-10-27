@@ -1,12 +1,12 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Attributes;
-using Havit.Blazor.Mobx.Stores;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Attributes;
+using VrsekDev.Blazor.Mobx.Stores;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Samples.Shared.Stores
+namespace VrsekDev.Blazor.Mobx.Samples.Shared.Stores
 {
     public class AsyncCounterStore : AsyncMobxStore
     {

@@ -1,7 +1,7 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Exceptions;
-using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Fakes;
-using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Exceptions;
+using VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Fakes;
+using VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Tests.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests
+namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Tests
 {
     [TestClass]
     public class RuntimeProxyManagerTests

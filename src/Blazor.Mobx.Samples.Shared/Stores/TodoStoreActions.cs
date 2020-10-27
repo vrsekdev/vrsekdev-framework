@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.Mobx.Reactables.Reactions;
+﻿using VrsekDev.Blazor.Mobx.Reactables.Reactions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Samples.Shared.Stores
+namespace VrsekDev.Blazor.Mobx.Samples.Shared.Stores
 {
     public class TodoStoreActions : ReactionRegistrator<ITodoStore>
     {

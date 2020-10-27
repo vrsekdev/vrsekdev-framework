@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Events;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Reactables.ComputedValues
+namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
 {
     internal class ComputedValueInvoker<TStore> : ReactableInvoker<TStore>
         where TStore : class

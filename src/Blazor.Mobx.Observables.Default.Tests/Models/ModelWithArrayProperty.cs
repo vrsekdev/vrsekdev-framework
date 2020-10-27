@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Observables.Default.Tests.Models
+namespace VrsekDev.Blazor.Mobx.Observables.Default.Tests.Models
 {
     public class ModelWithArrayProperty
     {

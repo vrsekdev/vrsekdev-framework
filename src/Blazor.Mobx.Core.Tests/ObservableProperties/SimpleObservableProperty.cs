@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Tests.ObservableProperties
+namespace VrsekDev.Blazor.Mobx.Tests.ObservableProperties
 {
     public class SimpleObservableProperty
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Abstractions.Components
+namespace VrsekDev.Blazor.Mobx.Abstractions.Components
 {
     public interface IBlazorMobxComponent
     {

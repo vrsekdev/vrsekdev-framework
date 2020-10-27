@@ -1,5 +1,5 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.Components;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Tests.Fakes
+namespace VrsekDev.Blazor.Mobx.Tests.Fakes
 {
     public class FakeBlazorComponent : IBlazorMobxComponent
     {

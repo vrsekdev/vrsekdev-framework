@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.PropertyObservers
+namespace VrsekDev.Blazor.Mobx.PropertyObservers
 {
     internal class PropertyObserverFactory : IPropertyObserverFactory
     {

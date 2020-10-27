@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Reactables
+namespace VrsekDev.Blazor.Mobx.Reactables
 {
     public interface IInvokableReactable
     {

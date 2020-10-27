@@ -1,5 +1,5 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy
+namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy
 {
     internal class InterceptedMethodBuilder
     {

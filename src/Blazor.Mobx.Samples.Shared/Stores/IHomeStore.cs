@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Samples.Models;
+﻿using VrsekDev.Blazor.Mobx.Samples.Models;
 using System;
 using System.Linq;
-using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Attributes;
+using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Attributes;
 
-namespace Havit.Blazor.Mobx.Samples
+namespace VrsekDev.Blazor.Mobx.Samples
 {
     public interface IHomeStore
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 using System.Text;
-using Havit.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions;
 
-namespace Havit.Blazor.Mobx.Extensions
+namespace VrsekDev.Blazor.Mobx.Extensions
 {
     public static class EnumerableExtensions
     {

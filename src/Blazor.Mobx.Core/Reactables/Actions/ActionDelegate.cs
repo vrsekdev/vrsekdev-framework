@@ -1,4 +1,4 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Utils;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
 
-namespace Havit.Blazor.Mobx.Reactables.Actions
+namespace VrsekDev.Blazor.Mobx.Reactables.Actions
 {
     public delegate Delegate ActionInterceptorFactory(SemaphoreSlim transactionLock, Action dequeue);
 

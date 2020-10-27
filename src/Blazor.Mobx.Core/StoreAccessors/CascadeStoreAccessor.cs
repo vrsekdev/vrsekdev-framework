@@ -1,12 +1,12 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.Components;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.StoreAccessors
+namespace VrsekDev.Blazor.Mobx.StoreAccessors
 {
     public class CascadeStoreAccessor<TStore> : IStoreAccessor<TStore>
         where TStore : class

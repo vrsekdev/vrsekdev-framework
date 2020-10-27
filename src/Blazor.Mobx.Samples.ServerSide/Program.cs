@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Havit.Blazor.Mobx.Samples
+namespace VrsekDev.Blazor.Mobx.Samples
 {
     public class Program
     {

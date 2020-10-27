@@ -1,9 +1,9 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.Abstractions.Events;
-using Havit.Blazor.Mobx.Abstractions.Utils;
-using Havit.Blazor.Mobx.Components;
-using Havit.Blazor.Mobx.Reactables.ComputedValues;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
+using VrsekDev.Blazor.Mobx.Abstractions.Utils;
+using VrsekDev.Blazor.Mobx.Components;
+using VrsekDev.Blazor.Mobx.Reactables.ComputedValues;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.StoreAccessors
+namespace VrsekDev.Blazor.Mobx.StoreAccessors
 {
     internal class StoreAccessor<TStore> : ObserverBase<TStore>, IStoreAccessor<TStore>
         where TStore : class

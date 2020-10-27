@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Reactables.Reactions
+namespace VrsekDev.Blazor.Mobx.Reactables.Reactions
 {
     internal class ReactionWrapper<TStore>
         where TStore : class

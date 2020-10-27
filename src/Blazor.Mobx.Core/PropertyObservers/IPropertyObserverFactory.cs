@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.PropertyObservers
+namespace VrsekDev.Blazor.Mobx.PropertyObservers
 {
     internal interface IPropertyObserverFactory
     {

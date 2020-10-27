@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Havit.Blazor.Mobx.Extensions;
-using Havit.Blazor.Mobx.Samples.Shared.Stores;
+using VrsekDev.Blazor.Mobx.Extensions;
+using VrsekDev.Blazor.Mobx.Samples.Shared.Stores;
 
-namespace Havit.Blazor.Mobx.Samples
+namespace VrsekDev.Blazor.Mobx.Samples
 {
     public class Startup
     {

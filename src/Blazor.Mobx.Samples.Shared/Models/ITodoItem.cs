@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Attributes;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Samples.Models
+namespace VrsekDev.Blazor.Mobx.Samples.Models
 {
     public interface ITodoItem
     {

@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.PropertyObservers;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Mobx.PropertyObservers;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Components
+namespace VrsekDev.Blazor.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase, IBlazorMobxComponent
     {

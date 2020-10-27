@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Reactables.Reactions;
+﻿using VrsekDev.Blazor.Mobx.Reactables.Reactions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Havit.Blazor.Mobx
+namespace VrsekDev.Blazor.Mobx
 {
     internal interface IStoreMetadata<TStore>
         where TStore : class

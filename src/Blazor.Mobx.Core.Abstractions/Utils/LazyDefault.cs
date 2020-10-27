@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Abstractions.Utils
+namespace VrsekDev.Blazor.Mobx.Abstractions.Utils
 {
     public class LazyDefault<TValue>
     {

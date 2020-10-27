@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Samples
+namespace VrsekDev.Blazor.Mobx.Samples
 {
     public interface ITodoStore
     {

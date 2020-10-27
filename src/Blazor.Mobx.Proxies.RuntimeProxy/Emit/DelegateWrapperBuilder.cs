@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Proxies.RuntimeProxy.Emit
+namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit
 {
     internal class DelegateWrapperBuilder
     {

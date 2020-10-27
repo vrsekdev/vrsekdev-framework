@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Tests.Fakes
+namespace VrsekDev.Blazor.Mobx.Tests.Fakes
 {
     public class FakeDependency
     {

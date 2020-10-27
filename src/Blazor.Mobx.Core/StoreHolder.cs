@@ -1,11 +1,11 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Events;
-using Havit.Blazor.Mobx.Abstractions.Utils;
-using Havit.Blazor.Mobx.DependencyInjection;
-using Havit.Blazor.Mobx.Reactables;
-using Havit.Blazor.Mobx.Reactables.Actions;
-using Havit.Blazor.Mobx.Reactables.Autoruns;
-using Havit.Blazor.Mobx.Reactables.ComputedValues;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
+using VrsekDev.Blazor.Mobx.Abstractions.Utils;
+using VrsekDev.Blazor.Mobx.DependencyInjection;
+using VrsekDev.Blazor.Mobx.Reactables;
+using VrsekDev.Blazor.Mobx.Reactables.Actions;
+using VrsekDev.Blazor.Mobx.Reactables.Autoruns;
+using VrsekDev.Blazor.Mobx.Reactables.ComputedValues;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx
+namespace VrsekDev.Blazor.Mobx
 {
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class

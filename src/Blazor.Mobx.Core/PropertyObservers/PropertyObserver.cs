@@ -1,7 +1,7 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.Abstractions.Events;
-using Havit.Blazor.Mobx.StoreAccessors;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
+using VrsekDev.Blazor.Mobx.StoreAccessors;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.PropertyObservers
+namespace VrsekDev.Blazor.Mobx.PropertyObservers
 {
     internal class PropertyObserver<T> : ObserverBase<T>
         where T : class

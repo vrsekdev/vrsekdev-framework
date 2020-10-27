@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx
+namespace VrsekDev.Blazor.Mobx
 {
     internal class ObservableCollectionAdapter<T> : List<T>, IObservableCollection<T>
     {

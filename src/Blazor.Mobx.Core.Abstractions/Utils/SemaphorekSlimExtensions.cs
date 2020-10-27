@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Abstractions.Utils
+namespace VrsekDev.Blazor.Mobx.Abstractions.Utils
 {
     public static class SemaphorekSlimExtensions
     {

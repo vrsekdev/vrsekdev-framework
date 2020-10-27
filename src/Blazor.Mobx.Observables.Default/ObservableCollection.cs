@@ -1,13 +1,13 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Events;
-using Havit.Blazor.Mobx.Observables.Default.Extensions;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
+using VrsekDev.Blazor.Mobx.Observables.Default.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Observables.Default
+namespace VrsekDev.Blazor.Mobx.Observables.Default
 {
     internal abstract class ObservableCollection : IObservableCollection
     {

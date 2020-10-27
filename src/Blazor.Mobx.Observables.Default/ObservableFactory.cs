@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions;
-using Havit.Blazor.Mobx.Abstractions.Events;
+﻿using VrsekDev.Blazor.Mobx.Abstractions;
+using VrsekDev.Blazor.Mobx.Abstractions.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Havit.Blazor.Mobx.Observables.Default
+namespace VrsekDev.Blazor.Mobx.Observables.Default
 {
     internal class ObservableFactory : IObservableFactory
     {

@@ -1,7 +1,7 @@
-﻿using Havit.Blazor.Mobx.Extensions;
-using Havit.Blazor.Mobx.PropertyObservers;
-using Havit.Blazor.Mobx.Tests.Fakes;
-using Havit.Blazor.Mobx.Tests.ObservableProperties;
+﻿using VrsekDev.Blazor.Mobx.Extensions;
+using VrsekDev.Blazor.Mobx.PropertyObservers;
+using VrsekDev.Blazor.Mobx.Tests.Fakes;
+using VrsekDev.Blazor.Mobx.Tests.ObservableProperties;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx.Tests
+namespace VrsekDev.Blazor.Mobx.Tests
 {
     [TestClass]
     public class PropertyObserverTests

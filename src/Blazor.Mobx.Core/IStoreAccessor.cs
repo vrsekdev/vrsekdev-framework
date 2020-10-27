@@ -1,10 +1,10 @@
-﻿using Havit.Blazor.Mobx.Abstractions.Components;
-using Havit.Blazor.Mobx.Components;
+﻿using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Mobx.Components;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
 
-namespace Havit.Blazor.Mobx
+namespace VrsekDev.Blazor.Mobx
 {
     public interface IStoreAccessor<TStore>
         where TStore : class
