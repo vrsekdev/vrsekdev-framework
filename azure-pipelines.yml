@@ -28,7 +28,7 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
-  displayName: Create packages
+  displayName: Publish
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -39,9 +39,20 @@ steps:
       src/Blazor.Mobx.Proxies.RuntimeProxy/Blazor.Mobx.Proxies.RuntimeProxy.csproj
     arguments: '--output $(Build.ArtifactStagingDirectory)'
 
-- task: PublishPipelineArtifact@1
-  displayName: Publish artifacts
+- task: NuGetCommand@2
+  displayName: Pack NuGet packages
   inputs:
-    targetPath: '$(Pipeline.Workspace)'
+    command: 'pack'
+    packagesToPack: |
+      src/Blazor.Mobx.Core/Blazor.Mobx.Core.csproj
+      src/Blazor.Mobx.Core.Abstractions/Blazor.Mobx.Core.Abstractions.csproj
+      src/Blazor.Mobx.Observables.Default/Blazor.Mobx.Observables.Default.csproj
+      src/Blazor.Mobx.Proxies.RuntimeProxy/Blazor.Mobx.Proxies.RuntimeProxy.csproj
+    versioningScheme: 'off'
+
+- task: PublishPipelineArtifact@1
+  displayName: Publish artifact
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
     artifact: 'drop'
     publishLocation: 'pipeline'
