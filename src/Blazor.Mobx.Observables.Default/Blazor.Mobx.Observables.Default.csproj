@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>Havit.Blazor.Mobx.Observables.Default</AssemblyName>
-    <RootNamespace>Havit.Blazor.Mobx.Observables.Default</RootNamespace>
+    <AssemblyName>VrsekDev.Blazor.Mobx.Observables.Default</AssemblyName>
+    <RootNamespace>VrsekDev.Blazor.Mobx.Observables.Default</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>

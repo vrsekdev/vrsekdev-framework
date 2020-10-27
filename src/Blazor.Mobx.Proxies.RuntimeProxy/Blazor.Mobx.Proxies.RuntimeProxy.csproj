@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>Havit.Blazor.Mobx.Proxies.RuntimeProxy</AssemblyName>
-    <RootNamespace>Havit.Blazor.Mobx.Proxies.RuntimeProxy</RootNamespace>
+    <AssemblyName>VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy</AssemblyName>
+    <RootNamespace>VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>

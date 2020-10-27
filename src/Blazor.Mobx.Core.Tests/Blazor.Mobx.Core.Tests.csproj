@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Havit.Blazor.Mobx.Tests</AssemblyName>
-    <RootNamespace>Havit.Blazor.Mobx.Tests</RootNamespace>
+    <AssemblyName>VrsekDev.Blazor.Mobx.Tests</AssemblyName>
+    <RootNamespace>VrsekDev.Blazor.Mobx.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

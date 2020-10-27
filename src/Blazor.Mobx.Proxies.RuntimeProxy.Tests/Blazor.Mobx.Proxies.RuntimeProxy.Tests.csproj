@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests</AssemblyName>
-    <RootNamespace>Havit.Blazor.Mobx.Proxies.RuntimeProxy.Tests</RootNamespace>
+    <AssemblyName>VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Tests</AssemblyName>
+    <RootNamespace>VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

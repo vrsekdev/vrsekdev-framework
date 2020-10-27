@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>Havit.Blazor.Mobx.Samples.ServerSide</AssemblyName>
-    <RootNamespace>Havit.Blazor.Mobx.Samples.ServerSide</RootNamespace>
+    <AssemblyName>VrsekDev.Blazor.Mobx.Samples.ServerSide</AssemblyName>
+    <RootNamespace>VrsekDev.Blazor.Mobx.Samples.ServerSide</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

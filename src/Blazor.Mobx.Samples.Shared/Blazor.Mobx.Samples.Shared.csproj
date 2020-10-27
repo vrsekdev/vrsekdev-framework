@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
-    <AssemblyName>Havit.Blazor.Mobx.Samples.Shared</AssemblyName>
-    <RootNamespace>Havit.Blazor.Mobx.Samples.Shared</RootNamespace>
+    <AssemblyName>VrsekDev.Blazor.Mobx.Samples.Shared</AssemblyName>
+    <RootNamespace>VrsekDev.Blazor.Mobx.Samples.Shared</RootNamespace>
   </PropertyGroup>
 
 
