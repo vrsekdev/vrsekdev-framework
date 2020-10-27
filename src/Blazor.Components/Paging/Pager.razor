@@ -1,0 +1,34 @@
+﻿@code {
+    [Parameter]
+    public PagingInfo PagingInfo { get; set; }
+
+    [Parameter]
+    public int NumberOfPagesShown { get; set; } = 5;
+}
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(!PagingInfo.IsPreviousPageEnabled ? "disabled": "")">
+            <button class="page-link" @onclick="() => ChangePage(PagingInfo.CurrentPage - 1)">Předchozí</button>
+        </li>
+        @for (int i = StartIndex; i < (NumberOfPagesShown + StartIndex) && i <= PagingInfo.PagesCount; i++)
+        {
+            int pageNumber = i;
+            <li class="page-item @(pageNumber == PagingInfo.CurrentPage ? "active" : "")">
+                <button class="page-link" @onclick="() => ChangePage(pageNumber)">@pageNumber</button>
+            </li>
+        }
+        <li class="page-item @(!PagingInfo.IsNextPageEnabled ? "disabled": "")">
+            <button class="page-link" @onclick="() => ChangePage(PagingInfo.CurrentPage + 1)">Další</button>
+        </li>
+    </ul>
+</nav>
+
+@code {
+    public int StartIndex => Math.Min(Math.Max(PagingInfo.CurrentPage - ((NumberOfPagesShown - 1) / 2), 1), Math.Max(PagingInfo.PagesCount - NumberOfPagesShown + 1, 1));
+
+    private void ChangePage(int pageNumber)
+    {
+        PagingInfo.CurrentPage = pageNumber;
+    }
+}
