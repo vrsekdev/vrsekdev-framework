@@ -17,7 +17,7 @@ function LivIconsEvoDefaults() {
 
 	var defaultOptions = {
 
-		pathToFolder: '../../../app-assets/fonts/LivIconsEvo/svg/', //the path from root of your site to folder with icons. Also may be as URL, like 'http://yoursite.com/path/to/LivIconsEvo/svg/'
+		pathToFolder: '/_content/VrsekDev.Blazor.Templates.Frest/app-assets/fonts/LivIconsEvo/svg/', //the path from root of your site to folder with icons. Also may be as URL, like 'http://yoursite.com/path/to/LivIconsEvo/svg/'
 		name: 'bell.svg', //the default icon name
 
 		//visualization options

@@ -49,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Templates.Frest", "B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Templates.Frest.Sample", "Blazor.Templates.Frest.Sample\Blazor.Templates.Frest.Sample.csproj", "{6414DCB6-976C-4193-AF10-5F4DFA691587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Core", "Blazor.Core\Blazor.Core.csproj", "{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Core", "Blazor.Core\Blazor.Core.csproj", "{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

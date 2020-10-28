@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Blazor.Core\Blazor.Core.csproj" />
+  </ItemGroup>
+
 </Project>

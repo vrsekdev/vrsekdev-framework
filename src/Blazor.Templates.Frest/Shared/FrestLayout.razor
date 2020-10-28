@@ -33,11 +33,7 @@
             </ul>
         </div>
         <div class="shadow-bottom"></div>
-        <div class="main-menu-content">
-            <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
-                @MainMenu()
-            </ul>
-        </div>
+        @MainMenu()
     </div>
 
     <div class="app-content content">
@@ -57,7 +53,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("appInitializer.onAppLoaded");
+            //await JSRuntime.InvokeVoidAsync("appInitializer.onAppLoaded");
         }
 
         await base.OnAfterRenderAsync(firstRender);

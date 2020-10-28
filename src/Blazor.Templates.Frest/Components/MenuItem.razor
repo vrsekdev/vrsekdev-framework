@@ -1,0 +1,22 @@
+﻿@code {
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<li>
+    <a href="@Url">
+        <i class="bx bx-right-arrow-alt"></i>
+        <span class="menu-item">@Title</span>
+    </a>
+    <ConditionalView Condition="ChildContent != null">
+        <ul class="menu-content">
+            @ChildContent
+        </ul>
+    </ConditionalView>
+</li>

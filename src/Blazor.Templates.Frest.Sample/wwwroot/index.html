@@ -35,7 +35,7 @@
     <!-- END: Custom CSS-->
 </head>
 
-<body class="vertical-layout vertical-menu-modern 2-columns  navbar-sticky footer-static">
+<body class="vertical-layout vertical-menu-modern 2-columns navbar-sticky footer-static" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
     <app>Loading...</app>
 
     <div id="blazor-error-ui">
@@ -44,9 +44,6 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
-
-    <script src="/_content/VrsekDev.Blazor.Core/js/appInitializer.js"></script>
-    <script src="/_content/VrsekDev.Blazor.Core/js/appJsInjector.js"></script>
 
     <!-- BEGIN: Vendor JS-->
     <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/vendors/js/vendors.min.js"></script>
@@ -60,12 +57,14 @@
     <!-- END: Page Vendor JS-->
     <!-- BEGIN: Theme JS-->
     <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/scripts/configs/vertical-menu-light.js"></script>
-    <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/core/app-menu.js"></script>
     <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/core/app.js"></script>
+    <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/core/app-menu.js"></script>
     <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/scripts/components.js"></script>
     <script src="/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/scripts/footer.js"></script>
-    <!-- END: Theme JS-->
+    <script src="/_content/VrsekDev.Blazor.Templates.Frest/functions.js"></script>
+
     <!-- BEGIN: Page JS-->
+    <script src="../../../app-assets/js/scripts/pages/dashboard-ecommerce.js"></script>
     <!-- END: Page JS-->
 </body>
 

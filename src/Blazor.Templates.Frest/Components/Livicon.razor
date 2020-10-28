@@ -1,0 +1,11 @@
+﻿@inject IJSRuntime JSRuntime
+
+@code {
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+}
+
+<i @ref="iconRef" class="menu-livicon"></i>

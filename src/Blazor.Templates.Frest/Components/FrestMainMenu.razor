@@ -1,0 +1,17 @@
+﻿@inject IJSRuntime JSRuntime
+
+@code {
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<div class="main-menu-content">
+    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
+        <CascadingValue Name="IconStyle" Value="@("lines")">
+            @ChildContent
+        </CascadingValue>
+    </ul>
+</div>
