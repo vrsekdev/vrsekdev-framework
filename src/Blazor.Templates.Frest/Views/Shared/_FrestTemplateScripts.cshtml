@@ -1,0 +1,22 @@
+﻿<script src="_content/VrsekDev.Blazor.Core/js/appInitializer.js"></script>
+<script src="_content/VrsekDev.Blazor.Core/js/appJsInjector.js"></script>
+
+<script type="text/javascript">
+    window.appInitializer.subscribe(function () {
+        window.jsInjector.injectJsFiles([
+            // BEGIN: Vendor JS
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/vendors/js/vendors.min.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.tools.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/fonts/LivIconsEvo/js/LivIconsEvo.min.js",
+            // BEGIN Vendor JS
+            // BEGIN: Theme JS
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/scripts/configs/vertical-menu-light.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/core/app-menu.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/core/app.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/scripts/components.js",
+            "/_content/VrsekDev.Blazor.Templates.Frest/app-assets/js/scripts/footer.js",
+            // END: Theme JS
+        ])
+    })
+</script>
