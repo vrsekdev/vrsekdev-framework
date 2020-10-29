@@ -1,7 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
 
-@inject IJSRuntime JSRuntime
-
 @code {
     [Parameter]
     public string Title { get; set; }
@@ -19,14 +17,29 @@
     public RenderFragment ChildContent { get; set; }
 }
 
-<li class="nav-item" @onmouseenter="HandleMouseEnterEventAsync" >
-    <NavLink href="@Url">
-        <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
-        <span class="menu-title">@Title</span>
-    </NavLink>
-    <ConditionalView Condition="ChildContent != null">
-        <ul class="menu-content">
-            @ChildContent
-        </ul>
+<li @ref="menuRef" class="nav-item @hasSubClass @openClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="HandleClickAsync" @onclick:stopPropagation="true">
+    <ConditionalView Condition="ChildContent == null">
+        <Passed>
+            <NavLink href="@Url">
+                <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
+                <span class="menu-title">@Title</span>
+            </NavLink>
+        </Passed>
+        <Failed>
+            <a class="cursor-pointer">
+                <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
+                <span class="menu-title">@Title</span>
+            </a>
+            <ul class="menu-content">
+                @ChildContent
+            </ul>
+        </Failed>
     </ConditionalView>
 </li>
+
+@code {
+    private FrestLivicon iconRef;
+    private ElementReference menuRef;
+    private bool isOpen;
+    private string hasSubClass, openClass, hoverClass;
+}

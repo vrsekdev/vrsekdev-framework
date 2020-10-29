@@ -38,5 +38,10 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
             await JSRuntime.InvokeVoidAsync("vrsekdev.frest.stopLiviconEvo", iconRef);
             await JSRuntime.InvokeVoidAsync("vrsekdev.frest.playLiviconEvo", iconRef);
         }
+
+        public async Task HandleMouseLeaveEventAsync()
+        {
+            await JSRuntime.InvokeVoidAsync("vrsekdev.frest.stopLiviconEvo", iconRef);
+        }
     }
 }

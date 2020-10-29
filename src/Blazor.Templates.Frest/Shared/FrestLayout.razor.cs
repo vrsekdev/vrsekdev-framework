@@ -39,7 +39,7 @@ namespace VrsekDev.Blazor.Templates.Frest.Shared
             await InvokeAsync(StateHasChanged);
         }
 
-        private async Task HandleMainMenuCollapseClicked()
+        private async Task HandleMainMenuCollapseClick()
         {
             mainMenuParameters.IsCollapsed = !mainMenuParameters.IsCollapsed;
 

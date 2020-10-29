@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Templates.Frest.Components
 {
-    public partial class FrestNavItem
+    public partial class FrestMenuItem
     {
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
@@ -26,10 +26,10 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
         {
             if (ChildContent != null)
             {
-                string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
                 isOpen = !isOpen;
                 openClass = isOpen ? "open" : "";
 
+                string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
                 await JSRuntime.InvokeVoidAsync(function, menuRef);
             }
         }

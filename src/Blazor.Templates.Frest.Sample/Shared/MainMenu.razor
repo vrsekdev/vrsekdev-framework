@@ -1,7 +1,7 @@
 ﻿<FrestMainMenu IsCollapsed="false">
-    <FrestNavItem Title="Dashboard" Url="/" Icon="desktop">
-        <FrestMenuItem Title="eCommerce" />
-        <FrestMenuItem Title="Analytics" />
+    <FrestNavItem Title="Dashboard" Icon="desktop">
+        <FrestMenuItem Title="eCommerce" Url="/" />
+        <FrestMenuItem Title="Analytics" Url="/analytics" />
     </FrestNavItem>
 
     <FrestNavHeader Title="Apps" />
@@ -11,7 +11,9 @@
     <FrestNavItem Title="Calendar" Url="/app-calendar" Icon="calendar" />
     <FrestNavItem Title="Kanban" Url="/app-kanban" Icon="grid" />
     <FrestNavItem Title="Invoice" Url="#" Icon="calendar">
-        <FrestMenuItem Title="Invoice List" Url="/app-invoice-list" />
+        <FrestMenuItem Title="Invoice List" Url="/app-invoice-list">
+            <FrestMenuItem Title="Invoice List - mine" Url="/app-invoice-list" />
+        </FrestMenuItem>
         <FrestMenuItem Title="Invoice" Url="/app-invoice" />
         <FrestMenuItem Title="Invoice Edit" Url="/app-invoice-edit" />
         <FrestMenuItem Title="Invoice Add" Url="/app-invoice-add" />

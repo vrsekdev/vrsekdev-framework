@@ -884,4 +884,4 @@
   $(".header-navbar .dropdown-notification label").on("click", function (e) {
     e.stopPropagation()
   })
-})(window, document, jQuery)
+})

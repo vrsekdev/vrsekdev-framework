@@ -1,4 +1,6 @@
-﻿@code {
+﻿@using Microsoft.AspNetCore.Components.Routing
+
+@code {
     [Parameter]
     public string Title { get; set; }
 
@@ -9,14 +11,29 @@
     public RenderFragment ChildContent { get; set; }
 }
 
-<li>
-    <a href="@Url">
-        <i class="bx bx-right-arrow-alt"></i>
-        <span class="menu-item">@Title</span>
-    </a>
-    <ConditionalView Condition="ChildContent != null">
-        <ul class="menu-content">
-            @ChildContent
-        </ul>
+<li @ref="menuRef" class="@hasSubClass @openClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="HandleClickAsync" @onclick:stopPropagation="true">
+    <ConditionalView Condition="ChildContent == null">
+        <Passed>
+            <NavLink href="@Url">
+                <i class="bx bx-right-arrow-alt"></i>
+                <span class="menu-title">@Title</span>
+            </NavLink>
+        </Passed>
+        <Failed>
+            <a class="cursor-pointer">
+                <i class="bx bx-right-arrow-alt"></i>
+                <span class="menu-title">@Title</span>
+            </a>
+            <ul class="menu-content">
+                @ChildContent
+            </ul>
+        </Failed>
     </ConditionalView>
 </li>
+
+@code {
+    private FrestLivicon iconRef;
+    private ElementReference menuRef;
+    private bool isOpen;
+    private string hasSubClass, openClass, hoverClass;
+}
