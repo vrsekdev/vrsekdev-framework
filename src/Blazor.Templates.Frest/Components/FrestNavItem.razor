@@ -1,5 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
 
+@inherits BlazorMobxComponentBase<MainMenuStore>
+
 @code {
     [Parameter]
     public string Title { get; set; }
@@ -13,29 +15,26 @@
     [Parameter]
     public string Icon { get; set; }
 
-    [CascadingParameter(Name = "IconStyle")]
-    public string IconStyle { get; set; }
-
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 }
 
-<li @ref="menuRef" class="nav-item @hasSubClass @openClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="HandleClickAsync" @onclick:stopPropagation="true">
+<li @ref="menuRef" class="nav-item @hasSubClass @OpenClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="ToggleOpenAsync" @onclick:stopPropagation="true">
     <ConditionalView Condition="ChildContent == null">
         <Passed>
             <NavLink href="@Url" Match="Match">
-                <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
+                <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@Store.IconStyle" />
                 <span class="menu-title">@Title</span>
             </NavLink>
         </Passed>
         <Failed>
             <a class="cursor-pointer">
-                <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
+                <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@Store.IconStyle" />
                 <span class="menu-title">@Title</span>
             </a>
-            <ul class="menu-content">
+            <FrestMenuContainer>
                 @ChildContent
-            </ul>
+            </FrestMenuContainer>
         </Failed>
     </ConditionalView>
 </li>
@@ -44,5 +43,7 @@
     private FrestLivicon iconRef;
     private ElementReference menuRef;
     private bool isOpen;
-    private string hasSubClass, openClass, hoverClass;
+    private string hasSubClass, hoverClass;
+
+    private string OpenClass => isOpen && (!Store.IsCollapsed || Store.IsExpanded) ? "open" : "";
 }

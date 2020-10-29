@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.Mobx;
 using VrsekDev.Blazor.Templates.Frest.Models;
+using VrsekDev.Blazor.Templates.Frest.Stores;
 
 namespace VrsekDev.Blazor.Templates.Frest.Shared
 {
@@ -17,31 +19,31 @@ namespace VrsekDev.Blazor.Templates.Frest.Shared
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            if (firstRender)
-            {
-                mainMenuParameters.MouseEnterEvent += HandleChange;
-                mainMenuParameters.MouseLeaveEvent += HandleChange;
-            }
+        [Inject]
+        public IStoreAccessor<MainMenuStore> MainMenuAccessor { get; set; }
 
-            base.OnAfterRender(firstRender);
+        public MainMenuStore Store => MainMenuAccessor.Store;
+
+        protected override void OnInitialized()
+        {
+            MainMenuAccessor.SetConsumer(this);
         }
 
-        private string GetMainMenuExpandedClass()
+        private async Task HandleMainMenuOnMouseleave()
         {
-            return mainMenuParameters.IsCollapsed && mainMenuParameters.IsExpanded ? "expanded" : "";
+            Store.IsExpanded = false;
+            await JSRuntime.InvokeVoidAsync("console.log", $"leaving {Store.IsCollapsed} + {Store.IsExpanded}");
         }
 
-        private async void HandleChange(object sender, EventArgs e)
+        private async Task HandleMainMenuOnMouseenter()
         {
-            mainMenuExpandedClass = GetMainMenuExpandedClass();
-            await InvokeAsync(StateHasChanged);
+            Store.IsExpanded = true;
+            await JSRuntime.InvokeVoidAsync("console.log", $"entering {Store.IsCollapsed} + {Store.IsExpanded}");
         }
 
         private async Task HandleMainMenuCollapseClick()
         {
-            mainMenuParameters.IsCollapsed = !mainMenuParameters.IsCollapsed;
+            Store.IsCollapsed = !Store.IsCollapsed;
 
             await JSRuntime.InvokeVoidAsync("vrsekdev.frest.mainMenuToggleCollapse");
         }

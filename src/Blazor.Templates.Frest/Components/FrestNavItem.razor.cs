@@ -12,6 +12,24 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
 
+        protected override void OnInitialized()
+        {
+            Autorun(async store =>
+            {
+                if (ChildContent != null)
+                {
+                    bool shouldBeOpen = store.OpenedNavigationId == menuRef.Id ? true : false;
+                    if (shouldBeOpen != isOpen)
+                    {
+                        string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
+                        await JSRuntime.InvokeVoidAsync(function, menuRef);
+                    }
+                    isOpen = shouldBeOpen;
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
+        }
+
         protected override void OnParametersSet()
         {
             if (ChildContent != null)
@@ -22,16 +40,14 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
             base.OnParametersSet();
         }
 
-        protected async Task HandleClickAsync()
+        protected Task ToggleOpenAsync()
         {
             if (ChildContent != null)
             {
-                string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
-                isOpen = !isOpen;
-                openClass = isOpen ? "open" : "";
-
-                await JSRuntime.InvokeVoidAsync(function, menuRef);
+                Store.OpenedNavigationId = !isOpen ? menuRef.Id : null;
             }
+
+            return Task.CompletedTask;
         }
 
         protected Task HandleMouseEnterAsync()

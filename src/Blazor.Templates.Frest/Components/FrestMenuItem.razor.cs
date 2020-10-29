@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.Mobx;
+using VrsekDev.Blazor.Mobx.Abstractions.Components;
+using VrsekDev.Blazor.Templates.Frest.Stores;
 
 namespace VrsekDev.Blazor.Templates.Frest.Components
 {
@@ -11,6 +14,27 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
     {
         [Inject]
         public IJSRuntime JSRuntime { get; set; }
+
+        [Inject]
+        public IStoreAccessor<MainMenuStore> MainMenuStoreAccessor { get; set; }
+
+        protected override void OnInitialized()
+        {
+            MainMenuStoreAccessor.SetConsumer((IBlazorMobxComponent)this);
+
+            Autorun(async store =>
+            {
+                bool shouldBeOpen = store.OpenedMenuItemId == menuRef.Id ? true : false;
+                await JSRuntime.InvokeVoidAsync("console.log", $"{shouldBeOpen} + {isOpen}");
+                if (shouldBeOpen != isOpen)
+                {
+                    string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
+                    await JSRuntime.InvokeVoidAsync(function, menuRef);
+                }
+                isOpen = shouldBeOpen;
+                await InvokeAsync(StateHasChanged);
+            });
+        }
 
         protected override void OnParametersSet()
         {
@@ -22,16 +46,15 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
             base.OnParametersSet();
         }
 
-        protected async Task HandleClickAsync()
+        protected Task HandleClickAsync()
         {
             if (ChildContent != null)
             {
-                string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
+                Store.OpenedMenuItemId = !isOpen ? menuRef.Id : null;
                 isOpen = !isOpen;
-                openClass = isOpen ? "open" : "";
-
-                await JSRuntime.InvokeVoidAsync(function, menuRef);
             }
+
+            return Task.CompletedTask;
         }
 
         protected Task HandleMouseEnterAsync()

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Blazor.Core\Blazor.Core.csproj" />
+    <ProjectReference Include="..\Blazor.Mobx.Core\Blazor.Mobx.Core.csproj" />
   </ItemGroup>
 
 </Project>

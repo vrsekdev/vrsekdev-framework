@@ -17,20 +17,22 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
         {
             if (firstRender)
             {
-                Parameters.MouseEnterEvent += HandleChange;
-                Parameters.MouseLeaveEvent += HandleChange;
-
-                await JSRuntime.InvokeVoidAsync("$.app.menu.init", IsCollapsed);
+                await JSRuntime.InvokeVoidAsync("$.app.menu.init", Store.IsCollapsed);
             }
 
             base.OnAfterRender(firstRender);
         }
 
+        protected async override Task OnParametersSetAsync()
+        {
+            cssClass = await GetMenuClassAsync();
+        }
+
         protected async Task<string> GetMenuClassAsync()
         {
-            await JSRuntime.InvokeVoidAsync("console.log", $"{Parameters.IsCollapsed} + {Parameters.IsExpanded}");
+            await JSRuntime.InvokeVoidAsync("console.log", $"{Store.IsCollapsed} + {Store.IsExpanded}");
 
-            switch ((Parameters.IsCollapsed, Parameters.IsExpanded))
+            switch ((Store.IsCollapsed, Store.IsExpanded))
             {
                 case var t when t.IsCollapsed && t.IsExpanded:
                     await JSRuntime.InvokeVoidAsync("vrsekdev.frest.mainMenuExpand");
@@ -41,14 +43,6 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
                 default:
                     return "open";
             }
-        }
-
-        private async void HandleChange(object sender, EventArgs e)
-        {
-            cssClass = await GetMenuClassAsync();
-            await JSRuntime.InvokeVoidAsync("console.log", cssClass);
-
-            await InvokeAsync(StateHasChanged);
         }
     }
 }

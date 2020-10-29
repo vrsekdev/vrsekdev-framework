@@ -1,5 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
 
+@inherits BlazorMobxComponentBase<MenuContainerStore>
+
 @code {
     [Parameter]
     public string Title { get; set; }
@@ -14,7 +16,7 @@
     public RenderFragment ChildContent { get; set; }
 }
 
-<li @ref="menuRef" class="@hasSubClass @openClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="HandleClickAsync" @onclick:stopPropagation="true">
+<li @ref="menuRef" class="@hasSubClass @OpenClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="HandleClickAsync" @onclick:stopPropagation="true">
     <ConditionalView Condition="ChildContent == null">
         <Passed>
             <NavLink href="@Url" Match="Match">
@@ -27,9 +29,9 @@
                 <i class="bx bx-right-arrow-alt"></i>
                 <span class="menu-title">@Title</span>
             </a>
-            <ul class="menu-content">
+            <FrestMenuContainer>
                 @ChildContent
-            </ul>
+            </FrestMenuContainer>
         </Failed>
     </ConditionalView>
 </li>
@@ -38,5 +40,7 @@
     private FrestLivicon iconRef;
     private ElementReference menuRef;
     private bool isOpen;
-    private string hasSubClass, openClass, hoverClass;
+    private string hasSubClass, hoverClass;
+
+    private string OpenClass => isOpen && (!MainMenuStoreAccessor.Store.IsCollapsed || MainMenuStoreAccessor.Store.IsExpanded) ? "open" : "";
 }

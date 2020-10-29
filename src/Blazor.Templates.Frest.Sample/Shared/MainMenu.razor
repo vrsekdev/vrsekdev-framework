@@ -16,8 +16,10 @@
         </FrestMenuItem>
         <FrestMenuItem Title="Invoice" Url="/app-invoice" />
         <FrestMenuItem Title="Invoice Edit" Url="/app-invoice-edit" />
-        <FrestMenuItem Title="Invoice Add" Url="/app-invoice-add" />
-    </FrestNavItem>
+        <FrestMenuItem Title="Invoice Add" Url="/app-invoice-add">
+            <FrestMenuItem Title="Invoice Add" Url="/app-invoice-add" />
+            </FrestMenuItem>
+</FrestNavItem>
     <FrestNavItem Title="File Manager" Url="/app-file-manager" Icon="save" />
 
     <FrestNavHeader Title="UI Elements" />

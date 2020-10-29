@@ -1,11 +1,10 @@
 ﻿@using VrsekDev.Blazor.Templates.Frest.Models
 
+@inherits BlazorMobxComponentBase<MainMenuStore>
+
 @code {
     [Parameter]
     public bool IsCollapsed { get; set; }
-
-    [CascadingParameter(Name = "MainMenu")]
-    public MainMenuParameters Parameters { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
@@ -13,9 +12,7 @@
 
 <div class="main-menu-content">
     <ul class="navigation navigation-main @cssClass" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
-        <CascadingValue Name="IconStyle" Value="@("lines")">
-            @ChildContent
-        </CascadingValue>
+        @ChildContent
     </ul>
 </div>
 
