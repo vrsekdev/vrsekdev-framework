@@ -16,7 +16,19 @@ namespace VrsekDev.Blazor.Mobx.Components
     public class CascadeStoreHolder<TStore> : ComponentBase
         where TStore : class
     {
-        private IStoreAccessor<TStore> StoreAccessor => CreateStoreAccessor();
+        private IStoreAccessor<TStore> _storeAccessor;
+
+        public IStoreAccessor<TStore> StoreAccessor
+        {
+            get 
+            { 
+                if (_storeAccessor == null)
+                {
+                    _storeAccessor = CreateStoreAccessor();
+                }
+                return _storeAccessor; 
+            }
+        }
 
         [Inject]
         private IPropertyProxyFactory PropertyProxyFactory { get; set; }
