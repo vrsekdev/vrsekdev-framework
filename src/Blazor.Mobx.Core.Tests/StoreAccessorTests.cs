@@ -196,13 +196,94 @@ namespace VrsekDev.Blazor.Mobx.Tests
             // Act
             Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
             store.AnotherValue = 65; invokeCount++;
+            store.AnotherValue = 50;
 
             // Assert
             Assert.AreEqual(invokeCount, ClassStoreWithAction.AutorunInvokeCount);
         }
 
         [TestMethod]
-        public void Store_ComputedValue_IsProperty()
+        public void Method_Autorun_DontInvokeOnNotObservedPropertyChange()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0, actualInvokeCount = 0;
+
+            storeAccessor.Autorun(store =>
+            {
+                _ = store.Value;
+                actualInvokeCount++;
+            });
+
+            // Act
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+            // Always invokes on first change
+            store.Value = 65; invokeCount++;
+            // Real invoke
+            store.AnotherValue = 65;
+
+            // Assert
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+        }
+
+        [TestMethod]
+        public void Method_Autorun_InvokeOnChange()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0, actualInvokeCount = 0;
+
+            storeAccessor.Autorun(store =>
+            {
+                _ = store.Value;
+                actualInvokeCount++;
+            });
+
+            // Act
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+
+            // Always invokes on first change
+            store.Value = 65; invokeCount++;
+            // Real invoke
+            store.Value = 65; invokeCount++;
+
+            // Assert
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+        }
+
+        [TestMethod]
+        public void Method_Autorun_BehavePromiscous()
+        {
+            // Arrange
+            IStoreAccessor<ClassStoreWithAction> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithAction>>();
+            var consumer = new FakeBlazorComponent();
+            storeAccessor.SetConsumer(consumer);
+            var store = storeAccessor.Store;
+            int invokeCount = 0, actualInvokeCount = 0;
+
+            storeAccessor.Autorun(store =>
+            {
+                _ = store.Value;
+                actualInvokeCount++;
+            });
+
+            // Act
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+            store.AnotherValue = 65; invokeCount++;
+            store.AnotherValue = 50;
+
+            // Assert
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+        }
+
+        [TestMethod]
+        public void Method_ComputedValue_IsProperty()
         {
             // Arrange
             IStoreAccessor<ClassStoreWithComputed> storeAccessor = serviceProvider.GetRequiredService<IStoreAccessor<ClassStoreWithComputed>>();
