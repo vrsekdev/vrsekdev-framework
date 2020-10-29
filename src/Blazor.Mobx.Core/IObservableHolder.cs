@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace VrsekDev.Blazor.Mobx
 {
@@ -19,5 +20,7 @@ namespace VrsekDev.Blazor.Mobx
         public void ExecuteInTransaction(Action action);
 
         public Task ExecuteInTransactionAsync(Func<Task> action);
+
+        void RegisterMethodAutorun(Action<T> autorunMethod);
     }
 }

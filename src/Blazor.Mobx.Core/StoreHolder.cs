@@ -57,7 +57,7 @@ namespace VrsekDev.Blazor.Mobx
                 OnCollectionItemsChanged);
 
             RootObservableProperty = CreateObservableProperty(typeof(TStore));
-            InitializeReactables();
+            InitializeStoreReactables();
         }
 
         public IObservableProperty CreateObservableProperty(Type type)
@@ -85,20 +85,31 @@ namespace VrsekDev.Blazor.Mobx
             DequeueAll();
         }
 
-        private void InitializeReactables()
+        public void RegisterMethodAutorun(Action<TStore> autorunMethod)
         {
-            RegisterAutoruns();
+            IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
+            var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
+            DependencyInjector.InjectDependency(store);
+
+            IInvokableReactable target = new MethodAutorunContainer<TStore>(autorunMethod, store);
+            ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);
+            invoker.PlantSubscriber(propertyProxy);
+        }
+
+        private void InitializeStoreReactables()
+        {
+            RegisterStoreAutoruns();
 
             List<MethodInterception> methodInterceptions = new List<MethodInterception>();
-            methodInterceptions.AddRange(GetComputedValueInterceptions());
-            methodInterceptions.AddRange(GetActionInterceptions());
+            methodInterceptions.AddRange(GetStoreComputedValueInterceptions());
+            methodInterceptions.AddRange(GetStoreActionInterceptions());
             StoreReactables = new MethodInterceptions
             {
                 Interceptions = methodInterceptions.ToArray()
             };
         }
 
-        private void RegisterAutoruns()
+        private void RegisterStoreAutoruns()
         {
             foreach (var autorunMethod in storeMetadata.GetAutoruns())
             {
@@ -106,13 +117,13 @@ namespace VrsekDev.Blazor.Mobx
                 var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);
                 DependencyInjector.InjectDependency(store);
 
-                IInvokableReactable target = new AutorunContainer<TStore>(autorunMethod, store);
+                IInvokableReactable target = new StoreAutorunContainer<TStore>(autorunMethod, store);
                 ReactableInvoker<TStore> invoker = new ReactableInvoker<TStore>(target, this);
                 invoker.PlantSubscriber(propertyProxy);
             }
         }
 
-        private IEnumerable<MethodInterception> GetActionInterceptions()
+        private IEnumerable<MethodInterception> GetStoreActionInterceptions()
         {
             var actions = storeMetadata.GetActions();
             return actions.Select(actionMethod =>
@@ -129,7 +140,7 @@ namespace VrsekDev.Blazor.Mobx
             });
         }
 
-        private IEnumerable<MethodInterception> GetComputedValueInterceptions()
+        private IEnumerable<MethodInterception> GetStoreComputedValueInterceptions()
         {
             var computedValues = storeMetadata.GetComputedValues();
             return computedValues.Select(computedValueMethod =>

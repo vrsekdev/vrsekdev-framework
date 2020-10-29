@@ -33,6 +33,11 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             throw CreateException();
         }
 
+        public void Autorun(Action<TStore> action)
+        {
+            throw CreateException();
+        }
+
         public void SetConsumer(IBlazorMobxComponent consumer)
         {
             //throw CreateException();

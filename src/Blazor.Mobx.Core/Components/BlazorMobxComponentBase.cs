@@ -56,15 +56,20 @@ namespace VrsekDev.Blazor.Mobx.Components
             storeAccessor.Value.ResetStore();
         }
 
-        protected virtual T CreateObservable<T>()
-            where T : class
+        public void Autorun(Action<TStore> action)
         {
-            return storeAccessor.Value.CreateObservable<T>();
+            storeAccessor.Value.Autorun(action);
         }
 
         public override T CreateObservable<T>(T instance)
         {
             return storeAccessor.Value.CreateObservable(instance);
+        }
+
+        protected virtual T CreateObservable<T>()
+            where T : class
+        {
+            return storeAccessor.Value.CreateObservable<T>();
         }
     }
 }

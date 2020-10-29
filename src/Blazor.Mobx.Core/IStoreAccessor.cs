@@ -23,6 +23,8 @@ namespace VrsekDev.Blazor.Mobx
 
         Task ExecuteInActionAsync(Func<Task> action);
 
+        void Autorun(Action<TStore> action);
+
         void ResetStore();
     }
 }

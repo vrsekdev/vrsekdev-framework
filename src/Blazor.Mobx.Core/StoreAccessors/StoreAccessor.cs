@@ -97,6 +97,11 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             return storeHolder.ExecuteInTransactionAsync(action);
         }
 
+        public void Autorun(Action<TStore> action)
+        {
+            storeHolder.RegisterMethodAutorun(action);
+        }
+
         public void ResetStore()
         {
             propertyProxyWrapper.UnwrapPropertyObservable(Store).ObservableProperty.ResetValues();

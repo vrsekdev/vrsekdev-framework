@@ -37,6 +37,11 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             throw new NotImplementedException();
         }
 
+        public void RegisterMethodAutorun(Action<T> autorunMethod)
+        {
+            throw new NotImplementedException();
+        }
+
         private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedEventArgs e)
         {
             PropertyStateChangedEvent?.Invoke(sender, e);

@@ -5,12 +5,12 @@ using System.Text;
 
 namespace VrsekDev.Blazor.Mobx.Reactables.Autoruns
 {
-    internal class AutorunContainer<TStore> : IInvokableReactable
+    internal class StoreAutorunContainer<TStore> : IInvokableReactable
     {
         private readonly Lazy<Action> autorunActionLazy;
 
 
-        public AutorunContainer(
+        public StoreAutorunContainer(
             MethodInfo storeAutorunMethod,
             TStore store)
         {
