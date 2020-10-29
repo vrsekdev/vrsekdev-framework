@@ -26,10 +26,10 @@ namespace VrsekDev.Blazor.Templates.Frest.Components
         {
             if (ChildContent != null)
             {
+                string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
                 isOpen = !isOpen;
                 openClass = isOpen ? "open" : "";
 
-                string function = "vrsekdev.frest." + (isOpen ? "menuItemCollapse" : "menuItemExpand");
                 await JSRuntime.InvokeVoidAsync(function, menuRef);
             }
         }

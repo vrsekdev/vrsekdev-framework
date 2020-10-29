@@ -8,6 +8,9 @@
     public string Url { get; set; }
 
     [Parameter]
+    public NavLinkMatch Match { get; set; }
+
+    [Parameter]
     public string Icon { get; set; }
 
     [CascadingParameter(Name = "IconStyle")]
@@ -20,7 +23,7 @@
 <li @ref="menuRef" class="nav-item @hasSubClass @openClass @hoverClass" @onmouseenter="HandleMouseEnterAsync" @onmouseleave="HandleMouseLeaveAsync" @onclick="HandleClickAsync" @onclick:stopPropagation="true">
     <ConditionalView Condition="ChildContent == null">
         <Passed>
-            <NavLink href="@Url">
+            <NavLink href="@Url" Match="Match">
                 <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
                 <span class="menu-title">@Title</span>
             </NavLink>

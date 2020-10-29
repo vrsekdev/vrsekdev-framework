@@ -4,8 +4,8 @@ window.vrsekdev.frest = {
     addLiviconEvo: (element, config) => {
         $(element).addLiviconEvo(config);
     },
-    stopLiviconEvo: (element) => {    
-        $(element).stopLiviconEvo();
+    stopLiviconEvo: (element) => {
+        $(element).find(".menu-livicon").stopLiviconEvo();
     },
     playLiviconEvo: (element) => {    
         $(element).playLiviconEvo();
