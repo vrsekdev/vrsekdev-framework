@@ -1,17 +1,24 @@
-﻿@inject IJSRuntime JSRuntime
+﻿@using VrsekDev.Blazor.Templates.Frest.Models
 
 @code {
     [Parameter]
     public bool IsCollapsed { get; set; }
+
+    [CascadingParameter(Name = "MainMenu")]
+    public MainMenuParameters Parameters { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 }
 
 <div class="main-menu-content">
-    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
+    <ul class="navigation navigation-main @cssClass" id="main-menu-navigation" data-menu="menu-navigation" data-icon-style="lines">
         <CascadingValue Name="IconStyle" Value="@("lines")">
             @ChildContent
         </CascadingValue>
     </ul>
 </div>
+
+@code {
+    private string cssClass;
+}

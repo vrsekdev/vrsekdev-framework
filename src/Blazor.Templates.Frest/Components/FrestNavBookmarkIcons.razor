@@ -1,0 +1,8 @@
+﻿@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<ul class="nav navbar-nav bookmark-icons">
+    @ChildContent
+</ul>

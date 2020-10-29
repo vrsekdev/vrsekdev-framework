@@ -1,0 +1,8 @@
+﻿@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<div class="dropdown-menu cursor-pointer" aria-labelledby="dropdown-flag">
+    @ChildContent
+</div>

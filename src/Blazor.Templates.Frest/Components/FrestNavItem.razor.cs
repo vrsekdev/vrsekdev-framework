@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Templates.Frest.Components
 {
-    public partial class NavItem
+    public partial class FrestNavItem
     {
-        private Livicon iconRef;
+        private FrestLivicon iconRef;
 
         protected Task HandleMouseEnterEventAsync()
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.Templates.Frest.Components
 {
-    public partial class NavBar
+    public partial class FrestNavBar
     {
 
     }

@@ -1,0 +1,23 @@
+﻿@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
+    public string IconClass { get; set; }
+
+    [Parameter]
+    public bool IsBookmarked { get; set; }
+}
+
+<li class="auto-suggestion d-flex align-items-center justify-content-between cursor-pointer">
+    <a class="d-flex align-items-center justify-content-between w-100" href="@Url">
+        <div class="d-flex justify-content-start">
+            <span class="mr-75 ficon bx bx-@IconClass" data-icon="ficon bx bx-@IconClass"></span>
+            <span>@Text</span>
+        </div>
+        <span class="float-right bookmark-icon bx bx-star @(IsBookmarked ? "warning" : "")"></span>
+    </a>
+</li>

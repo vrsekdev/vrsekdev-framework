@@ -21,7 +21,7 @@
 
 <li class="nav-item" @onmouseenter="HandleMouseEnterEventAsync" >
     <NavLink href="@Url">
-        <Livicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
+        <FrestLivicon @ref="iconRef" Icon="@Icon" Style="@IconStyle" />
         <span class="menu-title">@Title</span>
     </NavLink>
     <ConditionalView Condition="ChildContent != null">

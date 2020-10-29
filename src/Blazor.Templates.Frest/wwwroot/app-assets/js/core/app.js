@@ -423,43 +423,6 @@
     }
   }
 
-  $(document).on("click", ".menu-toggle, .modern-nav-toggle", function (e) {
-    e.preventDefault()
-
-    // Toggle menu
-    $.app.menu.toggle()
-
-    setTimeout(function () {
-      $(window).trigger("resize")
-    }, 200)
-
-    if ($("#collapsed-sidebar").length > 0) {
-      setTimeout(function () {
-        if ($body.hasClass("menu-expanded") || $body.hasClass("menu-open")) {
-          $("#collapsed-sidebar").prop("checked", false)
-        } else {
-          $("#collapsed-sidebar").prop("checked", true)
-        }
-      }, 1000)
-    }
-
-    // Hides dropdown on click of menu toggle
-    // $('[data-toggle="dropdown"]').dropdown('hide');
-
-    // Hides collapse dropdown on click of menu toggle
-    if (
-      $(
-        ".vertical-overlay-menu .navbar-with-menu .navbar-container .navbar-collapse"
-      ).hasClass("show")
-    ) {
-      $(
-        ".vertical-overlay-menu .navbar-with-menu .navbar-container .navbar-collapse"
-      ).removeClass("show")
-    }
-
-    return false
-  })
-
   // Add Children Class
   $(".navigation")
     .find("li")
@@ -551,90 +514,9 @@
     }, 100)
   })
 
-  // main menu internationalization
-
-  // init i18n and load language file
-  i18next
-    .use(window.i18nextXHRBackend)
-    .init({
-      debug: false,
-      fallbackLng: "en",
-      backend: {
-        loadPath: "_content/VrsekDev.Blazor.Templates.Frest/app-assets/data/locales/{{lng}}.json"
-      },
-      returnObjects: true
-    },
-      function (err, t) {
-        // resources have been loaded
-        jqueryI18next.init(i18next, $)
-      }
-    )
-
-  // change language according to data-language of dropdown item
-  $(".dropdown-language .dropdown-item").on("click", function () {
-    var $this = $(this)
-    $this.siblings(".selected").removeClass("selected")
-    $this.addClass("selected")
-    var selectedLang = $this.text()
-    var selectedFlag = $this.find(".flag-icon").attr("class")
-    $("#dropdown-flag .selected-language").text(selectedLang)
-    $("#dropdown-flag .flag-icon")
-      .removeClass()
-      .addClass(selectedFlag)
-    var currentLanguage = $this.data("language")
-    i18next.changeLanguage(currentLanguage, function (err, t) {
-      $(".main-menu").localize()
-    })
-  })
-
   /********************* Bookmark & Search ***********************/
   // This variable is used for mouseenter and mouseleave events of search list
   var $filename = $(".search-input input").data("search")
-
-  // Bookmark icon click
-  $(".bookmark-wrapper .bookmark-star").on("click", function (e) {
-    e.stopPropagation()
-    $(".bookmark-wrapper .bookmark-input").toggleClass("show")
-    $(".bookmark-wrapper .bookmark-input input").val("")
-    $(".bookmark-wrapper .bookmark-input input").blur()
-    $(".bookmark-wrapper .bookmark-input input").focus()
-    $(".bookmark-wrapper .search-list").addClass("show")
-
-    var arrList = $("ul.nav.navbar-nav.bookmark-icons li"),
-      $arrList = "",
-      $activeItemClass = ""
-
-    $("ul.search-list li").remove()
-
-    for (var i = 0; i < arrList.length; i++) {
-      if (i === 0) {
-        $activeItemClass = "current_item"
-      } else {
-        $activeItemClass = ""
-      }
-      $arrList +=
-        '<li class="auto-suggestion d-flex align-items-center justify-content-between cursor-pointer ' +
-        $activeItemClass +
-        '">' +
-        '<a class="d-flex align-items-center justify-content-between w-100" href=' +
-        arrList[i].firstChild.href +
-        ">" +
-        '<div class="d-flex justify-content-start">' +
-        '<span class="mr-75 ' +
-        arrList[i].firstChild.firstChild.className +
-        '"  data-icon="' +
-        arrList[i].firstChild.firstChild.className +
-        '"></span>' +
-        "<span>" +
-        arrList[i].firstChild.dataset.originalTitle +
-        "</span>" +
-        "</div>" +
-        '<span class="float-right bookmark-icon bx bx-star warning"></span>' +
-        "</a>" +
-        "</li>"
-    }
-    $("ul.search-list").append($arrList)
-  })
 
   // Navigation Search area Open
   $(".nav-link-search").on("click", function () {
@@ -646,7 +528,7 @@
     $(".search-input input").focus()
     $(".search-input .search-list li").remove()
     $(".search-input .search-list").addClass("show")
-    $(".bookmark-wrapper .bookmark-input").removeClass("show")
+    //$(".bookmark-wrapper .bookmark-input").removeClass("show")
   })
 
   // Navigation Search area Close
@@ -715,11 +597,11 @@
           $(".bookmark-input .search-list").addClass("show")
         } else {
           $(".search-input .search-list").addClass("show")
-          $(".bookmark-input .search-list").removeClass("show")
+          //$(".bookmark-input .search-list").removeClass("show")
         }
         if (bookmark === false) {
           $(".search-input .search-list").addClass("show")
-          $(".bookmark-input .search-list").removeClass("show")
+          //$(".bookmark-input .search-list").removeClass("show")
         }
 
         var $startList = "",
@@ -915,62 +797,6 @@
   $(document).on("click", ".search-list li", function (e) {
     e.stopPropagation()
   })
-
-  $("html").on("click", function ($this) {
-    if (!$($this.target).hasClass("bookmark-icon")) {
-      if ($(".bookmark-input .search-list").hasClass("show")) {
-        $(".bookmark-input .search-list").removeClass("show")
-      }
-      if ($(".bookmark-input").hasClass("show")) {
-        $(".bookmark-input").removeClass("show")
-      }
-    }
-  })
-
-  // Favorite star click
-  $(document).on(
-    "click",
-    ".bookmark-input .search-list .bookmark-icon",
-    function (e) {
-      e.stopPropagation()
-      if ($(this).hasClass("warning")) {
-        $(this).removeClass("warning")
-        var arrList = $("ul.nav.navbar-nav.bookmark-icons li")
-        for (var i = 0; i < arrList.length; i++) {
-          if (
-            arrList[i].firstChild.dataset.originalTitle ==
-            $(this).parent()[0].innerText
-          ) {
-            arrList[i].remove()
-          }
-        }
-        e.preventDefault()
-      } else {
-        var arrList = $("ul.nav.navbar-nav.bookmark-icons li")
-        $(this).addClass("warning")
-        e.preventDefault()
-        var $url = $(this).parent()[0].href,
-          $name = $(this).parent()[0].innerText,
-          $icon = $(this).parent()[0].firstChild.firstChild.dataset.icon,
-          $listItem = "",
-          $listItemDropdown = ""
-        $listItem =
-          '<li class="nav-item d-none d-lg-block">' +
-          '<a class="nav-link" href="' +
-          $url +
-          '" data-toggle="tooltip" data-placement="top" title="' +
-          $name +
-          '">' +
-          '<i class="ficon ' +
-          $icon +
-          '"></i>' +
-          "</a>" +
-          "</li>"
-        $("ul.nav.bookmark-icons").append($listItem)
-        $('[data-toggle="tooltip"]').tooltip()
-      }
-    }
-  )
 
   // If we use up key(38) Down key (40) or Enter key(13)
   $(window).on("keydown", function (e) {

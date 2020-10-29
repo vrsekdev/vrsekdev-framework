@@ -1,0 +1,16 @@
+﻿@code {
+    [Parameter]
+    public RenderFragment SelectedLanguage { get; set; }
+
+    [Parameter]
+    public RenderFragment Items { get; set; }
+}
+
+<li class="dropdown dropdown-language nav-item">
+    <a class="dropdown-toggle nav-link" id="dropdown-flag" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @SelectedLanguage
+    </a>
+    <FrestDropdownMenu>
+        @Items
+    </FrestDropdownMenu>
+</li>

@@ -8,7 +8,7 @@ using VrsekDev.Blazor.Templates.Frest.Models;
 
 namespace VrsekDev.Blazor.Templates.Frest.Components
 {
-    public partial class Livicon
+    public partial class FrestLivicon
     {
         private ElementReference iconRef;
 
