@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
 {
@@ -22,9 +23,10 @@ namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
             return true;
         }
 
-        public void Invoke()
+        public ValueTask InvokeAsync()
         {
             isInvalidated = true;
+            return default;
         }
 
         public TValue OnMethodInvoke(Func<TStore, TValue> storeFunc)

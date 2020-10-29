@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.Reactables.Autoruns
 {
@@ -27,9 +28,11 @@ namespace VrsekDev.Blazor.Mobx.Reactables.Autoruns
             return true;
         }
 
-        public void Invoke()
+        public ValueTask InvokeAsync()
         {
             autorunActionLazy.Value();
+
+            return default;
         }
     }
 }

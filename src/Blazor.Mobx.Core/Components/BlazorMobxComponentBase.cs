@@ -61,6 +61,11 @@ namespace VrsekDev.Blazor.Mobx.Components
             storeAccessor.Value.Autorun(action);
         }
 
+        public void Autorun(Func<TStore, ValueTask> action)
+        {
+            storeAccessor.Value.Autorun(action);
+        }
+
         public override T CreateObservable<T>(T instance)
         {
             return storeAccessor.Value.CreateObservable(instance);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
 {
@@ -20,9 +21,9 @@ namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
             this.computedValue = computedValue;
         }
 
-        protected override void InvokeInternal(bool isInitialInvoke)
+        protected async override ValueTask InvokeInternalAsync(bool isInitialInvoke)
         {
-            base.InvokeInternal(isInitialInvoke);
+            await base.InvokeInternalAsync(isInitialInvoke);
 
             if (!isInitialInvoke)
             {

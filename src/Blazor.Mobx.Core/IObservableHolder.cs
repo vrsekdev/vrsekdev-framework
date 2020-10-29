@@ -21,6 +21,6 @@ namespace VrsekDev.Blazor.Mobx
 
         public Task ExecuteInTransactionAsync(Func<Task> action);
 
-        void RegisterMethodAutorun(Action<T> autorunMethod);
+        void RegisterMethodAutorun(Func<T, ValueTask> autorunMethod);
     }
 }

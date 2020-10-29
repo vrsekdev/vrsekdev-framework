@@ -26,15 +26,15 @@ namespace VrsekDev.Blazor.Mobx.Reactables
             propertyProxy.Subscribe(new PropertyAccessedSubscriber(OnPropertyAccessed));
         }
 
-        protected override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
         {
             if (!initialized)
             {
                 initialized = true;
                 if (reactable.RequiresInitialInvoke())
                 {
-                    InvokeInternal(true);
-                    return new ValueTask<bool>(true);
+                    await InvokeInternalAsync(true);
+                    return true;
                 }
             }
 
@@ -42,23 +42,23 @@ namespace VrsekDev.Blazor.Mobx.Reactables
             {
                 if (container.IsSubscribed(e.PropertyInfo.Name))
                 {
-                    InvokeInternal(false);
-                    return new ValueTask<bool>(true);
+                    await InvokeInternalAsync(false);
+                    return true;
                 }
             }
 
-            return new ValueTask<bool>(false);
+            return false;
         }
 
-        protected override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
         {
             if (!initialized)
             {
                 initialized = true;
                 if (reactable.RequiresInitialInvoke())
                 {
-                    InvokeInternal(true);
-                    return new ValueTask<bool>(true);
+                    await InvokeInternalAsync(true);
+                    return true;
                 }
             }
 
@@ -68,28 +68,28 @@ namespace VrsekDev.Blazor.Mobx.Reactables
                 return new ValueTask<bool>(true);
             }*/
 
-            return new ValueTask<bool>(false);
+            return false;
         }
 
-        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
         {
             if (!initialized)
             {
                 initialized = true;
                 if (reactable.RequiresInitialInvoke())
                 {
-                    InvokeInternal(true);
-                    return new ValueTask<bool>(true);
+                    await InvokeInternalAsync(true);
+                    return true;
                 }
             }
 
-            InvokeInternal(false);
-            return new ValueTask<bool>(true);
+            await InvokeInternalAsync(false);
+            return true;
         }
 
-        protected virtual void InvokeInternal(bool isInitialInvoke)
+        protected virtual ValueTask InvokeInternalAsync(bool isInitialInvoke)
         {
-            reactable.Invoke();
+            return reactable.InvokeAsync();
         }
     }
 }

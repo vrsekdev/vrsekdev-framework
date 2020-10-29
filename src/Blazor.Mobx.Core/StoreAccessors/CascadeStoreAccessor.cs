@@ -33,6 +33,11 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             throw CreateException();
         }
 
+        public void Autorun(Func<TStore, ValueTask> action)
+        {
+            throw CreateException();
+        }
+
         public void Autorun(Action<TStore> action)
         {
             throw CreateException();

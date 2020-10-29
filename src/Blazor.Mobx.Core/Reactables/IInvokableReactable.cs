@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.Reactables
 {
@@ -8,6 +9,6 @@ namespace VrsekDev.Blazor.Mobx.Reactables
     {
         bool RequiresInitialInvoke();
 
-        void Invoke();
+        ValueTask InvokeAsync();
     }
 }

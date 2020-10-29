@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.Reactables.Autoruns
 {
     public class MethodAutorunContainer<TStore> : IInvokableReactable
     {
-        private readonly Action<TStore> autorunAction;
+        private readonly Func<TStore, ValueTask> autorunAction;
         private readonly TStore store;
 
         public MethodAutorunContainer(
-            Action<TStore> autorunAction,
+            Func<TStore, ValueTask> autorunAction,
             TStore store)
         {
             this.autorunAction = autorunAction;
@@ -23,9 +24,9 @@ namespace VrsekDev.Blazor.Mobx.Reactables.Autoruns
             return true;
         }
 
-        public void Invoke()
+        public ValueTask InvokeAsync()
         {
-            autorunAction(store);
+            return autorunAction(store);
         }
     }
 }

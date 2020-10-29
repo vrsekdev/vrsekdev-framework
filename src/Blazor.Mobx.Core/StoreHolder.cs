@@ -85,7 +85,7 @@ namespace VrsekDev.Blazor.Mobx
             DequeueAll();
         }
 
-        public void RegisterMethodAutorun(Action<TStore> autorunMethod)
+        public void RegisterMethodAutorun(Func<TStore, ValueTask> autorunMethod)
         {
             IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
             var store = propertyProxyWrapper.WrapPropertyObservable<TStore>(propertyProxy);

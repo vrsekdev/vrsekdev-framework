@@ -97,9 +97,18 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             return storeHolder.ExecuteInTransactionAsync(action);
         }
 
-        public void Autorun(Action<TStore> action)
+        public void Autorun(Func<TStore, ValueTask> action)
         {
             storeHolder.RegisterMethodAutorun(action);
+        }
+
+        public void Autorun(Action<TStore> action)
+        {
+            Autorun((store) =>
+            {
+                action(store);
+                return default;
+            });
         }
 
         public void ResetStore()

@@ -37,7 +37,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             throw new NotImplementedException();
         }
 
-        public void RegisterMethodAutorun(Action<T> autorunMethod)
+        public void RegisterMethodAutorun(Func<T, ValueTask> autorunMethod)
         {
             throw new NotImplementedException();
         }
