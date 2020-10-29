@@ -459,12 +459,12 @@ body.footer-hidden footer {
 .main-menu.menu-light .navigation > li:not(.open) > ul {
   display : none;
 }
-.main-menu.menu-light .navigation > li.active:not(.sidebar-group-active) > a {
+.main-menu.menu-light .navigation > li:not(.sidebar-group-active) > a.active {
   background : rgba(90, 141, 238, 0.15);
   color : #5A8DEE;
   border-radius : 0.267rem;
 }
-.main-menu.menu-light .navigation > li .active > a {
+.main-menu.menu-light .navigation > li > a.active {
   margin-bottom : 0;
 }
 .main-menu.menu-light .navigation > li .active .hover {
@@ -577,15 +577,15 @@ body.footer-hidden footer {
 .main-menu.menu-dark .navigation > li:not(.open) > ul {
   display : none;
 }
-.main-menu.menu-dark .navigation > li.active:not(.sidebar-group-active) > a {
+.main-menu.menu-dark .navigation > li:not(.sidebar-group-active) > a.active {
   background : rgba(90, 141, 238, 0.15);
   color : #5A8DEE;
   border-radius : 0.267rem;
 }
-.main-menu.menu-dark .navigation > li .active > a {
+.main-menu.menu-dark .navigation > li > a.active {
   margin-bottom : 0;
 }
-.main-menu.menu-dark .navigation > li .active .hover {
+.main-menu.menu-dark .navigation > li a .active .hover {
   background : #141B2C;
 }
 .main-menu.menu-dark .navigation > li ul li > a {
