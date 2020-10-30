@@ -39,4 +39,12 @@
     <ProjectReference Include="..\Blazor.Mobx.Core.Abstractions\Blazor.Mobx.Core.Abstractions.csproj" />
   </ItemGroup>
 
+  <Target Name="CopyNugetToNugetSource" AfterTargets="GenerateNuspec">
+    <ItemGroup>
+      <_FilesToCopy Include="$(OutputPath)\..\*.nupkg;$(OutputPath)\..\*.snupkg" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(UserProfile)\.nuget\local"/>
+  </Target>
+
 </Project>

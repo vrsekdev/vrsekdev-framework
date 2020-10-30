@@ -35,4 +35,12 @@
     <ProjectReference Include="..\Blazor.Mobx.Proxies.RuntimeProxy\Blazor.Mobx.Proxies.RuntimeProxy.csproj" />
   </ItemGroup>
 
+  <Target Name="CopyNugetToNugetSource" AfterTargets="GenerateNuspec">
+    <ItemGroup>
+      <_FilesToCopy Include="$(OutputPath)\..\*.nupkg;$(OutputPath)\..\*.snupkg" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(UserProfile)\.nuget\local"/>
+  </Target>
+
 </Project>
