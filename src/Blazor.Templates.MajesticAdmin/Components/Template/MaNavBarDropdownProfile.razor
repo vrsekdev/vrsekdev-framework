@@ -11,7 +11,9 @@
 
 <li class="nav-item nav-profile dropdown">
     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-        <img src="@ProfileImgUrl" alt="profile" />
+        <ConditionalView Condition="ProfileImgUrl != null">
+            <img src="@ProfileImgUrl" alt="profile" />
+        </ConditionalView>
         <span class="nav-profile-name">@DisplayName</span>
     </a>
     <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
