@@ -32,7 +32,7 @@ namespace VrsekDev.Blazor.Mobx.Components
     {
         private Lazy<IStoreAccessor<TStore>> storeAccessor;
 
-        public BlazorMobxComponentBase()
+        protected BlazorMobxComponentBase()
         {
             storeAccessor = new Lazy<IStoreAccessor<TStore>>(() =>
             {
@@ -54,6 +54,16 @@ namespace VrsekDev.Blazor.Mobx.Components
         public void ResetStore()
         {
             storeAccessor.Value.ResetStore();
+        }
+
+        public void ExecuteInAction(Action action)
+        {
+            storeAccessor.Value.ExecuteInAction(action);
+        }
+
+        public Task ExecuteInActionAsync(Func<Task> action)
+        {
+            return storeAccessor.Value.ExecuteInActionAsync(action);
         }
 
         public void Autorun(Action<TStore> action)
