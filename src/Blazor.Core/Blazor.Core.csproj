@@ -18,6 +18,12 @@
     <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="..\..\LICENSE" Link="LICENSE">
       <PackagePath></PackagePath>
