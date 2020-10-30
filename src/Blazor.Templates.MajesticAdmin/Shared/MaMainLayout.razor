@@ -1,0 +1,63 @@
+﻿@inherits LayoutComponentBase
+
+@typeparam TLogo
+@typeparam TNavBar
+@typeparam TSideBar
+@typeparam TFooter
+<div class="container-scroller">
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="navbar-brand-wrapper d-flex justify-content-center">
+            <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
+                @Logo()
+                <button type="button" class="navbar-toggler navbar-toggler align-self-center" data-toggle="minimize" @onclick="ToggleSideBarAsync">
+                    <span class="mdi mdi-sort-variant"></span>
+                </button>
+            </div>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+            @NavBar()
+            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                <span class="mdi mdi-menu"></span>
+            </button>
+        </div>
+    </nav>
+    <div class="container-fluid page-body-wrapper">
+        <MaSidebar>
+            @SideBar()
+        </MaSidebar>
+        <div class="main-panel">
+            <div class="content-wrapper">
+                @Body
+            </div>
+            <footer class="footer">
+                @Footer()
+            </footer>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RenderFragment Logo() => builder =>
+    {
+        builder.OpenComponent<TLogo>(0);
+        builder.CloseComponent();
+    };
+
+    private RenderFragment NavBar() => builder =>
+    {
+        builder.OpenComponent<TNavBar>(0);
+        builder.CloseComponent();
+    };
+
+    private RenderFragment SideBar() => builder =>
+    {
+        builder.OpenComponent<TSideBar>(0);
+        builder.CloseComponent();
+    };
+
+    private RenderFragment Footer() => builder =>
+    {
+        builder.OpenComponent<TFooter>(0);
+        builder.CloseComponent();
+    };
+}

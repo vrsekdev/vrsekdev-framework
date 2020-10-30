@@ -1,0 +1,12 @@
+﻿@code {
+    [Parameter]
+    public bool HasNewNotifications { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<MaNavBarDropdownIcon CustomClass="mr-4" Icon="bell" IsActive="HasNewNotifications">
+    <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
+    @ChildContent
+</MaNavBarDropdownIcon>

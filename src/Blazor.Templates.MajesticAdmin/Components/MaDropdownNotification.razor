@@ -1,0 +1,26 @@
+﻿@code {
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public string Header { get; set; }
+
+    [Parameter]
+    public string Message { get; set; }
+}
+
+<MaDropdownItemThumbnail>
+    <Thumbnail>
+        <div class="item-icon bg-info">
+            <i class="mdi mdi-@Icon mx-0"></i>
+        </div>
+    </Thumbnail>
+    <Content>
+        <h6 class="font-weight-normal">
+            @Header
+        </h6>
+        <p class="font-weight-light small-text mb-0 text-muted">
+            @Message
+        </p>
+    </Content>
+</MaDropdownItemThumbnail>

@@ -1,5 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
+@code {
+    [Parameter]
+    public string LogoUrl { get; set; }
+}
+
 @inject IJSRuntime JSRuntime
 
 <div class="container-scroller">
@@ -9,7 +14,7 @@
                 <div class="col-lg-4 mx-auto">
                     <div class="auth-form-light text-left py-5 px-4 px-sm-5">
                         <div class="brand-logo">
-                            <img src="/images/praha_logo.png" alt="logo">
+                            <img src="@LogoUrl" alt="logo">
                         </div>
                         @Body
                     </div>
@@ -18,15 +23,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("appInitializer.onAppLoaded");
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-}

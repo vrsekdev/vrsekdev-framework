@@ -1,0 +1,24 @@
+﻿@code {
+    [Parameter]
+    public string ThumbnailUrl { get; set; }
+
+    [Parameter]
+    public string Sender { get; set; }
+
+    [Parameter]
+    public string MessagePreview { get; set; }
+}
+
+<MaDropdownItemThumbnail>
+    <Thumbnail>
+        <img src="@ThumbnailUrl" alt="image" class="profile-pic">
+    </Thumbnail>
+    <Content>
+        <h6 class="ellipsis font-weight-normal">
+            @Sender
+        </h6>
+        <p class="font-weight-light small-text text-muted mb-0">
+            @MessagePreview
+        </p>
+    </Content>
+</MaDropdownItemThumbnail>

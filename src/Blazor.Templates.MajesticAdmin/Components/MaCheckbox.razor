@@ -1,0 +1,11 @@
+﻿
+@code {
+    [Parameter]
+    public string Label { get; set; }
+}
+
+<label class="form-check-label text-muted">
+    <input type="checkbox" class="form-check-input">
+    @Label
+    <i class="input-helper"></i>
+</label>

@@ -1,0 +1,25 @@
+﻿@code {
+    [Parameter]
+    public string Icon { get; set; }
+
+    [Parameter]
+    public bool IsActive { get; set; }
+
+    [Parameter]
+    public string CustomClass { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
+
+<li class="nav-item dropdown @CustomClass">
+    <a href="#" class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" data-toggle="dropdown">
+        <i class="mdi mdi-@Icon mx-0"></i>
+        <ConditionalView Condition="IsActive">
+            <span class="count"></span>
+        </ConditionalView>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right navbar-dropdown">
+        @ChildContent
+    </div>
+</li>

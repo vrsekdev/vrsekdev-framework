@@ -1,0 +1,16 @@
+﻿@code {
+    [Parameter]
+    public RenderFragment Thumbnail { get; set; }
+
+    [Parameter]
+    public RenderFragment Content { get; set; }
+}
+
+<MaDropdownItem>
+    <div class="item-thumbnail">
+        @Thumbnail
+    </div>
+    <div class="item-content flex-grow">
+        @Content
+    </div>
+</MaDropdownItem>
