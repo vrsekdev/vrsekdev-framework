@@ -2,10 +2,13 @@
 @code {
     [Parameter]
     public string Label { get; set; }
+
+    [Parameter]
+    public string InputName { get; set; }
 }
 
 <label class="form-check-label text-muted">
-    <input type="checkbox" class="form-check-input">
+    <input type="checkbox" class="form-check-input" name="@InputName">
     @Label
     <i class="input-helper"></i>
 </label>
