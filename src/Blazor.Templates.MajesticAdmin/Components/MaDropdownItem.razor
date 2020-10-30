@@ -1,8 +1,11 @@
 ﻿@code {
     [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
     public RenderFragment ChildContent { get; set; }
 }
 
-<a class="dropdown-item">
+<a href="@Url" class="dropdown-item">
     @ChildContent
 </a>

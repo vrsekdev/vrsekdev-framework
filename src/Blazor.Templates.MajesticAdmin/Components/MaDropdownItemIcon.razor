@@ -1,12 +1,15 @@
 ﻿@code {
     [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
     public string Icon { get; set; }
 
     [Parameter]
     public string Text { get; set; }
 }
 
-<MaDropdownItem>
+<MaDropdownItem Url="@Url">
     <i class="mdi mdi-@Icon text-primary"></i>
     @Text
 </MaDropdownItem>    

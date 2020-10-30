@@ -1,12 +1,15 @@
 ﻿@code {
     [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
     public RenderFragment Thumbnail { get; set; }
 
     [Parameter]
     public RenderFragment Content { get; set; }
 }
 
-<MaDropdownItem>
+<MaDropdownItem Url="@Url">
     <div class="item-thumbnail">
         @Thumbnail
     </div>
