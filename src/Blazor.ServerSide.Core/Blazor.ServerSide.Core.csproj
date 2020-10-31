@@ -40,9 +40,7 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
-  <Import Project="$(Build.SourcesDirectory)\include\includes.props" Condition="Exists('$(Build_SourcesDirectory)\include\includes.props')" />
   <Import Project="$(SolutionDir)\include\includes.props" Condition="Exists('$(SolutionDir)\include\includes.props')" />
-  <Import Project="$(Build.SourcesDirectory)\include\settings.props" Condition="Exists('$(Build_SourcesDirectory)\include\settings.props')" />
   <Import Project="$(SolutionDir)\include\settings.props" Condition="Exists('$(SolutionDir)\include\settings.props')" />
 
 </Project>
