@@ -62,22 +62,22 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             Type returnType;
             if (method.ReturnType == typeof(Task))
             {
-                result = GetResultNoReturnTypeAsync(requestContent);
+                result = GetResultNoReturnTypeAsync(typeof(TInterface).Name, method.Name, requestContent);
             }
             else
             {
                 returnType = method.ReturnType.GetGenericArguments()[0];
                 result = GetType().GetMethod(nameof(GetResultAsync), BindingFlags.Instance | BindingFlags.NonPublic)
                             .MakeGenericMethod(returnType)
-                            .Invoke(this, new object[] { requestContent });
+                            .Invoke(this, new object[] { typeof(TInterface).Name, method.Name, requestContent });
             }
             
             return true;
         }
 
-        private async Task<T> GetResultAsync<T>(StreamContent requestContent)
+        private async Task<T> GetResultAsync<T>(string contractName, string methodName, StreamContent requestContent)
         {
-            var response = await httpClient.PostAsync("/bcf/invoke", requestContent);
+            var response = await httpClient.PostAsync($"/bcf/invoke?contract={contractName}&method={methodName}", requestContent);
 
             switch (response.StatusCode)
             {
@@ -91,9 +91,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             }
         }
 
-        private async Task GetResultNoReturnTypeAsync(StreamContent requestContent)
+        private async Task GetResultNoReturnTypeAsync(string contractName, string methodName, StreamContent requestContent)
         {
-            using var response = await httpClient.PostAsync("/bcf/invoke", requestContent);
+            using var response = await httpClient.PostAsync($"/bcf/invoke?contract={contractName}&method={methodName}", requestContent);
 
             switch (response.StatusCode)
             {

@@ -39,7 +39,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var now = DateTimeOffset.Now;
-            bool isBase = request.RequestUri.LocalPath == "/bcf/invoke";
+            bool isBase = request.RequestUri.LocalPath.StartsWith("/bcf/invoke");
 
             if (isBase)
             {
