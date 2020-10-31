@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
@@ -17,21 +18,18 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
             this.serviceProvider = serviceProvider;
         }
 
-        public Task<object> InvokeAsync(MethodInfo methodInfo, object[] arguments)
+        public Task<object> InvokeAsync(MethodInfo methodInfo, object instance, object[] arguments)
         {
-            object instance = serviceProvider.GetRequiredService(methodInfo.DeclaringType);
-
             object result = methodInfo.Invoke(instance, arguments);
             if (result.GetType() == typeof(Task))
             {
                 // no return value
-                return (Task<object>)GetType().GetMethod(nameof(ConvertTaskNoResult), BindingFlags.Instance | BindingFlags.NonPublic)
-                    .Invoke(this, new object[] { result });
+                return ConvertTaskNoResult((Task)result);
             }
 
-            //return GetType().GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic)
-            //    .MakeGenericMethod(result.GetType().GetGenericArguments)
-            return (Task<object>)((dynamic)this).ConvertTask((dynamic)result);
+            return (Task<object>)GetType().GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic)
+                .MakeGenericMethod(result.GetType().GetGenericArguments()[0])
+                .Invoke(instance, arguments);
         }
 
         private MethodInfo BindMethod(Type implementationType, RequestBindingInfo bindingInfo)
