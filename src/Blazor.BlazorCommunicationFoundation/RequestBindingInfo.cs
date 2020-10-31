@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {
-    public class BindingInfo
+    public class RequestBindingInfo
     {
         public string TypeName { get; set; }
         public string MethodName { get; set; }

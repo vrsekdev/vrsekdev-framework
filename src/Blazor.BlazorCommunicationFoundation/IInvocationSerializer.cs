@@ -12,6 +12,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 
         Task SerializeAsync(Stream stream, Type type, object instance);
 
+        byte[] Serialize(Type type, object instance);
+
         Task<T> DeserializeAsync<T>(Stream stream);
+
+        object Deserialize(Type type, byte[] value);
     }
 }

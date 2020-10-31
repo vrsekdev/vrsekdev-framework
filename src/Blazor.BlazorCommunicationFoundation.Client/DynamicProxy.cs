@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using System.Net;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
@@ -19,12 +20,15 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 
         private readonly HttpClient httpClient;
         private readonly IInvocationSerializer invocationSerializer;
+        private readonly IInvocationRequestArgumentSerializer argumentSerializer;
 
         public DynamicProxy(HttpClient httpClient,
-            IInvocationSerializer invocationSerializer)
+            IInvocationSerializer invocationSerializer,
+            IInvocationRequestArgumentSerializer argumentSerializer)
         {
             this.httpClient = httpClient;
             this.invocationSerializer = invocationSerializer;
+            this.argumentSerializer = argumentSerializer;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
@@ -36,22 +40,20 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             }
 
             using MemoryStream requestStream = new MemoryStream();
-            invocationSerializer.Serialize(requestStream, new InvocationWrapper
+            invocationSerializer.Serialize(requestStream, new InvocationRequest
             {
-                BindingInfo = new BindingInfo
+                BindingInfo = new RequestBindingInfo
                 {
                     TypeName = typeof(TInterface).AssemblyQualifiedName,
                     MethodName = binder.Name,
                 },
-                Arguments = args
+                Arguments = argumentSerializer.SerializeArguments(args)
             });
             requestStream.Position = 0;
 
-            Type returnType = typeof(TInterface).GetMethod(binder.Name).ReturnType.GetGenericArguments()[0];
-
             StreamContent requestContent = new StreamContent(requestStream);
 
-            //Type returnType = typeof(Task<>).MakeGenericType(binder.ReturnType.GetGenericArguments()[0]);
+            Type returnType = typeof(TInterface).GetMethod(binder.Name).ReturnType.GetGenericArguments()[0];
             result = GetType().GetMethod(nameof(GetResultAsync), BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(returnType)
                 .Invoke(this, new object[] { requestContent });
@@ -61,9 +63,17 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
         private async Task<T> GetResultAsync<T>(StreamContent requestContent)
         {
             var response = await httpClient.PostAsync("/bcf/invoke", requestContent);
-            var responseStream = await response.Content.ReadAsStreamAsync();
 
-            return await invocationSerializer.DeserializeAsync<T>(responseStream);
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    var responseStream = await response.Content.ReadAsStreamAsync();
+                    return await invocationSerializer.DeserializeAsync<T>(responseStream);
+                case HttpStatusCode.NoContent:
+                    return default;
+                default:
+                    throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
             where TInterface : class
         {
             services.AddTransient<DynamicProxy<TInterface>>();
-            services.AddTransient(typeof(TInterface), sp => new DynamicProxy<TInterface>(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<IInvocationSerializer>()).ActLike<TInterface>());
+            services.AddTransient(typeof(TInterface), sp => sp.GetRequiredService<DynamicProxy<TInterface>>().ActLike<TInterface>());
         }
     }
 }

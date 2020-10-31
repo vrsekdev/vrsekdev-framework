@@ -12,19 +12,29 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
     {
         private MessagePackSerializerOptions options = ContractlessStandardResolver.Options;
 
-        public void Serialize<T>(Stream stream, T instance)
-        {
-            MessagePackSerializer.SerializeAsync(stream, instance, options);
-        }
-
         public Task SerializeAsync(Stream stream, Type type, object instance)
         {
             return MessagePackSerializer.SerializeAsync(type, stream, instance, options);
         }
 
+        public void Serialize<T>(Stream stream, T instance)
+        {
+            MessagePackSerializer.SerializeAsync(stream, instance, options);
+        }
+
+        public byte[] Serialize(Type type, object instance)
+        {
+            return MessagePackSerializer.Serialize(type, instance, options);
+        }
+
         public async Task<T> DeserializeAsync<T>(Stream stream)
         {
             return await MessagePackSerializer.DeserializeAsync<T>(stream, options);
+        }
+
+        public object Deserialize(Type type, byte[] value)
+        {
+            return MessagePackSerializer.Deserialize(type, value, options);
         }
     }
 }

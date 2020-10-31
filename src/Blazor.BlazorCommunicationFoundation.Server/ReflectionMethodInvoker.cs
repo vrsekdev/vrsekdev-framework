@@ -17,18 +17,26 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
             this.serviceProvider = serviceProvider;
         }
 
-        public Task<object> InvokeAsync(InvocationWrapper invocationWrapper)
+        public Task<object> InvokeAsync(RequestBindingInfo bindingInfo, object[] arguments)
         {
-            Type interfaceType = Type.GetType(invocationWrapper.BindingInfo.TypeName);
+            Type interfaceType = Type.GetType(bindingInfo.TypeName);
             object instance = serviceProvider.GetRequiredService(interfaceType);
 
-            MethodInfo method = BindMethod(instance.GetType(), invocationWrapper.BindingInfo);
-            object result = method.Invoke(instance, invocationWrapper.Arguments);
+            MethodInfo method = BindMethod(instance.GetType(), bindingInfo);
+            object result = method.Invoke(instance, arguments);
+            if (result.GetType() == typeof(Task))
+            {
+                // no return value
+                return (Task<object>)GetType().GetMethod(nameof(ConvertTaskNoResult), BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(this, new object[] { result });
+            }
 
+            //return GetType().GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic)
+            //    .MakeGenericMethod(result.GetType().GetGenericArguments)
             return (Task<object>)((dynamic)this).ConvertTask((dynamic)result);
         }
 
-        private MethodInfo BindMethod(Type implementationType, BindingInfo bindingInfo)
+        private MethodInfo BindMethod(Type implementationType, RequestBindingInfo bindingInfo)
         {
             return implementationType.GetMethod(bindingInfo.MethodName);
         }
@@ -36,6 +44,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
         private async Task<object> ConvertTask<T>(Task<T> task)
         {
             return await task;
+        }
+
+        private async Task<object> ConvertTaskNoResult(Task task)
+        {
+            await task;
+            return null;
         }
     }
 }

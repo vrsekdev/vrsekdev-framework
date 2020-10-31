@@ -4,10 +4,8 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {
-    public class InvocationWrapper
+    public class ArgumentBindingInfo
     {
-        public BindingInfo BindingInfo { get; set; }
-
-        public object[] Arguments { get; set; }
+        public string TypeName { get; set; }
     }
 }

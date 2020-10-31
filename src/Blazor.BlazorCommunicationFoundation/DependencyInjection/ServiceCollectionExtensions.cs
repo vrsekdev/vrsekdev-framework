@@ -10,6 +10,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection
         public static void AddBlazorCommunicationFoundation(this IServiceCollection services)
         {
             services.AddSingleton<IInvocationSerializer, MessagePackInvocationSerializer>();
+            services.AddSingleton<IInvocationRequestArgumentSerializer, InvocationRequestArgumentSerializer>();
         }
     }
 }
