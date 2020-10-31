@@ -6,6 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Blazor.BlazorCommunicationFoundation.Sample.Shared;
+using Blazor.BlazorCommunicationFoundation.Sample.Server.Services;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 
 namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 {
@@ -25,6 +29,10 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+            services.AddBlazorCommunicationFoundation();
+            services.AddBCFServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

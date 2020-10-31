@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Blazor.BlazorCommunicationFoundation.Server\Blazor.BlazorCommunicationFoundation.Server.csproj" />
     <ProjectReference Include="..\Client\Blazor.BlazorCommunicationFoundation.Sample.Client.csproj" />
     <ProjectReference Include="..\Shared\Blazor.BlazorCommunicationFoundation.Sample.Shared.csproj" />
   </ItemGroup>
