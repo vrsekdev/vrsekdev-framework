@@ -1,0 +1,11 @@
+<Project>
+  <Target Name="CopyNugetToNugetSource" AfterTargets="GenerateNuspec" Condition="$(CopyNugetPackages) == true">
+    <ItemGroup>
+      <_FilesToCopy Include="$(OutputPath)\..\*.nupkg;$(OutputPath)\..\*.snupkg" />
+    </ItemGroup>
+
+    <Message Importance="high" Text="Tvle" />
+    
+    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(UserProfile)\.nuget\local"/>
+  </Target>
+</Project>

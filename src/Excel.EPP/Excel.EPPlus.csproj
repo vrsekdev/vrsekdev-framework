@@ -27,12 +27,9 @@
     <ProjectReference Include="..\Excel.Abstractions\Excel.Abstractions.csproj" />
   </ItemGroup>
 
-  <Target Name="CopyNugetToNugetSource" AfterTargets="GenerateNuspec">
-    <ItemGroup>
-      <_FilesToCopy Include="$(OutputPath)\..\*.nupkg;$(OutputPath)\..\*.snupkg" />
-    </ItemGroup>
-
-    <Copy SourceFiles="@(_FilesToCopy)" DestinationFolder="$(UserProfile)\.nuget\local"/>
-  </Target>
+  <Import Project="$(Build.SourcesDirectory)\include\includes.props" Condition="Exists('$(Build_SourcesDirectory)\include\includes.props')" />
+  <Import Project="$(SolutionDir)\include\includes.props" Condition="Exists('$(SolutionDir)\include\includes.props')" />
+  <Import Project="$(Build.SourcesDirectory)\include\settings.props" Condition="Exists('$(Build_SourcesDirectory)\include\settings.props')" />
+  <Import Project="$(SolutionDir)\include\settings.props" Condition="Exists('$(SolutionDir)\include\settings.props')" />
 
 </Project>

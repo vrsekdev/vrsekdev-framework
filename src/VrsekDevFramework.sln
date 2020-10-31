@@ -63,13 +63,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BlazorCommunicationFoundati
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{131C37EE-820A-409D-AF3F-F8DC130A3353}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.BlazorCommunicationFoundation.Sample.Server", "Blazor.BlazorCommunicationFoundation.Sample\Server\Blazor.BlazorCommunicationFoundation.Sample.Server.csproj", "{0798846F-B8DC-4067-AA6E-F0E517941C0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.BlazorCommunicationFoundation.Sample.Server", "Blazor.BlazorCommunicationFoundation.Sample\Server\Blazor.BlazorCommunicationFoundation.Sample.Server.csproj", "{0798846F-B8DC-4067-AA6E-F0E517941C0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.BlazorCommunicationFoundation.Sample.Client", "Blazor.BlazorCommunicationFoundation.Sample\Client\Blazor.BlazorCommunicationFoundation.Sample.Client.csproj", "{7A2CC649-D898-4223-8566-81A1F350C6E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.BlazorCommunicationFoundation.Sample.Client", "Blazor.BlazorCommunicationFoundation.Sample\Client\Blazor.BlazorCommunicationFoundation.Sample.Client.csproj", "{7A2CC649-D898-4223-8566-81A1F350C6E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.BlazorCommunicationFoundation.Sample.Shared", "Blazor.BlazorCommunicationFoundation.Sample\Shared\Blazor.BlazorCommunicationFoundation.Sample.Shared.csproj", "{430B0FB1-6DE0-4EFC-AB86-669192573D56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.BlazorCommunicationFoundation.Sample.Shared", "Blazor.BlazorCommunicationFoundation.Sample\Shared\Blazor.BlazorCommunicationFoundation.Sample.Shared.csproj", "{430B0FB1-6DE0-4EFC-AB86-669192573D56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.BlazorCommunicationFoundation.Client.Authentication", "Blazor.BlazorCommunicationFoundation.Client.Authentication\Blazor.BlazorCommunicationFoundation.Client.Authentication.csproj", "{2082414A-A099-4731-864B-F07872F087CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.BlazorCommunicationFoundation.Client.Authentication", "Blazor.BlazorCommunicationFoundation.Client.Authentication\Blazor.BlazorCommunicationFoundation.Client.Authentication.csproj", "{2082414A-A099-4731-864B-F07872F087CC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E82149C0-ADBA-45C8-B010-A4A6232A9A06}"
+	ProjectSection(SolutionItems) = preProject
+		include\includes.props = include\includes.props
+		include\settings.props = include\settings.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
