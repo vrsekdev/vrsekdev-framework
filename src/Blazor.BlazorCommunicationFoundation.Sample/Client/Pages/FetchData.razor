@@ -1,5 +1,8 @@
 @page "/fetchdata"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Blazor.BlazorCommunicationFoundation.Sample.Shared
+
 @inject HttpClient Http
 @inject IWeatherForecastContract WeatherForecastContract
 
@@ -43,15 +46,28 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await WeatherForecastContract.GetAsync();
-        //await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        try
+        {
+            forecasts = await WeatherForecastContract.GetAsync();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 
     protected async Task HandleAddNew()
     {
-        await WeatherForecastContract.AddAsync(new WeatherForecast
+        try
         {
-            TemperatureC = 50
-        });
+            await WeatherForecastContract.AddAsync(new WeatherForecast
+            {
+                TemperatureC = 50
+            });
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 }

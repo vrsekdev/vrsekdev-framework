@@ -1,4 +1,5 @@
 ﻿using Blazor.BlazorCommunicationFoundation.Sample.Shared;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Services
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
+        [Authorize]
         public Task AddAsync(WeatherForecast weatherForecast)
         {
             return Task.CompletedTask;
