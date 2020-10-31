@@ -13,10 +13,13 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Services
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
+        public Task AddAsync(WeatherForecast weatherForecast)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task<WeatherForecast[]> GetAsync(WeatherForecastGetFilter filter)
         {
-            return Task.FromResult<WeatherForecast[]>(null);
-            /*
             var rng = new Random();
             return Task.FromResult(Enumerable.Range(1, filter.Count).Select(index => new WeatherForecast
             {
@@ -24,7 +27,19 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Services
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
-            .ToArray());*/
+            .ToArray());
+        }
+
+        public Task<WeatherForecast[]> GetAsync()
+        {
+            var rng = new Random();
+            return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = Summaries[rng.Next(Summaries.Length)]
+            })
+            .ToArray());
         }
     }
 }

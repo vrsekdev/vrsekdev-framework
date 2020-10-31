@@ -13,6 +13,8 @@
 }
 else
 {
+    <button @onclick="HandleAddNew">Add</button>
+
     <table class="table">
         <thead>
             <tr>
@@ -41,8 +43,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await WeatherForecastContract.GetAsync(null);
+        forecasts = await WeatherForecastContract.GetAsync();
         //await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
 
+    protected async Task HandleAddNew()
+    {
+        await WeatherForecastContract.AddAsync(new WeatherForecast
+        {
+            TemperatureC = 50
+        });
+    }
 }
