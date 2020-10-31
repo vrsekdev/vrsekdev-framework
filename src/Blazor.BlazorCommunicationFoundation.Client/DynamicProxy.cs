@@ -100,8 +100,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                 case HttpStatusCode.OK:
                 case HttpStatusCode.NoContent:
                     return;
-                case HttpStatusCode.Unauthorized:
-                    throw new SecurityException("User is unauthorized.");
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }

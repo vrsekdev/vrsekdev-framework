@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Blazor.BlazorCommunicationFoundation.Client.Authentication\Blazor.BlazorCommunicationFoundation.Client.Authentication.csproj" />
     <ProjectReference Include="..\..\Blazor.BlazorCommunicationFoundation.Client\Blazor.BlazorCommunicationFoundation.Client.csproj" />
     <ProjectReference Include="..\..\Blazor.BlazorCommunicationFoundation.Core\Blazor.BlazorCommunicationFoundation.Core.csproj" />
     <ProjectReference Include="..\Shared\Blazor.BlazorCommunicationFoundation.Sample.Shared.csproj" />
