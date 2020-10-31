@@ -45,14 +45,14 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Controllers
             MethodInfo methodInfo = methodBinder.BindMethod(invocationRequest.BindingInfo, invocationRequest.Arguments.Select(x => x.BindingInfo).ToArray());
             object contractImplementation = contractImplementationResolver.Resolve(methodInfo.DeclaringType);
 
-            AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(methodInfo);
+            AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(contractImplementation, methodInfo);
             if (!await authorizationHandler.AuthorizeAsync(HttpContext, authorizationContext))
             {
                 return;
             }
 
             object[] arguments = argumentSerializer.DeserializeArguments(methodInfo.GetParameters(), invocationRequest.Arguments);
-            var result = methodInvoker.InvokeAsync(methodInfo, contractImplementation, arguments);
+            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, arguments);
             if (result == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.NoContent;

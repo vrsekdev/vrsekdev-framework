@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,11 +17,18 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security
             this.policyProvider = policyProvider;
         }
 
-        public async Task<AuthorizationContext> GetAuthorizationContextAsync(MethodInfo methodInfo)
+        public async Task<AuthorizationContext> GetAuthorizationContextAsync(object implementation, MethodInfo methodInfo)
         {
-            AuthorizeAttribute authorizeAttribute = methodInfo.DeclaringType.GetCustomAttribute<AuthorizeAttribute>();
+            Type[] parameterTypes = methodInfo.GetParameters().Select(x => x.ParameterType).ToArray();
+            if (parameterTypes.Length == 0)
+            {
+                parameterTypes = Type.EmptyTypes;
+            }
+            MethodInfo concreteMethod = implementation.GetType().GetMethod(methodInfo.Name, parameterTypes);
+
+            AuthorizeAttribute authorizeAttribute = concreteMethod.DeclaringType.GetCustomAttribute<AuthorizeAttribute>();
             // overwrite by action attribute
-            authorizeAttribute = methodInfo.GetCustomAttribute<AuthorizeAttribute>() ?? authorizeAttribute;
+            authorizeAttribute = concreteMethod.GetCustomAttribute<AuthorizeAttribute>() ?? authorizeAttribute;
 
             if (authorizeAttribute == null)
             {

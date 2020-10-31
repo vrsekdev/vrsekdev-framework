@@ -29,7 +29,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 
             return (Task<object>)GetType().GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(result.GetType().GetGenericArguments()[0])
-                .Invoke(instance, arguments);
+                .Invoke(this, new object[] { result });
         }
 
         private MethodInfo BindMethod(Type implementationType, RequestBindingInfo bindingInfo)

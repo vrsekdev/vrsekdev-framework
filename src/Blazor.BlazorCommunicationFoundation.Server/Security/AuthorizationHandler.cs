@@ -35,11 +35,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security
             }
 
             AuthenticateResult authenticationResult = await policyEvaluator.AuthenticateAsync(policy, httpContext);
-            if (!authenticationResult.Succeeded)
-            {
-                await httpContext.ChallengeAsync();
-                return false;
-            }
             PolicyAuthorizationResult authorizationResult = await policyEvaluator.AuthorizeAsync(policy, authenticationResult, httpContext, null);
             if (authorizationResult.Challenged)
             {

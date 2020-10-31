@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blazor.BlazorCommunicationFoundation\Blazor.BlazorCommunicationFoundation.Core.csproj" />
+    <ProjectReference Include="..\Blazor.BlazorCommunicationFoundation.Core\Blazor.BlazorCommunicationFoundation.Core.csproj" />
   </ItemGroup>
 
 </Project>

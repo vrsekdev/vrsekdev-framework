@@ -10,6 +10,7 @@ using System.Reflection;
 using System.IO;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 using System.Net;
+using System.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
@@ -44,7 +45,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 
             MethodInfo method = methodBinder.BindMethod(typeof(TInterface), binder.Name, args);
 
-            using MemoryStream requestStream = new MemoryStream();
+            MemoryStream requestStream = new MemoryStream();
             invocationSerializer.Serialize(requestStream, new InvocationRequest
             {
                 BindingInfo = new RequestBindingInfo
@@ -92,13 +93,15 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 
         private async Task GetResultNoReturnTypeAsync(StreamContent requestContent)
         {
-            var response = await httpClient.PostAsync("/bcf/invoke", requestContent);
+            using var response = await httpClient.PostAsync("/bcf/invoke", requestContent);
 
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
                 case HttpStatusCode.NoContent:
                     return;
+                case HttpStatusCode.Unauthorized:
+                    throw new SecurityException("User is unauthorized.");
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }

@@ -8,6 +8,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security
 {
     public interface IAuthorizationContextProvider
     {
-        Task<AuthorizationContext> GetAuthorizationContextAsync(MethodInfo methodInfo);
+        Task<AuthorizationContext> GetAuthorizationContextAsync(object implementation, MethodInfo methodInfo);
     }
 }
