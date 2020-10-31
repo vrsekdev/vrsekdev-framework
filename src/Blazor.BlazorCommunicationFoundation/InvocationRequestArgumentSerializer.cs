@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
@@ -14,61 +15,47 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
             this.invocationSerializer = invocationSerializer;
         }
 
-        public InvocationRequestArgument[] SerializeArguments(object[] arguments)
+        public InvocationRequestArgument[] SerializeArguments(ParameterInfo[] parameters, object[] arguments)
         {
             InvocationRequestArgument[] result = new InvocationRequestArgument[arguments.Length];
 
             for (int i = 0; i < arguments.Length; i++)
             {
-                result[i] = SerializeArgument(arguments[i]);
+                result[i] = SerializeArgument(parameters[i], arguments[i]);
             }
 
             return result;
         }
 
-        public object[] DeserializeArguments(InvocationRequestArgument[] arguments)
+        public object[] DeserializeArguments(ParameterInfo[] parameters, InvocationRequestArgument[] arguments)
         {
             object[] result = new object[arguments.Length];
 
             for (int i = 0; i < arguments.Length; i++)
             {
-                result[i] = DeserializeArgument(arguments[i]);
+                result[i] = DeserializeArgument(parameters[i], arguments[i].Value);
             }
 
             return result;
         }
 
-        private InvocationRequestArgument SerializeArgument(object value)
+        private InvocationRequestArgument SerializeArgument(ParameterInfo parameter, object value)
         {
-            if (value == null)
+            ArgumentBindingInfo bindingInfo = new ArgumentBindingInfo
             {
-                return new InvocationRequestArgument
-                {
-                    Value = null
-                };
-            }
+                TypeName = parameter.ParameterType.AssemblyQualifiedName
+            };
 
-            Type type = value.GetType();
             return new InvocationRequestArgument
             {
-                BindingInfo = new ArgumentBindingInfo
-                {
-                    TypeName = type.AssemblyQualifiedName
-                },
-                Value = invocationSerializer.Serialize(type, value)
+                BindingInfo = bindingInfo,
+                Value = invocationSerializer.Serialize(parameter.ParameterType, value)
             };
         }
 
-        private object DeserializeArgument(InvocationRequestArgument argument)
+        private object DeserializeArgument(ParameterInfo parameter, byte[] value)
         {
-            if (argument.Value == null)
-            {
-                return null;
-            }
-
-            Type type = Type.GetType(argument.BindingInfo.TypeName);
-
-            return invocationSerializer.Deserialize(type, argument.Value);
+            return invocationSerializer.Deserialize(parameter.ParameterType, value);
         }
     }
 }

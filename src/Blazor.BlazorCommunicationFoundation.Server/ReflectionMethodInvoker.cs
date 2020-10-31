@@ -17,13 +17,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
             this.serviceProvider = serviceProvider;
         }
 
-        public Task<object> InvokeAsync(RequestBindingInfo bindingInfo, object[] arguments)
+        public Task<object> InvokeAsync(MethodInfo methodInfo, object[] arguments)
         {
-            Type interfaceType = Type.GetType(bindingInfo.TypeName);
-            object instance = serviceProvider.GetRequiredService(interfaceType);
+            object instance = serviceProvider.GetRequiredService(methodInfo.DeclaringType);
 
-            MethodInfo method = BindMethod(instance.GetType(), bindingInfo);
-            object result = method.Invoke(instance, arguments);
+            object result = methodInfo.Invoke(instance, arguments);
             if (result.GetType() == typeof(Task))
             {
                 // no return value

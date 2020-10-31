@@ -9,6 +9,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
     public interface IMethodInvoker
     {
-        Task<object> InvokeAsync(RequestBindingInfo bindingInfo, object[] arguments);
+        Task<object> InvokeAsync(MethodInfo method, object[] arguments);
     }
 }

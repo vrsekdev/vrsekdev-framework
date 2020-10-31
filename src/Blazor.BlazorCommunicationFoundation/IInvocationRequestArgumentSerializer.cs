@@ -1,9 +1,11 @@
-﻿namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
+﻿using System.Reflection;
+
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {
     public interface IInvocationRequestArgumentSerializer
     {
-        InvocationRequestArgument[] SerializeArguments(object[] arguments);
+        InvocationRequestArgument[] SerializeArguments(ParameterInfo[] parameters, object[] arguments);
 
-        object[] DeserializeArguments(InvocationRequestArgument[] arguments);
+        object[] DeserializeArguments(ParameterInfo[] parameters, InvocationRequestArgument[] arguments);
     }
 }
