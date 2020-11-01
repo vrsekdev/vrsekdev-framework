@@ -72,5 +72,89 @@ namespace VrsekDev.Blazor.Mobx.Tests
             // Assert
             Assert.AreEqual(instance.StringValue, observable.StringValue);
         }
+
+        [TestMethod]
+        public void Method_Autorun_DontInvokeOnNotObservedPropertyChange()
+        {
+            // Arrange
+            var observerFactory = serviceProvider.GetRequiredService<IPropertyObserverFactory>();
+            var observer = observerFactory.Create<SimpleObservableProperty>();
+
+            var component = new FakeBlazorComponent();
+            observer.SetConsumer(component);
+            var observable = observer.WrappedInstance;
+            int invokeCount = 0, actualInvokeCount = 0;
+
+            observer.Autorun(property =>
+            {
+                _ = property.StringValue;
+                actualInvokeCount++;
+            });
+
+            // Act
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+            // Always invokes on first change
+            observable.StringValue = "test"; invokeCount++;
+            observable.IntValue = 65;
+
+            // Assert
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+        }
+
+        [TestMethod]
+        public void Method_Autorun_InvokeOnChange()
+        {
+            // Arrange
+            var observerFactory = serviceProvider.GetRequiredService<IPropertyObserverFactory>();
+            var observer = observerFactory.Create<SimpleObservableProperty>();
+
+            var component = new FakeBlazorComponent();
+            observer.SetConsumer(component);
+            var observable = observer.WrappedInstance;
+            int invokeCount = 0, actualInvokeCount = 0;
+
+            observer.Autorun(property =>
+            {
+                _ = property.StringValue;
+                actualInvokeCount++;
+            });
+
+            // Act
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+            // Always invokes on first change
+            observable.StringValue = "test"; invokeCount++;
+            observable.StringValue = "test2"; invokeCount++;
+
+            // Assert
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+        }
+
+        [TestMethod]
+        public void Method_Autorun_BehavePromiscous()
+        {
+            // Arrange
+            var observerFactory = serviceProvider.GetRequiredService<IPropertyObserverFactory>();
+            var observer = observerFactory.Create<SimpleObservableProperty>();
+
+            var component = new FakeBlazorComponent();
+            observer.SetConsumer(component);
+            var observable = observer.WrappedInstance;
+            int invokeCount = 0, actualInvokeCount = 0;
+
+            observer.Autorun(property =>
+            {
+                _ = property.StringValue;
+                actualInvokeCount++;
+            });
+
+            // Act
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+            // Always invokes on first change
+            observable.IntValue = 65; invokeCount++;
+            observable.IntValue = 65;
+
+            // Assert
+            Assert.AreEqual(invokeCount, actualInvokeCount);
+        }
     }
 }

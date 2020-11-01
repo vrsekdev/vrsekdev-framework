@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx
 {
-    internal abstract class ObserverBase<T> : IStoreSubscriber
+    internal abstract class ObserverBase<T> : IStoreObserver<T>, IStoreSubscriber
         where T : class
     {
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
 
         protected Dictionary<IObservableProperty, IObservableContainer> observableContainers = new Dictionary<IObservableProperty, IObservableContainer>();
+        private readonly IObservableHolder<T> observableHolder;
 
         public ObserverBase(
             IObservableHolder<T> observableHolder)
@@ -20,6 +21,31 @@ namespace VrsekDev.Blazor.Mobx
             observableHolder.Subscribers.Add(this);
 
             PropertyAccessedEvent += OnPropertyAccessedEvent;
+            this.observableHolder = observableHolder;
+        }
+
+        public void ExecuteInAction(Action action)
+        {
+            observableHolder.ExecuteInTransaction(action);
+        }
+
+        public Task ExecuteInActionAsync(Func<Task> action)
+        {
+            return observableHolder.ExecuteInTransactionAsync(action);
+        }
+
+        public void Autorun(Func<T, ValueTask> action)
+        {
+            observableHolder.RegisterMethodAutorun(action);
+        }
+
+        public void Autorun(Action<T> action)
+        {
+            Autorun((store) =>
+            {
+                action(store);
+                return default;
+            });
         }
 
         protected void OnPropertyAccessed(object sender, PropertyAccessedEventArgs e)
@@ -68,9 +94,7 @@ namespace VrsekDev.Blazor.Mobx
         }
 
         protected abstract ValueTask<bool> TryInvokeAsync(ComputedValueChangedArgs e);
-
         protected abstract ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedArgs e);
-
         protected abstract ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedArgs e);
     }
 }

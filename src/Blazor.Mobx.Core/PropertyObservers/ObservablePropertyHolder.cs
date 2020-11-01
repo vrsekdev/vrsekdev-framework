@@ -4,17 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.Mobx.Reactables.Autoruns;
+using VrsekDev.Blazor.Mobx.Reactables;
 
 namespace VrsekDev.Blazor.Mobx.PropertyObservers
 {
     internal class ObservablePropertyHolder<T> : IObservableHolder<T>
         where T : class
     {
+        private readonly IPropertyProxyWrapper propertyProxyWrapper;
+        private readonly IPropertyProxyFactory propertyProxyFactory;
+
         public StoreSubscribers Subscribers { get; } = new StoreSubscribers();
 
         public IObservableProperty RootObservableProperty { get; }
 
         public ObservablePropertyHolder(
+            IPropertyProxyFactory propertyProxyFactory,
+            IPropertyProxyWrapper propertyProxyWrapper,
             IObservableFactoryFactory observableFactoryFactory)
         {
             var observableFactory = observableFactoryFactory.CreateFactory(
@@ -22,6 +29,8 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
                 OnCollectionItemsChanged);
 
             RootObservableProperty = observableFactory.CreateObservableProperty(typeof(T));
+            this.propertyProxyWrapper = propertyProxyWrapper;
+            this.propertyProxyFactory = propertyProxyFactory;
         }
 
         public void ExecuteInTransaction(Action action)
@@ -36,7 +45,12 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
 
         public void RegisterMethodAutorun(Func<T, ValueTask> autorunMethod)
         {
-            throw new NotImplementedException();
+            IPropertyProxy propertyProxy = propertyProxyFactory.Create(RootObservableProperty);
+            var store = propertyProxyWrapper.WrapPropertyObservable<T>(propertyProxy);
+
+            IInvokableReactable target = new MethodAutorunContainer<T>(autorunMethod, store);
+            ReactableInvoker<T> invoker = new ReactableInvoker<T>(target, this);
+            invoker.PlantSubscriber(propertyProxy);
         }
 
         private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedArgs e)

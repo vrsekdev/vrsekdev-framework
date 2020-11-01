@@ -3,13 +3,20 @@ using VrsekDev.Blazor.Mobx.PropertyObservers;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.Mobx.Abstractions;
+using System.Collections.Generic;
 
 namespace VrsekDev.Blazor.Mobx.Components
 {
     public abstract class BlazorMobxComponentBase : ComponentBase, IBlazorMobxComponent
     {
+        private Dictionary<object, IStoreSubscriber> observableProperties = new Dictionary<object, IStoreSubscriber>();
+
         [Inject]
         private IPropertyObserverFactory PropertyObserverFactory { get; set; }
+
+        [Inject]
+        private IPropertyProxyWrapper PropertyProxyWrapper { get; set; }
 
         public virtual T CreateObservable<T>(T instance)
             where T : class
@@ -21,9 +28,43 @@ namespace VrsekDev.Blazor.Mobx.Components
             return observer.WrappedInstance;
         }
 
+        public void ExecuteInAction<T>(T instance, Action action) where T : class
+        {
+            PropertyObserver<T> observer = GetObserverForProperty(instance);
+            observer.ExecuteInAction(action);
+        }
+
+        public Task ExecuteInActionAsync<T>(T instance, Func<Task> action) where T : class
+        {
+            PropertyObserver<T> observer = GetObserverForProperty(instance);
+            return observer.ExecuteInActionAsync(action);
+        }
+
+        public void Autorun<T>(T instance, Action<T> action) where T : class
+        {
+            PropertyObserver<T> observer = GetObserverForProperty(instance);
+            observer.Autorun(action);
+        }
+
+        public void Autorun<T>(T instance, Func<T, ValueTask> action) where T : class
+        {
+            PropertyObserver<T> observer = GetObserverForProperty(instance);
+            observer.Autorun(action);
+        }
+
         public Task ForceUpdate()
         {
             return InvokeAsync(StateHasChanged);
+        }
+
+        private PropertyObserver<T> GetObserverForProperty<T>(T instance) where T : class
+        {
+            if (!observableProperties.TryGetValue(instance, out IStoreSubscriber storeSubscriber))
+            {
+                throw new ArgumentException("Instance is not a registered observable value");
+            }
+
+            return (PropertyObserver<T>)storeSubscriber;
         }
     }
 

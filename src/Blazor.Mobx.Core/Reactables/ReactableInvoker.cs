@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.Reactables
 {
-    internal class ReactableInvoker<TStore> : ObserverBase<TStore>
-        where TStore : class
+    internal class ReactableInvoker<T> : ObserverBase<T>
+        where T : class
     {
         private readonly IInvokableReactable reactable;
         private bool initialized = false;
 
         public ReactableInvoker(
             IInvokableReactable reactable,
-            IStoreHolder<TStore> storeHolder) : base(storeHolder)
+            IObservableHolder<T> observableHolder) : base(observableHolder)
         {
             this.reactable = reactable;
         }

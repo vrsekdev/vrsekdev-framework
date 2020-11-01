@@ -1,16 +1,9 @@
 ﻿using VrsekDev.Blazor.Mobx.Abstractions;
 using VrsekDev.Blazor.Mobx.Abstractions.Components;
 using VrsekDev.Blazor.Mobx.Abstractions.Events;
-using VrsekDev.Blazor.Mobx.Abstractions.Utils;
-using VrsekDev.Blazor.Mobx.Components;
-using VrsekDev.Blazor.Mobx.Reactables.ComputedValues;
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx.StoreAccessors
@@ -85,30 +78,6 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             PlantSubscriber(propertyProxy);
 
             return propertyProxyWrapper.WrapPropertyObservable<T>(propertyProxy);
-        }
-
-        public void ExecuteInAction(Action action)
-        {
-            storeHolder.ExecuteInTransaction(action);
-        }
-
-        public Task ExecuteInActionAsync(Func<Task> action)
-        {
-            return storeHolder.ExecuteInTransactionAsync(action);
-        }
-
-        public void Autorun(Func<TStore, ValueTask> action)
-        {
-            storeHolder.RegisterMethodAutorun(action);
-        }
-
-        public void Autorun(Action<TStore> action)
-        {
-            Autorun((store) =>
-            {
-                action(store);
-                return default;
-            });
         }
 
         public void ResetStore()

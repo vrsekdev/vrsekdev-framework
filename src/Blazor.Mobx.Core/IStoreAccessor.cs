@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx
 {
-    public interface IStoreAccessor<TStore>
+    public interface IStoreAccessor<TStore> : IStoreObserver<TStore>
         where TStore : class
     {
         TStore Store { get; }
@@ -18,14 +18,6 @@ namespace VrsekDev.Blazor.Mobx
         T CreateObservable<T>() where T : class;
 
         T CreateObservable<T>(T instance) where T : class;
-
-        void ExecuteInAction(Action action);
-
-        Task ExecuteInActionAsync(Func<Task> action);
-
-        void Autorun(Func<TStore, ValueTask> action);
-
-        void Autorun(Action<TStore> action);
 
         void ResetStore();
     }

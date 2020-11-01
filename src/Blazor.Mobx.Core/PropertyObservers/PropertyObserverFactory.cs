@@ -23,7 +23,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
 
         public PropertyObserver<T> Create<T>() where T : class
         {
-            var holder = new ObservablePropertyHolder<T>(observableFactoryFactory);
+            var holder = new ObservablePropertyHolder<T>(propertyProxyFactory, propertyProxyWrapper, observableFactoryFactory);
             return new PropertyObserver<T>(holder, propertyProxyFactory, propertyProxyWrapper);
         }
     }
