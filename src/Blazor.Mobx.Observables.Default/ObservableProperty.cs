@@ -192,6 +192,13 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
         private void DoSetNormalProperty(string name, object value, bool notify)
         {
+            object currentValue = normalProperties[name].Value;
+            if (currentValue == value)
+            {
+                // Do nothing when value equals
+                return;
+            }
+
             normalProperties[name].Value = value;
 
             if (notify)
