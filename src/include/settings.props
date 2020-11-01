@@ -1,5 +1,0 @@
-<Project>
- <PropertyGroup Condition="$(CopyNugetPackages) != false">
-   <CopyNugetPackages>true</CopyNugetPackages>
- </PropertyGroup>
-</Project>

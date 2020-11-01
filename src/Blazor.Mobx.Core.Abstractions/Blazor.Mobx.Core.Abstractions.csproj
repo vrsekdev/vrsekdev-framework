@@ -31,7 +31,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <Import Project="$(SolutionDir)\include\includes.props" Condition="Exists('$(SolutionDir)\include\includes.props')" />
-  <Import Project="$(SolutionDir)\include\settings.props" Condition="Exists('$(SolutionDir)\include\settings.props')" />
+  <Import Project="$(SolutionDir)..\..\include\includes.props" Condition="Exists('$(SolutionDir)..\..\include\includes.props')" />
+  <Import Project="$(SolutionDir)..\..\include\settings.props" Condition="Exists('$(SolutionDir)..\..\include\settings.props')" />
   
 </Project>

@@ -33,7 +33,7 @@
     <ProjectReference Include="..\Blazor.Mobx.Core.Abstractions\Blazor.Mobx.Core.Abstractions.csproj" />
   </ItemGroup>
 
-  <Import Project="$(SolutionDir)\include\includes.props" Condition="Exists('$(SolutionDir)\include\includes.props')" />
-  <Import Project="$(SolutionDir)\include\settings.props" Condition="Exists('$(SolutionDir)\include\settings.props')" />
+  <Import Project="$(SolutionDir)..\..\include\includes.props" Condition="Exists('$(SolutionDir)..\..\include\includes.props')" />
+  <Import Project="$(SolutionDir)..\..\include\settings.props" Condition="Exists('$(SolutionDir)..\..\include\settings.props')" />
 
 </Project>

@@ -27,7 +27,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
   </ItemGroup>
 
-  <Import Project="$(SolutionDir)\include\includes.props" Condition="Exists('$(SolutionDir)\include\includes.props')" />
-  <Import Project="$(SolutionDir)\include\settings.props" Condition="Exists('$(SolutionDir)\include\settings.props')" />
+  <Import Project="$(SolutionDir)..\..\include\includes.props" Condition="Exists('$(SolutionDir)..\..\include\includes.props')" />
+  <Import Project="$(SolutionDir)..\..\include\settings.props" Condition="Exists('$(SolutionDir)..\..\include\settings.props')" />
 
 </Project>
