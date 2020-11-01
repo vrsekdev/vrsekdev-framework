@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Templates.MajesticAdmin", "Blazor.Templates.MajesticAdmin\Blazor.Templates.MajesticAdmin.csproj", "{95BDBC8D-1E3A-4339-A392-72AA54CAA737}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.ServerSide.Core", "Blazor.ServerSide.Core\Blazor.ServerSide.Core.csproj", "{80B6559A-0C84-440A-824D-4DE1DF231DEF}"
@@ -47,8 +45,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Components", "Blazor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Core", "Blazor.Core\Blazor.Core.csproj", "{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Templates.MajesticAdmin.Sample", "Blazor.Templates.MajesticAdmin.Sample\Blazor.Templates.MajesticAdmin.Sample.csproj", "{B97340D9-56B4-47CF-B3B8-390D17EFF0CA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.BlazorCommunicationFoundation.Core", "Blazor.BlazorCommunicationFoundation.Core\Blazor.BlazorCommunicationFoundation.Core.csproj", "{3E979C7C-420F-445D-9327-D7F5A15FE9A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.BlazorCommunicationFoundation.Client", "Blazor.BlazorCommunicationFoundation.Client\Blazor.BlazorCommunicationFoundation.Client.csproj", "{82D6B6DA-9BAB-4EEA-9568-5BD84C124147}"
@@ -79,10 +75,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{95BDBC8D-1E3A-4339-A392-72AA54CAA737}.Release|Any CPU.Build.0 = Release|Any CPU
 		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80B6559A-0C84-440A-824D-4DE1DF231DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -151,10 +143,6 @@ Global
 		{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B97340D9-56B4-47CF-B3B8-390D17EFF0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B97340D9-56B4-47CF-B3B8-390D17EFF0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B97340D9-56B4-47CF-B3B8-390D17EFF0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B97340D9-56B4-47CF-B3B8-390D17EFF0CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E979C7C-420F-445D-9327-D7F5A15FE9A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E979C7C-420F-445D-9327-D7F5A15FE9A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E979C7C-420F-445D-9327-D7F5A15FE9A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -188,7 +176,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{95BDBC8D-1E3A-4339-A392-72AA54CAA737} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 		{80B6559A-0C84-440A-824D-4DE1DF231DEF} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 		{AB6C5A55-BBDB-49FD-93E4-EA8AB288B98D} = {2E2F9E3D-3E20-4173-A3B7-2A8F7C4EEC1B}
 		{0FC132DA-D482-49A2-A11E-B68CE155B0B5} = {2E2F9E3D-3E20-4173-A3B7-2A8F7C4EEC1B}
@@ -208,7 +195,6 @@ Global
 		{9628031F-52F1-4EA7-BCB3-A407C7ACC27C} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 		{29ECB6AA-CC5B-474A-96C5-EA1BBA2ED759} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 		{A5D57B5D-C2B6-4DA6-A59C-01E7B810BC9E} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
-		{B97340D9-56B4-47CF-B3B8-390D17EFF0CA} = {3FD7B8BE-DA70-44F1-841B-CA4074DB0BDF}
 		{3E979C7C-420F-445D-9327-D7F5A15FE9A5} = {73FF00A2-0EA9-470B-93E2-5513BC953649}
 		{82D6B6DA-9BAB-4EEA-9568-5BD84C124147} = {73FF00A2-0EA9-470B-93E2-5513BC953649}
 		{FC83DA27-C062-4191-A5EC-A3C38B0955A1} = {73FF00A2-0EA9-470B-93E2-5513BC953649}
