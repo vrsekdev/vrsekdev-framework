@@ -13,7 +13,5 @@ namespace VrsekDev.Blazor.Mobx
     {
         MethodInterceptions StoreReactables { get; }
         IStoreDependencyInjector<TStore> DependencyInjector { get; }
-
-        IObservableProperty CreateObservableProperty(Type type);
     }
 }

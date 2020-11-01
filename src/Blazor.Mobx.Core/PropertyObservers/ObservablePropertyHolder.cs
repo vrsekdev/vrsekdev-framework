@@ -14,6 +14,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
     {
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
         private readonly IPropertyProxyFactory propertyProxyFactory;
+        private readonly IObservableFactory observableFactory;
 
         public StoreSubscribers Subscribers { get; } = new StoreSubscribers();
 
@@ -24,13 +25,18 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             IPropertyProxyWrapper propertyProxyWrapper,
             IObservableFactoryFactory observableFactoryFactory)
         {
-            var observableFactory = observableFactoryFactory.CreateFactory(
+            this.propertyProxyWrapper = propertyProxyWrapper;
+            this.propertyProxyFactory = propertyProxyFactory;
+            this.observableFactory = observableFactoryFactory.CreateFactory(
                 OnPropertyStateChanged,
                 OnCollectionItemsChanged);
 
             RootObservableProperty = observableFactory.CreateObservableProperty(typeof(T));
-            this.propertyProxyWrapper = propertyProxyWrapper;
-            this.propertyProxyFactory = propertyProxyFactory;
+        }
+
+        public IObservableProperty CreateObservableProperty(Type type)
+        {
+            return observableFactory.CreateObservableProperty(type);
         }
 
         public void ExecuteInTransaction(Action action)

@@ -11,8 +11,6 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
     internal class StoreAccessor<TStore> : ObserverBase<TStore>, IStoreAccessor<TStore>
         where TStore : class
     {
-        private readonly IStoreHolder<TStore> storeHolder;
-        private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
 
         private IConsumerWrapper consumer;
@@ -22,8 +20,6 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             IPropertyProxyFactory propertyProxyFactory,
             IPropertyProxyWrapper propertyProxyWrapper) : base(storeHolder)
         {
-            this.storeHolder = storeHolder;
-            this.propertyProxyFactory = propertyProxyFactory;
             this.propertyProxyWrapper = propertyProxyWrapper;
 
             IPropertyProxy propertyProxy = propertyProxyFactory.Create(storeHolder.RootObservableProperty, storeHolder.StoreReactables);
@@ -52,32 +48,6 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             }
 
             this.consumer = new ReflectionConsumerWrapper(consumer);
-        }
-
-        public T CreateObservable<T>()
-             where T : class
-        {
-            IObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
-
-            return CreateObservable<T>(observableProperty);
-        }
-
-        public T CreateObservable<T>(T instance) 
-            where T : class
-        {
-            IObservableProperty observableProperty = storeHolder.CreateObservableProperty(typeof(T));
-            observableProperty.OverwriteFrom(instance, false);
-
-            return CreateObservable<T>(observableProperty);
-        }
-
-        internal T CreateObservable<T>(IObservableProperty observableProperty)
-            where T : class
-        {
-            IPropertyProxy propertyProxy = propertyProxyFactory.Create(observableProperty);
-            PlantSubscriber(propertyProxy);
-
-            return propertyProxyWrapper.WrapPropertyObservable<T>(propertyProxy);
         }
 
         public void ResetStore()

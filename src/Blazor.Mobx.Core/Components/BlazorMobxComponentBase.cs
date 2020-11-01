@@ -15,17 +15,27 @@ namespace VrsekDev.Blazor.Mobx.Components
         [Inject]
         private IPropertyObserverFactory PropertyObserverFactory { get; set; }
 
-        [Inject]
-        private IPropertyProxyWrapper PropertyProxyWrapper { get; set; }
+        protected T CreateObservable<T>() where T : class
+        {
+            var observer = PropertyObserverFactory.Create<T>();
+            observer.SetConsumer(this);
 
-        public virtual T CreateObservable<T>(T instance)
-            where T : class
+            T observable = observer.WrappedInstance;
+            observableProperties.Add(observable, observer);
+
+            return observable;
+        }
+
+        public T CreateObservable<T>(T instance) where T : class
         {
             var observer = PropertyObserverFactory.Create<T>();
             observer.SetConsumer(this);
             observer.InitializeValues(instance);
 
-            return observer.WrappedInstance;
+            T observable = observer.WrappedInstance;
+            observableProperties.Add(observable, observer);
+
+            return observable;
         }
 
         public void ExecuteInAction<T>(T instance, Action action) where T : class
@@ -115,17 +125,6 @@ namespace VrsekDev.Blazor.Mobx.Components
         public void Autorun(Func<TStore, ValueTask> action)
         {
             storeAccessor.Value.Autorun(action);
-        }
-
-        public override T CreateObservable<T>(T instance)
-        {
-            return storeAccessor.Value.CreateObservable(instance);
-        }
-
-        protected virtual T CreateObservable<T>()
-            where T : class
-        {
-            return storeAccessor.Value.CreateObservable<T>();
         }
     }
 }

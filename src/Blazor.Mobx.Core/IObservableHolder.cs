@@ -14,6 +14,8 @@ namespace VrsekDev.Blazor.Mobx
 
         IObservableProperty RootObservableProperty { get; }
 
+        IObservableProperty CreateObservableProperty(Type type);
+
         public void ExecuteInTransaction(Action action);
 
         public Task ExecuteInTransactionAsync(Func<Task> action);
