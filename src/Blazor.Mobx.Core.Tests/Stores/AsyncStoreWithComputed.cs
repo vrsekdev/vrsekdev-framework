@@ -15,7 +15,7 @@ namespace VrsekDev.Blazor.Mobx.Tests.Stores
         {
             return CompleteAsync(Task.Run(async () =>
             {
-                await Task.Delay(500);
+                await Task.Delay(200);
                 return true;
             }));
         }
@@ -30,7 +30,7 @@ namespace VrsekDev.Blazor.Mobx.Tests.Stores
 		{
 			return CompleteAsync(Task.Run(async () =>
             {
-                await Task.Delay(2000);
+                await Task.Delay(200);
 
                 return true;
             }));

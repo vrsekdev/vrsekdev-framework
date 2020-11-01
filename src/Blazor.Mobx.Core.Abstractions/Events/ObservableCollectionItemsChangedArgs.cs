@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.Mobx.Abstractions.Events
 {
-    public class ObservableCollectionItemsChangedEventArgs
+    public class ObservableCollectionItemsChangedArgs
     {
         public IObservableCollection ObservableCollection { get; set; }
 

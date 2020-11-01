@@ -26,7 +26,7 @@ namespace VrsekDev.Blazor.Mobx.Reactables
             propertyProxy.Subscribe(new PropertyAccessedSubscriber(OnPropertyAccessed));
         }
 
-        protected async override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedArgs e)
         {
             if (!initialized)
             {
@@ -50,7 +50,7 @@ namespace VrsekDev.Blazor.Mobx.Reactables
             return false;
         }
 
-        protected async override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedArgs e)
         {
             if (!initialized)
             {
@@ -71,7 +71,7 @@ namespace VrsekDev.Blazor.Mobx.Reactables
             return false;
         }
 
-        protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedArgs e)
         {
             if (!initialized)
             {

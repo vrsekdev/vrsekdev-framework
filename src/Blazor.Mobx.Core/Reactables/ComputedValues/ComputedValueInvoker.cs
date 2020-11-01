@@ -9,11 +9,11 @@ namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
     internal class ComputedValueInvoker<TStore> : ReactableInvoker<TStore>
         where TStore : class
     {
-        private readonly EventHandler<ComputedValueChangedEventArgs> computedValueChangedEvent;
+        private readonly EventHandler<ComputedValueChangedArgs> computedValueChangedEvent;
         private readonly IComputedValueInvokable computedValue;
 
         public ComputedValueInvoker(
-            EventHandler<ComputedValueChangedEventArgs> computedValueChangedEvent,
+            EventHandler<ComputedValueChangedArgs> computedValueChangedEvent,
             IComputedValueInvokable computedValue, 
             IStoreHolder<TStore> storeHolder) : base(computedValue, storeHolder)
         {
@@ -27,7 +27,7 @@ namespace VrsekDev.Blazor.Mobx.Reactables.ComputedValues
 
             if (!isInitialInvoke)
             {
-                computedValueChangedEvent(this, new ComputedValueChangedEventArgs
+                computedValueChangedEvent(this, new ComputedValueChangedArgs
                 {
                     ComputedValue = computedValue
                 });

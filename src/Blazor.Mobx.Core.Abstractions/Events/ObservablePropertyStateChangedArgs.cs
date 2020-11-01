@@ -5,7 +5,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.Mobx.Abstractions.Events
 {
-    public class ObservablePropertyStateChangedEventArgs
+    public class ObservablePropertyStateChangedArgs
     {
         public IObservableProperty ObservableProperty { get; set; }
 

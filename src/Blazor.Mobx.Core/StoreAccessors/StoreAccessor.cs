@@ -131,7 +131,7 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             base.OnPropertyAccessedEvent(sender, e);
         }
 
-        protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        protected async override ValueTask<bool> TryInvokeAsync(ComputedValueChangedArgs e)
         {
             if (consumer == null)
             {
@@ -147,7 +147,7 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             return true;
         }
 
-        protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
+        protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedArgs e)
         {
             if (consumer == null)
             {
@@ -173,7 +173,7 @@ namespace VrsekDev.Blazor.Mobx.StoreAccessors
             return false;
         }
 
-        protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
+        protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedArgs e)
         {
             if (consumer == null)
             {

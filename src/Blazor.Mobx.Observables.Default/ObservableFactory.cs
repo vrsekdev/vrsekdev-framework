@@ -8,12 +8,12 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 {
     internal class ObservableFactory : IObservableFactory
     {
-        private readonly EventHandler<ObservablePropertyStateChangedEventArgs> observablePropertyStateChangedEventArgs;
-        private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> observableCollectionItemsChangedEventArgs;
+        private readonly EventHandler<ObservablePropertyStateChangedArgs> observablePropertyStateChangedEventArgs;
+        private readonly EventHandler<ObservableCollectionItemsChangedArgs> observableCollectionItemsChangedEventArgs;
 
         public ObservableFactory(
-            EventHandler<ObservablePropertyStateChangedEventArgs> observablePropertyStateChangedEventArgs,
-            EventHandler<ObservableCollectionItemsChangedEventArgs> observableCollectionItemsChangedEventArgs)
+            EventHandler<ObservablePropertyStateChangedArgs> observablePropertyStateChangedEventArgs,
+            EventHandler<ObservableCollectionItemsChangedArgs> observableCollectionItemsChangedEventArgs)
         {
             this.observablePropertyStateChangedEventArgs = observablePropertyStateChangedEventArgs;
             this.observableCollectionItemsChangedEventArgs = observableCollectionItemsChangedEventArgs;

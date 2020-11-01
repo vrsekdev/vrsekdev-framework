@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.Mobx
 {
-    internal abstract class ObserverBase<T>
+    internal abstract class ObserverBase<T> : IStoreSubscriber
         where T : class
     {
         private event EventHandler<PropertyAccessedEventArgs> PropertyAccessedEvent;
@@ -17,11 +17,8 @@ namespace VrsekDev.Blazor.Mobx
         public ObserverBase(
             IObservableHolder<T> observableHolder)
         {
-            // no memory leak, because we dont store a reference to store holder
-            observableHolder.CollectionItemsChangedEvent += StoreHolder_CollectionItemsChangedEvent;
-            observableHolder.PropertyStateChangedEvent += StoreHolder_PropertyStateChangedEvent;
-            observableHolder.ComputedValueChangedEvent += StoreHolder_ComputedValueChangedEvent;
-            observableHolder.BatchObservableChangeEvent += StoreHolder_BatchObservableChangeEvent;
+            observableHolder.Subscribers.Add(this);
+
             PropertyAccessedEvent += OnPropertyAccessedEvent;
         }
 
@@ -42,38 +39,38 @@ namespace VrsekDev.Blazor.Mobx
             container.OnPropertyAccessed(e.PropertyName);
         }
 
-        private async void StoreHolder_PropertyStateChangedEvent(object sender, ObservablePropertyStateChangedEventArgs e)
+        public async ValueTask ComputedValueChangedAsync(ComputedValueChangedArgs args)
         {
-            await TryInvokeAsync(e);
+            await TryInvokeAsync(args);
         }
 
-        private async void StoreHolder_CollectionItemsChangedEvent(object sender, ObservableCollectionItemsChangedEventArgs e)
+        public async ValueTask PropertyStateChangedAsync(ObservablePropertyStateChangedArgs args)
         {
-            await TryInvokeAsync(e);
+            await TryInvokeAsync(args);
         }
 
-        private async void StoreHolder_ComputedValueChangedEvent(object sender, ComputedValueChangedEventArgs e)
+        public async ValueTask CollectionItemsChangedAsync(ObservableCollectionItemsChangedArgs args)
         {
-            await TryInvokeAsync(e);
+            await TryInvokeAsync(args);
         }
 
-        protected virtual async void StoreHolder_BatchObservableChangeEvent(object sender, BatchObservableChangeEventArgs e)
+        public virtual async ValueTask BatchObservableChangedAsync(BatchObservableChangeArgs args)
         {
-            int computedValueChanges = e.ComputedValueChanges.Count;
-            int collectionslength = e.CollectionChanges.Count;
-            int propertiesLength = e.PropertyChanges.Count;
+            int computedValueChanges = args.ComputedValueChanges.Count;
+            int collectionslength = args.CollectionChanges.Count;
+            int propertiesLength = args.PropertyChanges.Count;
 
             int index = 0;
             // Invoke only once for all changes
-            while ((index < computedValueChanges && !await TryInvokeAsync(e.ComputedValueChanges[index]))
-                || (index < propertiesLength && !await TryInvokeAsync(e.PropertyChanges[index]))
-                || (index < collectionslength && !await TryInvokeAsync(e.CollectionChanges[index]))) index++;
+            while ((index < computedValueChanges && !await TryInvokeAsync(args.ComputedValueChanges[index]))
+                || (index < propertiesLength && !await TryInvokeAsync(args.PropertyChanges[index]))
+                || (index < collectionslength && !await TryInvokeAsync(args.CollectionChanges[index]))) index++;
         }
 
-        protected abstract ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e);
+        protected abstract ValueTask<bool> TryInvokeAsync(ComputedValueChangedArgs e);
 
-        protected abstract ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e);
+        protected abstract ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedArgs e);
 
-        protected abstract ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e);
+        protected abstract ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedArgs e);
     }
 }

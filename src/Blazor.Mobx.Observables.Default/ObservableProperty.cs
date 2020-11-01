@@ -13,8 +13,8 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 {
     internal class ObservableProperty : IObservableProperty
     {
-        private EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
-        private EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        private EventHandler<ObservablePropertyStateChangedArgs> statePropertyChangedEvent;
+        private EventHandler<ObservableCollectionItemsChangedArgs> collectionItemsChangedEvent;
 
         private Dictionary<string, PropertyInfo> allPropertiesByName;
 
@@ -27,8 +27,8 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
         internal ObservableProperty(
             Type interfaceType,
-            EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
-            EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent)
+            EventHandler<ObservablePropertyStateChangedArgs> statePropertyChangedEvent,
+            EventHandler<ObservableCollectionItemsChangedArgs> collectionItemsChangedEvent)
         {
             ObservedType = interfaceType;
             this.statePropertyChangedEvent = statePropertyChangedEvent;
@@ -125,7 +125,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
             if (notify)
             {
-                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedArgs
                 {
                     ObservableProperty = this,
                     PropertyInfo = allPropertiesByName[name]
@@ -164,7 +164,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
                 if (notify)
                 {
-                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
                     {
                         ObservableCollection = oldArray,
                         ItemsAdded = addedItems,
@@ -178,7 +178,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
             {
                 if (notify)
                 {
-                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+                    collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
                     {
                         ObservableCollection = oldArray,
                         ItemsAdded = Enumerable.Empty<object>(),
@@ -196,7 +196,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
             if (notify)
             {
-                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedArgs
                 {
                     ObservableProperty = this,
                     PropertyInfo = allPropertiesByName[name]
@@ -276,7 +276,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
             foreach (var propertyName in allPropertiesByName.Keys)
             {
-                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedEventArgs
+                statePropertyChangedEvent?.Invoke(this, new ObservablePropertyStateChangedArgs
                 {
                     ObservableProperty = this,
                     PropertyInfo = allPropertiesByName[propertyName],

@@ -61,7 +61,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             base.OnPropertyAccessedEvent(sender, e);
         }
 
-        protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedEventArgs e)
+        protected override async ValueTask<bool> TryInvokeAsync(ObservablePropertyStateChangedArgs e)
         {
             if (!consumer.IsAlive())
             {
@@ -82,7 +82,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             return false;
         }
 
-        protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedEventArgs e)
+        protected override async ValueTask<bool> TryInvokeAsync(ObservableCollectionItemsChangedArgs e)
         {
             if (!consumer.IsAlive())
             {
@@ -98,7 +98,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             return false;
         }
 
-        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedEventArgs e)
+        protected override ValueTask<bool> TryInvokeAsync(ComputedValueChangedArgs e)
         {
             throw new NotImplementedException();
         }

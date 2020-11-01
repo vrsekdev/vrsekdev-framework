@@ -10,10 +10,7 @@ namespace VrsekDev.Blazor.Mobx
 {
     internal interface IObservableHolder<T>
     {
-        event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
-        event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
-        event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
-        event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
+        StoreSubscribers Subscribers { get; }
 
         IObservableProperty RootObservableProperty { get; }
 

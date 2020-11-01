@@ -9,8 +9,8 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
     internal class ObservableFactoryFactory : IObservableFactoryFactory
     {
         public IObservableFactory CreateFactory(
-            EventHandler<ObservablePropertyStateChangedEventArgs> observablePropertyStateChangedEventArgs, 
-            EventHandler<ObservableCollectionItemsChangedEventArgs> observableCollectionItemsChangedEventArgs)
+            EventHandler<ObservablePropertyStateChangedArgs> observablePropertyStateChangedEventArgs, 
+            EventHandler<ObservableCollectionItemsChangedArgs> observableCollectionItemsChangedEventArgs)
         {
             return new ObservableFactory(observablePropertyStateChangedEventArgs, observableCollectionItemsChangedEventArgs);
         }

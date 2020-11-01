@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.Mobx.Abstractions.Events
 {
-    public class ComputedValueChangedEventArgs
+    public class ComputedValueChangedArgs
     {
         public IComputedValue ComputedValue { get; set; }
     }

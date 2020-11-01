@@ -22,8 +22,8 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
     internal class ObservableCollection<T> : ObservableCollection, IObservableCollection<T>
     {
-        private readonly EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent;
-        private readonly EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent;
+        private readonly EventHandler<ObservablePropertyStateChangedArgs> statePropertyChangedEvent;
+        private readonly EventHandler<ObservableCollectionItemsChangedArgs> collectionItemsChangedEvent;
 
         private List<T> list;
 
@@ -35,8 +35,8 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
         public ObservableCollection(
             bool observeElement,
-            EventHandler<ObservablePropertyStateChangedEventArgs> statePropertyChangedEvent,
-            EventHandler<ObservableCollectionItemsChangedEventArgs> collectionItemsChangedEvent) : base()
+            EventHandler<ObservablePropertyStateChangedArgs> statePropertyChangedEvent,
+            EventHandler<ObservableCollectionItemsChangedArgs> collectionItemsChangedEvent) : base()
         {
             this.statePropertyChangedEvent = statePropertyChangedEvent;
             this.collectionItemsChangedEvent = collectionItemsChangedEvent;
@@ -62,7 +62,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
             int oldCount = Count;
             list.Add(item);
 
-            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
             {
                 ObservableCollection = this,
                 ItemsAdded = addedItems,
@@ -84,7 +84,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
             AddRangeInternal(items);
 
-            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
             {
                 ObservableCollection = this,
                 ItemsAdded = (IEnumerable<object>)items,
@@ -112,7 +112,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
             list.Clear();
 
-            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
             {
                 ObservableCollection = this,
                 ItemsAdded = addedItems,
@@ -151,7 +151,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
 
             list[index] = item;
 
-            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
             {
                 ObservableCollection = this,
                 ItemsAdded = addedItems,
@@ -173,7 +173,7 @@ namespace VrsekDev.Blazor.Mobx.Observables.Default
                 removedItems = new object[] { item };
             }
 
-            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedEventArgs
+            collectionItemsChangedEvent?.Invoke(this, new ObservableCollectionItemsChangedArgs
             {
                 ObservableCollection = this,
                 ItemsAdded = addedItems,

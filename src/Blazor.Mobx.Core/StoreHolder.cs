@@ -20,14 +20,16 @@ namespace VrsekDev.Blazor.Mobx
     internal class StoreHolder<TStore> : IStoreHolder<TStore>
         where TStore : class
     {
-        private readonly Queue<ComputedValueChangedEventArgs> computedValueChangedQueue = new Queue<ComputedValueChangedEventArgs>();
-        private readonly Queue<ObservablePropertyStateChangedEventArgs> propertyStateChangedQueue = new Queue<ObservablePropertyStateChangedEventArgs>();
-        private readonly Queue<ObservableCollectionItemsChangedEventArgs> collectionChangedQueue =new Queue<ObservableCollectionItemsChangedEventArgs>();
+        private readonly Queue<ComputedValueChangedArgs> computedValueChangedQueue = new Queue<ComputedValueChangedArgs>();
+        private readonly Queue<ObservablePropertyStateChangedArgs> propertyStateChangedQueue = new Queue<ObservablePropertyStateChangedArgs>();
+        private readonly Queue<ObservableCollectionItemsChangedArgs> collectionChangedQueue =new Queue<ObservableCollectionItemsChangedArgs>();
 
         private readonly SemaphoreSlim transactionLock = new SemaphoreSlim(1, 1);
         private readonly IObservableFactory observableFactory;
         private readonly IPropertyProxyFactory propertyProxyFactory;
         private readonly IPropertyProxyWrapper propertyProxyWrapper;
+
+        public StoreSubscribers Subscribers { get; } = new StoreSubscribers();
 
         public IObservableProperty RootObservableProperty { get; }
         public IStoreDependencyInjector<TStore> DependencyInjector { get; }
@@ -35,11 +37,6 @@ namespace VrsekDev.Blazor.Mobx
         private readonly IStoreMetadata<TStore> storeMetadata;
 
         public MethodInterceptions StoreReactables { get; private set; } = new MethodInterceptions();
-
-        public event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
-        public event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
-        public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
-        public event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
 
         public StoreHolder(
             IStoreDependencyInjector<TStore> dependencyInjector,
@@ -165,11 +162,11 @@ namespace VrsekDev.Blazor.Mobx
             });
         }
 
-        private void OnComputedValueChanged(object sender, ComputedValueChangedEventArgs e)
+        private void OnComputedValueChanged(object sender, ComputedValueChangedArgs e)
         {
             bool executed = transactionLock.TryExecuteWithWriteLock(() =>
             {
-                ComputedValueChangedEvent?.Invoke(sender, e);
+                Subscribers.NotifyComputedValueChanged(e);
             });
 
             if (!executed)
@@ -181,11 +178,11 @@ namespace VrsekDev.Blazor.Mobx
             DequeueAll();
         }
 
-        private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedEventArgs e)
+        private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedArgs e)
         {
             bool executed = transactionLock.TryExecuteWithWriteLock(() =>
             {
-                PropertyStateChangedEvent?.Invoke(sender, e);
+                Subscribers.NotifyPropertyStateChanged(e);
             });
 
             if (!executed)
@@ -197,11 +194,11 @@ namespace VrsekDev.Blazor.Mobx
             DequeueAll();
         }
 
-        private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedEventArgs e)
+        private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedArgs e)
         {
             bool executed = transactionLock.TryExecuteWithWriteLock(() =>
             {
-                CollectionItemsChangedEvent?.Invoke(sender, e);
+                Subscribers.NotifyCollectionItemsChanged(e);
             });
 
             if (!executed)
@@ -221,7 +218,7 @@ namespace VrsekDev.Blazor.Mobx
 
             if (propertyBatch.Count > 0 || collectionBatch.Count > 0 || computedValuesBatch.Count > 0)
             {
-                BatchObservableChangeEvent?.Invoke(this, new BatchObservableChangeEventArgs
+                Subscribers.NotifyBatchObservableChanged(new BatchObservableChangeArgs
                 {
                     ComputedValueChanges = computedValuesBatch,
                     PropertyChanges = propertyBatch,
@@ -230,19 +227,19 @@ namespace VrsekDev.Blazor.Mobx
             }
         }
 
-        private List<ComputedValueChangedEventArgs> DequeueComputedValues()
+        private List<ComputedValueChangedArgs> DequeueComputedValues()
         {
             return Dequeue(computedValueChangedQueue, x => x.ComputedValue);
 
         }
 
-        private List<ObservablePropertyStateChangedEventArgs> DequeueProperties()
+        private List<ObservablePropertyStateChangedArgs> DequeueProperties()
         {
             return Dequeue(propertyStateChangedQueue, x => (x.ObservableProperty, x.PropertyInfo.Name));
 
         }
 
-        private List<ObservableCollectionItemsChangedEventArgs> DequeueCollections()
+        private List<ObservableCollectionItemsChangedArgs> DequeueCollections()
         {
             return Dequeue(collectionChangedQueue, x => x);
         }

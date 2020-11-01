@@ -10,10 +10,7 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
     internal class ObservablePropertyHolder<T> : IObservableHolder<T>
         where T : class
     {
-        public event EventHandler<ObservablePropertyStateChangedEventArgs> PropertyStateChangedEvent;
-        public event EventHandler<ObservableCollectionItemsChangedEventArgs> CollectionItemsChangedEvent;
-        public event EventHandler<ComputedValueChangedEventArgs> ComputedValueChangedEvent;
-        public event EventHandler<BatchObservableChangeEventArgs> BatchObservableChangeEvent;
+        public StoreSubscribers Subscribers { get; } = new StoreSubscribers();
 
         public IObservableProperty RootObservableProperty { get; }
 
@@ -42,14 +39,14 @@ namespace VrsekDev.Blazor.Mobx.PropertyObservers
             throw new NotImplementedException();
         }
 
-        private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedEventArgs e)
+        private void OnPropertyStateChanged(object sender, ObservablePropertyStateChangedArgs e)
         {
-            PropertyStateChangedEvent?.Invoke(sender, e);
+            Subscribers.NotifyPropertyStateChanged(e);
         }
 
-        private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedEventArgs e)
+        private void OnCollectionItemsChanged(object sender, ObservableCollectionItemsChangedArgs e)
         {
-            CollectionItemsChangedEvent?.Invoke(sender, e);
+            Subscribers.NotifyCollectionItemsChanged(e);
         }
     }
 }

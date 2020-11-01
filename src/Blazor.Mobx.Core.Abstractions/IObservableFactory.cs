@@ -15,7 +15,7 @@ namespace VrsekDev.Blazor.Mobx.Abstractions
     public interface IObservableFactoryFactory
     {
         IObservableFactory CreateFactory(
-            EventHandler<ObservablePropertyStateChangedEventArgs> observablePropertyStateChangedEventArgs,
-            EventHandler<ObservableCollectionItemsChangedEventArgs> observableCollectionItemsChangedEventArgs);
+            EventHandler<ObservablePropertyStateChangedArgs> observablePropertyStateChangedEventArgs,
+            EventHandler<ObservableCollectionItemsChangedArgs> observableCollectionItemsChangedEventArgs);
     }
 }
