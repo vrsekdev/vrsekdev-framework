@@ -1,0 +1,14 @@
+﻿@inherits BlazorMobxComponentBase<AppStore>
+
+@code { 
+    protected async override Task OnInitializedAsync()
+    {
+        Store.IsLoading = true;
+
+        await Task.Delay(3000);
+
+        Store.IsLoading = false;
+
+        await base.OnInitializedAsync();
+    }
+}

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using VrsekDev.Blazor.Mobx.Extensions;
+using VrsekDev.Blazor.Mobx.Samples.Shared.Stores;
 
 namespace VrsekDev.Blazor.Mobx.Samples.ClientSide
 {
@@ -23,10 +24,10 @@ namespace VrsekDev.Blazor.Mobx.Samples.ClientSide
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddDefaultMobxProperties();
-            services.AddMobxStore<IAppStore>().WithDefaultState(new DefaultAppStore()).LifestyleScoped();
-            services.AddMobxStore<IHomeStore>().LifestyleScoped();
+            services.AddMobxStore<AppStore>().LifestyleScoped();
+            /*services.AddMobxStore<IHomeStore>().LifestyleScoped();
             services.AddMobxStore<ICounterStore>().LifestyleTransient();
-            services.AddMobxStore<ITodoStore>().LifestyleCascading();
+            services.AddMobxStore<ITodoStore>().LifestyleCascading();*/
         }
     }
 }

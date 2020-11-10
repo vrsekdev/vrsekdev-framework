@@ -1,18 +1,17 @@
-﻿using VrsekDev.Blazor.Mobx.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using VrsekDev.Blazor.Mobx.Abstractions;
 using VrsekDev.Blazor.Mobx.Extensions;
 using VrsekDev.Blazor.Mobx.Samples.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace VrsekDev.Blazor.Mobx.Samples
+namespace VrsekDev.Blazor.Mobx.Samples.Shared.Stores
 {
-    public class DefaultAppStore : IAppStore
+    public class AppStore
     {
-        public DefaultAppStore()
+        public AppStore()
         {
-            NavigationItems = new List<INavigationItem>
+            NavigationItems = new List<NavigationItem>
             {
                 new NavigationItem
                 {
@@ -47,6 +46,8 @@ namespace VrsekDev.Blazor.Mobx.Samples
             }.ToObservableCollection();
         }
 
-        public IObservableCollection<INavigationItem> NavigationItems { get; set; }
+        public virtual bool IsLoading { get; set; } = true;
+
+        public virtual IObservableCollection<NavigationItem> NavigationItems { get; set; }
     }
 }
