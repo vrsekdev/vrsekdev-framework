@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection
@@ -10,6 +11,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
     {
         public static void AddBCFServer(this IServiceCollection services)
         {
+            services.AddBlazorCommunicationFoundation();
+
             services.AddTransient<IMethodInvoker, ReflectionMethodInvoker>();
             services.AddTransient<IAuthorizationContextProvider, AuthorizationContextProvider>();
             services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();

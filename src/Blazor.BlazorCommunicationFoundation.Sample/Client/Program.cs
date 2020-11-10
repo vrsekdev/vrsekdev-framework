@@ -31,8 +31,8 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
 
             builder.Services.AddApiAuthorization();
 
-            builder.Services.AddBlazorCommunicationFoundation();
             builder.Services.AddBFCAuthentication();
+            builder.Services.AddBCFClient();
             builder.Services.AddBCFContract<IWeatherForecastContract>();
 
             await builder.Build().RunAsync();

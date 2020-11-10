@@ -21,13 +21,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security
 
         public async Task<bool> AuthorizeAsync(HttpContext httpContext, AuthorizationContext authorizationContext)
         {
-            if (authorizationContext == null)
-            {
-                // authorization not required
-                return true;
-            }
-
-            AuthorizationPolicy policy = authorizationContext.Policy;
+            AuthorizationPolicy policy = authorizationContext?.Policy;
             if (policy == null)
             {
                 // authorization not required

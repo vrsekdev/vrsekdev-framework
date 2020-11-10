@@ -32,6 +32,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
             return await MessagePackSerializer.DeserializeAsync<T>(stream, options);
         }
 
+        public async Task<object> DeserializeAsync(Type type, Stream stream)
+        {
+            return await MessagePackSerializer.DeserializeAsync(type, stream, options);
+        }
+
         public object Deserialize(Type type, byte[] value)
         {
             return MessagePackSerializer.Deserialize(type, value, options);

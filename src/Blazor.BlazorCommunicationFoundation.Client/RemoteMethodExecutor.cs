@@ -1,31 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Net.Http;
-using System.Text;
-using System.Linq;
-using MessagePack;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.IO;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 using System.Net;
-using System.Security;
+using System.Net.Http;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
-    public class DynamicProxy<TInterface> : DynamicObject
-        where TInterface : class
+    public class RemoteMethodExecutor
     {
-        private static readonly HashSet<string> methods = new HashSet<string>(typeof(TInterface).GetMethods().Select(x => x.Name));
-
         private readonly HttpClient httpClient;
         private readonly IMethodBinder methodBinder;
         private readonly IInvocationSerializer invocationSerializer;
         private readonly IInvocationRequestArgumentSerializer argumentSerializer;
 
-        public DynamicProxy(HttpClient httpClient,
-            IMethodBinder methodBinder, 
+        public RemoteMethodExecutor(HttpClient httpClient,
+            IMethodBinder methodBinder,
             IInvocationSerializer invocationSerializer,
             IInvocationRequestArgumentSerializer argumentSerializer)
         {
@@ -35,22 +28,17 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             this.argumentSerializer = argumentSerializer;
         }
 
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        public bool TryInvokeRemoteMethod<TContract>(string methodName, object[] args, out object result)
+            where TContract : class
         {
-            if (!methods.Contains(binder.Name))
-            {
-                result = null;
-                return false;
-            }
-
-            MethodInfo method = methodBinder.BindMethod(typeof(TInterface), binder.Name, args);
+            MethodInfo method = methodBinder.BindMethod(typeof(TContract), methodName, args);
 
             MemoryStream requestStream = new MemoryStream();
             invocationSerializer.Serialize(requestStream, new InvocationRequest
             {
                 BindingInfo = new RequestBindingInfo
                 {
-                    TypeName = typeof(TInterface).AssemblyQualifiedName,
+                    TypeName = typeof(TContract).AssemblyQualifiedName,
                     MethodName = method.Name,
                 },
                 Arguments = argumentSerializer.SerializeArguments(method.GetParameters(), args)
@@ -62,16 +50,16 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             Type returnType;
             if (method.ReturnType == typeof(Task))
             {
-                result = GetResultNoReturnTypeAsync(typeof(TInterface).Name, method.Name, requestContent);
+                result = GetResultNoReturnTypeAsync(typeof(TContract).Name, method.Name, requestContent);
             }
             else
             {
                 returnType = method.ReturnType.GetGenericArguments()[0];
                 result = GetType().GetMethod(nameof(GetResultAsync), BindingFlags.Instance | BindingFlags.NonPublic)
                             .MakeGenericMethod(returnType)
-                            .Invoke(this, new object[] { typeof(TInterface).Name, method.Name, requestContent });
+                            .Invoke(this, new object[] { typeof(TContract).Name, method.Name, requestContent });
             }
-            
+
             return true;
         }
 
