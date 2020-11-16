@@ -67,13 +67,18 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
         {
             var response = await httpClient.PostAsync($"/bcf/invoke?contract={contractName}&method={methodName}", requestContent);
 
+            Stream responseStream;
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    var responseStream = await response.Content.ReadAsStreamAsync();
+                    responseStream = await response.Content.ReadAsStreamAsync();
                     return await invocationSerializer.DeserializeAsync<T>(responseStream);
                 case HttpStatusCode.NoContent:
                     return default;
+                case (HttpStatusCode)555: // Custom http status code
+                    responseStream = await response.Content.ReadAsStreamAsync();
+                    string contract = await invocationSerializer.DeserializeAsync<string>(responseStream);
+                    throw new Exception($"Contract `{contract}` is not registered.");
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }

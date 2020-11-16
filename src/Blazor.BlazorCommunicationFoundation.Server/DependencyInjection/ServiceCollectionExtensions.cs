@@ -9,7 +9,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddBCFServer(this IServiceCollection services)
+        public static void AddBCFServer(this IServiceCollection services, Action<IContractCollection> contractsAction)
         {
             services.AddBlazorCommunicationFoundation();
 
@@ -17,6 +17,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
             services.AddTransient<IAuthorizationContextProvider, AuthorizationContextProvider>();
             services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();
             services.AddTransient<IContractImplementationResolver, ServiceProviderContractImplementationResolver>();
+
+            BCFContractCollection contractCollection = new BCFContractCollection(services);
+            contractsAction(contractCollection);
+            services.AddSingleton<IContractImplementationStore>(new ServiceProviderContractImplementationStore(contractCollection.Contracts));
         }
     }
 }

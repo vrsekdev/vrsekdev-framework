@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Infrastructure;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Controllers
@@ -43,7 +45,18 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Controllers
         {
             InvocationRequest invocationRequest = await invocationSerializer.DeserializeAsync<InvocationRequest>(Request.Body);
             MethodInfo methodInfo = methodBinder.BindMethod(invocationRequest.BindingInfo, invocationRequest.Arguments.Select(x => x.BindingInfo).ToArray());
-            object contractImplementation = contractImplementationResolver.Resolve(methodInfo.DeclaringType);
+
+            object contractImplementation;
+            try
+            {
+                contractImplementation = contractImplementationResolver.Resolve(methodInfo.DeclaringType);
+            }
+            catch (ContractNotRegisteredException e)
+            {
+                Response.StatusCode = 555; // Custom http status code
+                await invocationSerializer.SerializeAsync(Response.Body, typeof(String), e.ContractType.Name);
+                return;
+            }
 
             AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(contractImplementation, methodInfo);
             if (!await authorizationHandler.AuthorizeAsync(HttpContext, authorizationContext))

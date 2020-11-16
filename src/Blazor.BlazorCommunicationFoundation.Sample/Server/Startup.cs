@@ -46,8 +46,10 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.AddTransient<IWeatherForecastContract, WeatherForecastService>();
-            services.AddBCFServer();
+            services.AddBCFServer(builder =>
+            {
+                builder.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
