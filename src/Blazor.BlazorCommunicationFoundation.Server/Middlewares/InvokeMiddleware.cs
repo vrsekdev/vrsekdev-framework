@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using System;
 using System.Linq;
 using System.Net;
@@ -44,19 +45,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
             }
 
             InvocationRequest invocationRequest = await invocationSerializer.DeserializeAsync<InvocationRequest>(httpContext.Request.Body);
-            MethodInfo methodInfo = methodBinder.BindMethod(invocationRequest.BindingInfo, invocationRequest.Arguments.Select(x => x.BindingInfo).ToArray());
 
             object contractImplementation;
             try
             {
-                contractImplementation = contractImplementationResolver.Resolve(methodInfo.DeclaringType);
+                contractImplementation = contractImplementationResolver.Resolve(invocationRequest.BindingInfo.TypeIdentifier);
             }
             catch (ContractNotRegisteredException e)
             {
                 httpContext.Response.StatusCode = 455; // Custom http status code
-                await invocationSerializer.SerializeAsync(httpContext.Response.Body, typeof(String), e.ContractType.Name);
                 return;
             }
+
+            MethodInfo methodInfo = methodBinder.BindMethod(contractImplementation.GetType(), invocationRequest.BindingInfo.MethodName, invocationRequest.Arguments.Select(x => x.BindingInfo).ToArray());
 
             AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(contractImplementation, methodInfo);
             if (!await authorizationHandler.AuthorizeAsync(httpContext, authorizationContext))

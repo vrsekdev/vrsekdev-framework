@@ -13,7 +13,6 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Data;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Models;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 using Blazor.BlazorCommunicationFoundation.Sample.Shared;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Services;
@@ -49,7 +48,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 
             services.AddBCFServer(builder =>
             {
-                builder.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+                //builder.AddTransient<IWeatherForecastContract, WeatherForecastService>();
             });
 
             services.AddControllersWithViews();

@@ -15,16 +15,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
         private readonly HttpClient httpClient;
         private readonly IMethodBinder methodBinder;
         private readonly IInvocationSerializer invocationSerializer;
+        private readonly IContractTypeSerializer contractTypeSerializer;
         private readonly IInvocationRequestArgumentSerializer argumentSerializer;
 
         public RemoteMethodExecutor(HttpClient httpClient,
             IMethodBinder methodBinder,
             IInvocationSerializer invocationSerializer,
+            IContractTypeSerializer contractTypeSerializer,
             IInvocationRequestArgumentSerializer argumentSerializer)
         {
             this.httpClient = httpClient;
             this.methodBinder = methodBinder;
             this.invocationSerializer = invocationSerializer;
+            this.contractTypeSerializer = contractTypeSerializer;
             this.argumentSerializer = argumentSerializer;
         }
 
@@ -38,7 +41,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             {
                 BindingInfo = new RequestBindingInfo
                 {
-                    TypeName = typeof(TContract).AssemblyQualifiedName,
+                    TypeIdentifier = contractTypeSerializer.GenerateIdentifier(typeof(TContract)),
                     MethodName = method.Name,
                 },
                 Arguments = argumentSerializer.SerializeArguments(method.GetParameters(), args)
@@ -76,9 +79,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                 case HttpStatusCode.NoContent:
                     return default;
                 case (HttpStatusCode)455: // Custom http status code
-                    responseStream = await response.Content.ReadAsStreamAsync();
-                    string contract = await invocationSerializer.DeserializeAsync<string>(responseStream);
-                    throw new Exception($"Contract `{contract}` is not registered.");
+                    throw new Exception($"Contract `{contractName}` is not registered.");
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }

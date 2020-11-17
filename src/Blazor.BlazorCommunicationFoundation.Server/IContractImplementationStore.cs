@@ -6,6 +6,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
     public interface IContractImplementationStore
     {
-        HashSet<Type> GetRegisteredTypes();
+        Type GetContractType(string contractIdentifier);
     }
 }

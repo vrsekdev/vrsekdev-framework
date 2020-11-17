@@ -6,11 +6,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Infrastructure
 {
     public class ContractNotRegisteredException : Exception
     {
-        public ContractNotRegisteredException(Type contractType)
+        public ContractNotRegisteredException(string contractIdentifier)
         {
-            ContractType = contractType;
+            ContractIdentifier = contractIdentifier;
         }
 
-        public Type ContractType { get; }
+        public String ContractIdentifier { get; }
     }
 }

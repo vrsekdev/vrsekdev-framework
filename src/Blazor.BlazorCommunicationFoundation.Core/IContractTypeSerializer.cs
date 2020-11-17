@@ -4,9 +4,8 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {
-    public class RequestBindingInfo
+    public interface IContractTypeSerializer
     {
-        public string TypeIdentifier { get; set; }
-        public string MethodName { get; set; }
+        string GenerateIdentifier(Type type);
     }
 }

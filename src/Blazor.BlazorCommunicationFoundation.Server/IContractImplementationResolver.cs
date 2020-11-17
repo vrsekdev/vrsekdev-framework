@@ -6,6 +6,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
     public interface IContractImplementationResolver
     {
-        object Resolve(Type contractType);
+        object Resolve(string contractIdentifier);
     }
 }

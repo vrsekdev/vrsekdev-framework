@@ -2,21 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
     internal class ServiceProviderContractImplementationStore : IContractImplementationStore
     {
-        private readonly HashSet<Type> registeredTypes;
+        private readonly Dictionary<string, Type> registeredTypes;
 
-        public ServiceProviderContractImplementationStore(IEnumerable<Type> registeredTypes)
+        public ServiceProviderContractImplementationStore(
+            IEnumerable<Type> registeredTypes,
+            IContractTypeSerializer contractTypeSerializer)
         {
-            this.registeredTypes = registeredTypes.ToHashSet();
+            this.registeredTypes = registeredTypes.ToDictionary(x => contractTypeSerializer.GenerateIdentifier(x));
         }
 
-        public HashSet<Type> GetRegisteredTypes()
+        public Type GetContractType(string contractIdentifier)
         {
-            return registeredTypes;
+            if (!registeredTypes.TryGetValue(contractIdentifier, out Type contractType))
+            {
+                return null;
+            }
+
+            return contractType;
         }
     }
 }

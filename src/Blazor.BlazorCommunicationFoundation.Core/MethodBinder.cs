@@ -9,16 +9,15 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {
     public class MethodBinder : IMethodBinder
     {
-        public MethodInfo BindMethod(RequestBindingInfo requestBindingInfo, ArgumentBindingInfo[] argumentsBindingInfo)
+        public MethodInfo BindMethod(Type contractType, string methodName, ArgumentBindingInfo[] argumentsBindingInfo)
         {
-            Type contractType = Type.GetType(requestBindingInfo.TypeName);
             Type[] argumentTypes = argumentsBindingInfo.Select(x => Type.GetType(x.TypeName)).ToArray();
             if (argumentTypes.Length == 0)
             {
                 argumentTypes = Type.EmptyTypes;
             }
 
-            return contractType.GetMethod(requestBindingInfo.MethodName, argumentTypes);
+            return contractType.GetMethod(methodName, argumentTypes);
         }
 
         public MethodInfo BindMethod(Type contractType, string methodName, object[] args)

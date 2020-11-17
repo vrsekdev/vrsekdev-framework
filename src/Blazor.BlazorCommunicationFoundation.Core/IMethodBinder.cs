@@ -8,7 +8,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {
     public interface IMethodBinder
     {
-        MethodInfo BindMethod(RequestBindingInfo requestBindingInfo, ArgumentBindingInfo[] argumentsBindingInfo);
+        MethodInfo BindMethod(Type contractType, string methodName, ArgumentBindingInfo[] argumentsBindingInfo);
 
         MethodInfo BindMethod(Type declaringType, string methodName, object[] args);
 

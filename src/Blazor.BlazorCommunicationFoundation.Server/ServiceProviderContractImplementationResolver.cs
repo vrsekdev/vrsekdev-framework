@@ -20,15 +20,15 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
             this.serviceProvider = serviceProvider;
         }
 
-        public object Resolve(Type contractType)
+        public object Resolve(string contractIdentifier)
         {
-            HashSet<Type> registeredTypes = contractImplementationStore.GetRegisteredTypes();
-            if (!registeredTypes.Contains(contractType))
+            Type registeredContract = contractImplementationStore.GetContractType(contractIdentifier);
+            if (registeredContract == null)
             {
-                throw new ContractNotRegisteredException(contractType);
+                throw new ContractNotRegisteredException(contractIdentifier);
             }
 
-            return serviceProvider.GetRequiredService(contractType);
+            return serviceProvider.GetRequiredService(registeredContract);
         }
     }
 }
