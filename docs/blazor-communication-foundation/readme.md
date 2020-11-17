@@ -12,6 +12,7 @@ For a sample usage with authorization, you can refer to the [sample project](htt
 - [Usage](#usage)
 - [Authorization](#authorization)
 - [Advanced](#advanced)
+  - [Custom serializer](#custom-serializer)
   - [Custom HttpClient](#custom-httpclient)
   - [Scopes](#scopes)
 
@@ -120,6 +121,49 @@ Or you can use it using constructor injection inside your client services regist
 Refer to a page [Authorization](authorization.md)
 
 ## Advanced
+
+### Custom serializer
+
+Blazor Communication Foundation allows using different serializers for serializing data between client and server. By default, MessagePack is used, but JSON is also available.
+To use JSON serializer, you need to install new package into your server and client application
+```
+Install-Package VrsekDev.Blazor.BlazorCommunicationFoundation.Server
+```
+
+Into your server configuration, add this new line
+
+```csharp
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json;
+...
+
+services.AddBCFServer(builder =>
+{
+    ...
+
+    builder.UseSerializer<JsonInvocationSerializer>();
+    
+    ...
+});
+```
+
+Into your client configuration, add this new line
+```csharp
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json;
+...
+
+builder.Services.AddBCFClient(builder =>
+{
+    ...
+
+    builder.UseSerializer<JsonInvocationSerializer>();
+
+    ...
+});
+```
+
+I recommend using it just for debugging by using `#if DEBUG` directive.
+
+You can also provide custom serializer by implementing interface `IInvokeSerializer`
 
 ### Custom HttpClient
 
