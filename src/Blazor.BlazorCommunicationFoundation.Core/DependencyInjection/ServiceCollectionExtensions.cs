@@ -11,7 +11,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection
         {
             services.AddSingleton<IInvocationSerializer, MessagePackInvocationSerializer>();
             services.AddSingleton<IInvocationRequestArgumentSerializer, InvocationRequestArgumentSerializer>();
-            services.AddSingleton<IContractTypeSerializer, AssemblyQualifiedNameContractTypeSerializer>();
+            services.AddSingleton<IContractTypeSerializer, AssemblyQualifiedNameHashContractTypeSerializer>();
             services.AddSingleton<IMethodBinder, MethodBinder>();
         }
     }
