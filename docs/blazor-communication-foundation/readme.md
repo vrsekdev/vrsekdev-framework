@@ -1,19 +1,32 @@
-# Blazor Communication Foundation
+# Blazor Communication Foundation <!-- omit in toc -->
 
 Blazor Communication Foundation is a simple library that provides communication between Blazor WebAsembly and ASP.NET Server using typed contracts defined through C# interfaces.
 
 For a sample usage with authorization, you can refer to the [sample project](https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/Blazor.BlazorCommunicationFoundation.Sample)
 
-- [Blazor Communication Foundation](#blazor-communication-foundation)
-  - [Configuration](#configuration)
-    - [Shared](#shared)
-    - [Client](#client)
-    - [Server](#server)
-  - [Usage](#usage)
-  - [Authorization](#authorization)
-  - [Advanced](#advanced)
-    - [Custom HttpClient](#custom-httpclient)
-    - [Scopes](#scopes)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Shared](#shared)
+  - [Client](#client)
+  - [Server](#server)
+- [Usage](#usage)
+- [Authorization](#authorization)
+- [Advanced](#advanced)
+  - [Custom HttpClient](#custom-httpclient)
+  - [Scopes](#scopes)
+
+
+## Installation
+
+Into your client application, install package
+```
+Install-Package VrsekDev.Blazor.BlazorCommunicationFoundation.Client
+```
+
+Into your server application (ASP.NET Core hosted), install package
+```
+Install-Package VrsekDev.Blazor.BlazorCommunicationFoundation.Server
+```
 
 ## Configuration
 
