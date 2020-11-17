@@ -16,6 +16,8 @@ For a sample usage with authorization, you can refer to the [sample project](htt
   - [Custom HttpClient](#custom-httpclient)
   - [Scopes](#scopes)
 - [Debugging](#debugging)
+  - [Request](#request)
+  - [Response](#response)
 
 
 ## Installation
@@ -225,3 +227,15 @@ builder.Services.AddBCFClient(builder =>
 ```
 
 ## Debugging
+
+By default, Blazor Communication Foundation uses MessagePack to serialize communication between client and server, which is not human-readable.
+
+To have an insight into the communication, I recommend using JSON serializer for `DEBUG` using `#if` directive. See [Custom serializer](#custom-serializer).
+
+### Request
+Request contains binding information for contract type and method and value of the parameters. Currently, parameter values are not readable, but there will be implemented a human-readable value soon.
+![request](images/json_request.jpg)
+
+### Response
+Response contains only serialized values
+![response](images/json_response.jpg)
