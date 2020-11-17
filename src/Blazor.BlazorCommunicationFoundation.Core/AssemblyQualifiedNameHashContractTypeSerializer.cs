@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation
 {
     public class AssemblyQualifiedNameHashContractTypeSerializer : IContractTypeSerializer
     {

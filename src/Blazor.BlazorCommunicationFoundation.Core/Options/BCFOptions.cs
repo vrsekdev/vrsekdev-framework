@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Options
 {
     public class BCFOptions
     {

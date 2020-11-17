@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server

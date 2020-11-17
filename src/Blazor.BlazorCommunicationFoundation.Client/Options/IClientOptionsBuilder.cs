@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
 {

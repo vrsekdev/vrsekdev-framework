@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation
 {
     public interface IInvocationRequestArgumentSerializer
     {

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

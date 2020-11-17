@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation
 {
     public class MethodBinder : IMethodBinder
     {

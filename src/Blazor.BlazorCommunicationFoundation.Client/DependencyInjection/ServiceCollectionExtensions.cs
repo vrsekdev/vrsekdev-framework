@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection
 {
