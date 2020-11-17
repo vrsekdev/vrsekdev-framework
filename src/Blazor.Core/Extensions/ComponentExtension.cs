@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace VrsekDev.Blazor.Core.Extensions
+namespace VrsekDev.Blazor.Extensions
 {
     public static class ComponentExtension
     {
