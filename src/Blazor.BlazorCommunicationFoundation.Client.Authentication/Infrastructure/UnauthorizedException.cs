@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Infrastructure
 {
@@ -19,9 +22,15 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.In
             this.loginUrl = loginUrl;
         }
 
-        public void RedirectToLogin()
+        public void RedirectToLogin(string returnUrl = null)
         {
-            navigationManager.NavigateTo(loginUrl);
+            UriBuilder uriBuilder = new UriBuilder(navigationManager.ToAbsoluteUri(loginUrl));
+
+            NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            query["returnUrl"] = returnUrl ?? navigationManager.Uri;
+            uriBuilder.Query = query.ToString();
+
+            navigationManager.NavigateTo(uriBuilder.ToString());
         }
     }
 }
