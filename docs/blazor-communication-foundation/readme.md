@@ -15,6 +15,7 @@ For a sample usage with authorization, you can refer to the [sample project](htt
   - [Custom serializer](#custom-serializer)
   - [Custom HttpClient](#custom-httpclient)
   - [Scopes](#scopes)
+- [Debugging](#debugging)
 
 
 ## Installation
@@ -222,3 +223,5 @@ builder.Services.AddBCFClient(builder =>
     builder.Contracts.AddContract<IWeatherForecastContract>();
 });
 ```
+
+## Debugging
