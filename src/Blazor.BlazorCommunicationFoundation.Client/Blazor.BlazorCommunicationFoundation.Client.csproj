@@ -6,6 +6,30 @@
     <RootNamespace>VrsekDev.Blazor.BlazorCommunicationFoundation.Client</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>0.6.0</Version>
+    <Authors>Daniel Vršek</Authors>
+    <Product>VrsekDev.Blazor.BlazorCommunicationFoundation.Client</Product>
+    <Description>Library providing communication between Blazor WebAsembly and ASP.NET Server using typed contracts defined through C# interfaces</Description>
+    <Copyright>Daniel Vršek</Copyright>
+    <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/docs/blazor-communication-foundation</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Link="LICENSE">
+      <PackagePath></PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.6" />

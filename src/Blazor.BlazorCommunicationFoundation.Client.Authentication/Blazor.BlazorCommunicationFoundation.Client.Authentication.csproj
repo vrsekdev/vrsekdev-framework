@@ -6,8 +6,36 @@
     <RootNamespace>VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Version>0.6.0</Version>
+    <Authors>Daniel Vršek</Authors>
+    <Product>VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication</Product>
+    <Description>Library providing communication between Blazor WebAsembly and ASP.NET Server using typed contracts defined through C# interfaces</Description>
+    <Copyright>Daniel Vršek</Copyright>
+    <RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/docs/blazor-communication-foundation</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Link="LICENSE">
+      <PackagePath></PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="3.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blazor.BlazorCommunicationFoundation.Client\Blazor.BlazorCommunicationFoundation.Client.csproj" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)..\..\include\includes.props" Condition="Exists('$(SolutionDir)..\..\include\includes.props')" />
