@@ -83,7 +83,7 @@ app.UseBlazorCommunicationFoundation();
 
 ## Usage
 
-You can use DI on your client to resolve contracts and execute methods as you would normally would.
+You can use DI on your client to resolve contracts and execute methods as you normally would.
 
 Inside blazor components, you can use attribute `[Inject]`
 
@@ -110,19 +110,31 @@ Refer to a page [Authorization](authorization.md)
 
 ### Custom HttpClient
 
-To use custom HttpClient to execute remote methods, you can use method `UseNamedHttpClient(string)` for using named HttpClients or `UseHttpClientResolver<TResolver>()` for custom implementations of interface `IHttpClientResolver`. By default, instance of `HttpClient` will by obtained from IServiceProvider by type `HttpClient`.
+To use custom HttpClient to execute remote methods, you can use method `UseNamedHttpClient(string)` for using named HttpClients or `UseHttpClientResolver<TResolver>()` for custom implementations of interface `IHttpClientResolver`.
 
 ```csharp
 builder.Services.AddHttpClient("WithAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
     .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>());
 
+builder.Services.AddBCFClient(builder =>
+{
+    builder.UseNamedHttpClient("WithAuth");
+    // IWeatherForecastContract will use HttpClient registered by name "WithAuth"
+    builder.Contracts.AddContract<IWeatherForecastContract>();
+});
+```
+
+By default, instance of `HttpClient` will by obtained from IServiceProvider by type `HttpClient`.
+
+```csharp
+builder.Services.AddHttpClient("NoAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
 // Register type HttpClient by instances supplied from factory
-builder.Services.AddScoped(
-    sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("NoAuth"));
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("NoAuth"));
 
 builder.Services.AddBCFClient(builder =>
 {
-    // IWeatherForecastContract will resolve type HttpClient registered above
+    // IWeatherForecastContract will use HttpClient registered from factory
     builder.Contracts.AddContract<IWeatherForecastContract>();
 });
 ```
@@ -146,9 +158,10 @@ builder.Services.AddBCFClient(builder =>
     builder.CreateScope(scope =>
     {
         scope.UseNamedHttpClient("WithAuth");
+        // IUserActionContract will use HttpClient registered by name "WithAuth"
         scope.Contracts.AddContract<IUserActionContract>();
     });
-    // IWeatherForecastContract will resolve type HttpClient registered above
+    // IWeatherForecastContract will use HttpClient registered from factory
     builder.Contracts.AddContract<IWeatherForecastContract>();
 });
 ```
