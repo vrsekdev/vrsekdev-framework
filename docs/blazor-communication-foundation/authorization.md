@@ -1,0 +1,1 @@
+# Blazor Communication Foundation - Authorization
