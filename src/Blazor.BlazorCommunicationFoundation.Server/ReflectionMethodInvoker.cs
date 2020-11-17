@@ -11,13 +11,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
     internal class ReflectionMethodInvoker : IMethodInvoker
     {
-        private readonly IServiceProvider serviceProvider;
-
-        public ReflectionMethodInvoker(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = serviceProvider;
-        }
-
         public Task<object> InvokeAsync(MethodInfo methodInfo, object instance, object[] arguments)
         {
             object result = methodInfo.Invoke(instance, arguments);

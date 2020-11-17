@@ -17,6 +17,7 @@ using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 using Blazor.BlazorCommunicationFoundation.Sample.Shared;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Services;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
 
 namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 {
@@ -80,6 +81,8 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseBlazorCommunicationFoundation();
 
             app.UseEndpoints(endpoints =>
             {

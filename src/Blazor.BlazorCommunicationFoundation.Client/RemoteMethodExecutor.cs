@@ -75,7 +75,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                     return await invocationSerializer.DeserializeAsync<T>(responseStream);
                 case HttpStatusCode.NoContent:
                     return default;
-                case (HttpStatusCode)555: // Custom http status code
+                case (HttpStatusCode)455: // Custom http status code
                     responseStream = await response.Content.ReadAsStreamAsync();
                     string contract = await invocationSerializer.DeserializeAsync<string>(responseStream);
                     throw new Exception($"Contract `{contract}` is not registered.");
