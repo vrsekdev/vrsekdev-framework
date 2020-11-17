@@ -69,7 +69,7 @@ builder.Services.AddBCFClient(builder =>
 ...
 ```
 
-Also, you need to make sure that you registered HttpClient or that you are using custom implementation of `IHttpClientResolver`.
+Also, you need to make sure that you registered HttpClient or that you are using custom implementation of `IHttpClientResolver` ([more](#custom-httpclient)).
 
 ### Server
 On server, you need to specify configuration for services. All extension methods for `IServiceCollection` can be used, including `AddTransient`, `AddScoped`, `AddSingleton` and implementation factories. 
@@ -127,7 +127,7 @@ Refer to a page [Authorization](authorization.md)
 Blazor Communication Foundation allows using different serializers for serializing data between client and server. By default, MessagePack is used, but JSON is also available.
 To use JSON serializer, you need to install new package into your server and client application
 ```
-Install-Package VrsekDev.Blazor.BlazorCommunicationFoundation.Server
+Install-Package VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json
 ```
 
 Into your server configuration, add this new line
