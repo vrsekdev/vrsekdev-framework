@@ -13,19 +13,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
     public class RemoteMethodExecutor
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientResolver httpClientResolver;
         private readonly IMethodBinder methodBinder;
         private readonly IInvocationSerializer invocationSerializer;
         private readonly IContractTypeSerializer contractTypeSerializer;
         private readonly IInvocationRequestArgumentSerializer argumentSerializer;
 
-        public RemoteMethodExecutor(HttpClient httpClient,
+        public RemoteMethodExecutor(IHttpClientResolver httpClientResolver,
             IMethodBinder methodBinder,
             IInvocationSerializer invocationSerializer,
             IContractTypeSerializer contractTypeSerializer,
             IInvocationRequestArgumentSerializer argumentSerializer)
         {
-            this.httpClient = httpClient;
+            this.httpClientResolver = httpClientResolver;
             this.methodBinder = methodBinder;
             this.invocationSerializer = invocationSerializer;
             this.contractTypeSerializer = contractTypeSerializer;
@@ -69,6 +69,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 
         private async Task<T> GetResultAsync<T>(string contractName, string methodName, StreamContent requestContent)
         {
+            HttpClient httpClient = httpClientResolver.GetHttpClient();
             var response = await httpClient.PostAsync($"/bcf/invoke?contract={contractName}&method={methodName}", requestContent);
 
             Stream responseStream;
@@ -88,6 +89,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 
         private async Task GetResultNoReturnTypeAsync(string contractName, string methodName, StreamContent requestContent)
         {
+            HttpClient httpClient = httpClientResolver.GetHttpClient();
             using var response = await httpClient.PostAsync($"/bcf/invoke?contract={contractName}&method={methodName}", requestContent);
 
             switch (response.StatusCode)

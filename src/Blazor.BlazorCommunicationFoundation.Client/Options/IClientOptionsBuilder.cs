@@ -10,5 +10,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
     public interface IClientOptionsBuilder : IOptionsBuilder<ClientBCFOptions>
     {
         IClientContractCollection Contracts { get; }
+
+        void UseNamedHttpClient(string httpClientName);
+
+        void UseHttpClientResolver<TResolver>() where TResolver : IHttpClientResolver;
     }
 }

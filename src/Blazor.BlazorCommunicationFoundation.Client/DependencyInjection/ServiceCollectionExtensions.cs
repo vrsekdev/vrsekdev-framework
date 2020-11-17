@@ -17,9 +17,17 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
             ClientBCFOptionsBuilder builder = new ClientBCFOptionsBuilder(services);
             builderAction ??= builder => { };
             builderAction(builder);
+            BCFOptions options = builder.Build();
+            ClientBCFOptions clientOptions = ((IClientOptionsBuilder)builder).Build();
 
-            services.AddBlazorCommunicationFoundation(builder.Build());
+            services.AddBlazorCommunicationFoundation(options);
 
+            if (clientOptions.HttpClientResolverType == null)
+            {
+                throw new ArgumentNullException("HttpClientResolverType type is required", nameof(clientOptions.HttpClientResolverType));
+            }
+
+            services.AddTransient(typeof(IHttpClientResolver), clientOptions.HttpClientResolverType);
             services.AddTransient<RemoteMethodExecutor>();
         }
     }
