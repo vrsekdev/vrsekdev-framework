@@ -69,7 +69,7 @@ builder.Services.AddBCFClient(builder =>
 ...
 ```
 
-Also, you need to make sure that you registered HttpClient or that you are using custom implementation of `IHttpClientResolver` ([more](#custom-httpclient)).
+Also, you need to make sure that you registered HttpClient or that you are using custom implementation of `IHttpClientResolver` ([more](#custom-httpclient))
 
 ### Server
 On server, you need to specify configuration for services. All extension methods for `IServiceCollection` can be used, including `AddTransient`, `AddScoped`, `AddSingleton` and implementation factories. 
