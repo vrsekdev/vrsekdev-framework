@@ -6,7 +6,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection
 {
-    internal class BCFContractCollection : IContractCollection
+    internal class ServerBCFContractCollection : IServerContractCollection
     {
         private readonly IServiceCollection services;
 
@@ -18,7 +18,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
         public ServiceDescriptor this[int index] { get => services[index]; set => services[index] = value; }
 
-        public BCFContractCollection(IServiceCollection services)
+        public ServerBCFContractCollection(IServiceCollection services)
         {
             this.services = services;
         }

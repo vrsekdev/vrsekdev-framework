@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options
 {
     public class BCFOptionsBuilder : IOptionsBuilder<BCFOptions>
     {

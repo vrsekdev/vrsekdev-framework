@@ -3,32 +3,24 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
 using VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddBCFClient(this IServiceCollection services, Action<IOptionsBuilder<BCFOptions>> builderAction = null)
+        public static void AddBCFClient(this IServiceCollection services, Action<IClientOptionsBuilder> builderAction = null)
         {
-            BCFOptionsBuilder builder = new BCFOptionsBuilder();
+            ClientBCFOptionsBuilder builder = new ClientBCFOptionsBuilder(services);
             builderAction ??= builder => { };
             builderAction(builder);
 
             services.AddBlazorCommunicationFoundation(builder.Build());
 
             services.AddTransient<RemoteMethodExecutor>();
-        }
-
-        public static void AddBCFContract<TInterface>(this IServiceCollection services)
-            where TInterface : class
-        {
-            Type contractProxy = RuntimeProxyBuilder.BuildRuntimeType(typeof(TInterface));
-
-            services.AddTransient<RuntimeProxy<TInterface>>();
-            services.AddTransient(typeof(TInterface), contractProxy);
         }
     }
 }

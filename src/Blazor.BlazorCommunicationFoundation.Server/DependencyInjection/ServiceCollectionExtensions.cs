@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 

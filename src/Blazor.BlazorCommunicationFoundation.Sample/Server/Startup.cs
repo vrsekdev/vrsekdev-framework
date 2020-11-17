@@ -52,7 +52,6 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 #if DEBUG
                 builder.UseSerializer<JsonInvocationSerializer>();
 #endif
-
                 builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
             });
 

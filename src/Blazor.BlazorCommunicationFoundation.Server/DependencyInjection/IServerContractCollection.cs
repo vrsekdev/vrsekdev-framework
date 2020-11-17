@@ -5,7 +5,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection
 {
-    public interface IContractCollection : IServiceCollection
+    public interface IServerContractCollection : IServiceCollection
     {
         HashSet<Type> Contracts { get; }
     }

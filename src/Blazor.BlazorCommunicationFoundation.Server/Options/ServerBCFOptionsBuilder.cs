@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options
@@ -12,10 +12,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options
         public ServerBCFOptionsBuilder(
             IServiceCollection services)
         {
-            Contracts = new BCFContractCollection(services);
+            Contracts = new ServerBCFContractCollection(services);
         }
 
-        public IContractCollection Contracts { get; }
+        public IServerContractCollection Contracts { get; }
 
         ServerBCFOptions IOptionsBuilder<ServerBCFOptions>.Build()
         {

@@ -32,8 +32,8 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
 #if DEBUG
                 builder.UseSerializer<JsonInvocationSerializer>();
 #endif
+                builder.Contracts.AddContract<IWeatherForecastContract>();
             });
-            builder.Services.AddBCFContract<IWeatherForecastContract>();
 
             await builder.Build().RunAsync();
         }
