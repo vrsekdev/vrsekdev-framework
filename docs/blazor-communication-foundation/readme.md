@@ -4,6 +4,17 @@ Blazor Communication Foundation is a simple library that provides communication 
 
 For a sample usage with authorization, you can refer to the [sample project](https://github.com/vrsekdev/vrsekdev-framework/tree/master/src/Blazor.BlazorCommunicationFoundation.Sample)
 
+- [Blazor Communication Foundation](#blazor-communication-foundation)
+  - [Configuration](#configuration)
+    - [Shared](#shared)
+    - [Client](#client)
+    - [Server](#server)
+  - [Usage](#usage)
+  - [Authorization](#authorization)
+  - [Advanced](#advanced)
+    - [Custom HttpClient](#custom-httpclient)
+    - [Scopes](#scopes)
+
 ## Configuration
 
 ### Shared
@@ -94,3 +105,50 @@ Or you can use it using constructor injection inside your client services regist
 ## Authorization
 
 Refer to a page [Authorization](authorization.md)
+
+## Advanced
+
+### Custom HttpClient
+
+To use custom HttpClient to execute remote methods, you can use method `UseNamedHttpClient(string)` for using named HttpClients or `UseHttpClientResolver<TResolver>()` for custom implementations of interface `IHttpClientResolver`. By default, instance of `HttpClient` will by obtained from IServiceProvider by type `HttpClient`.
+
+```csharp
+builder.Services.AddHttpClient("WithAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>());
+
+// Register type HttpClient by instances supplied from factory
+builder.Services.AddScoped(
+    sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("NoAuth"));
+
+builder.Services.AddBCFClient(builder =>
+{
+    // IWeatherForecastContract will resolve type HttpClient registered above
+    builder.Contracts.AddContract<IWeatherForecastContract>();
+});
+```
+
+### Scopes
+
+You can create scopes for contracts that enable you to combine multiple types of `IHttpClientResolver`. All contracts registered inside the scope will have the defined `HttpClient`.
+```csharp
+builder.Services.AddHttpClient("WithAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>());
+
+builder.Services.AddHttpClient("NoAuth", 
+    client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
+// Register type HttpClient by instances supplied from factory
+builder.Services.AddScoped(
+    sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("NoAuth"));
+
+builder.Services.AddBCFClient(builder =>
+{
+    builder.CreateScope(scope =>
+    {
+        scope.UseNamedHttpClient("WithAuth");
+        scope.Contracts.AddContract<IUserActionContract>();
+    });
+    // IWeatherForecastContract will resolve type HttpClient registered above
+    builder.Contracts.AddContract<IWeatherForecastContract>();
+});
+```
