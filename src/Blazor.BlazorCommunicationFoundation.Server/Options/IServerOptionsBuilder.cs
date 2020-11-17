@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
+
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options
+{
+    public interface IServerOptionsBuilder : IOptionsBuilder<ServerBCFOptions>
+    {
+        IContractCollection Contracts { get; }
+    }
+}

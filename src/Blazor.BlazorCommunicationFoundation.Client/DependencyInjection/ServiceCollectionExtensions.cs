@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
 using VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 
@@ -10,9 +11,13 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddBCFClient(this IServiceCollection services)
+        public static void AddBCFClient(this IServiceCollection services, Action<IOptionsBuilder<BCFOptions>> builderAction = null)
         {
-            services.AddBlazorCommunicationFoundation();
+            BCFOptionsBuilder builder = new BCFOptionsBuilder();
+            builderAction ??= builder => { };
+            builderAction(builder);
+
+            services.AddBlazorCommunicationFoundation(builder.Build());
 
             services.AddTransient<RemoteMethodExecutor>();
         }

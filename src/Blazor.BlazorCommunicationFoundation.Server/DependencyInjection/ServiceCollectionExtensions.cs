@@ -4,25 +4,29 @@ using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddBCFServer(this IServiceCollection services, Action<IContractCollection> contractsAction)
+        public static void AddBCFServer(this IServiceCollection services, Action<IServerOptionsBuilder> builderAction)
         {
-            services.AddBlazorCommunicationFoundation();
+            ServerBCFOptionsBuilder builder = new ServerBCFOptionsBuilder(services);
+            builderAction(builder);
+            BCFOptions options = builder.Build();
+            ServerBCFOptions serverOptions = ((IServerOptionsBuilder)builder).Build();
+
+            services.AddSingleton<IContractImplementationStore, ServiceProviderContractImplementationStore>(
+                serviceProvider => new ServiceProviderContractImplementationStore(serverOptions.Contracts.Contracts, serviceProvider.GetRequiredService<IContractTypeSerializer>()));
+
+            services.AddBlazorCommunicationFoundation(options);
 
             services.AddSingleton<IMethodInvoker, ReflectionMethodInvoker>();
             services.AddTransient<IAuthorizationContextProvider, AuthorizationContextProvider>();
             services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();
             services.AddTransient<IContractImplementationResolver, ServiceProviderContractImplementationResolver>();
-
-            BCFContractCollection contractCollection = new BCFContractCollection(services);
-            contractsAction(contractCollection);
-            services.AddSingleton<IContractImplementationStore, ServiceProviderContractImplementationStore>(
-                serviceProvider => new ServiceProviderContractImplementationStore(contractCollection.Contracts, serviceProvider.GetRequiredService<IContractTypeSerializer>()));
         }
     }
 }

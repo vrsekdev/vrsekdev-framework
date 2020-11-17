@@ -48,7 +48,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 
             services.AddBCFServer(builder =>
             {
-                builder.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+                builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
             });
 
             services.AddControllersWithViews();

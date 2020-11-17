@@ -7,11 +7,21 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddBlazorCommunicationFoundation(this IServiceCollection services)
+        public static void AddBlazorCommunicationFoundation(this IServiceCollection services, BCFOptions options)
         {
-            services.AddSingleton<IInvocationSerializer, MessagePackInvocationSerializer>();
+            if (options.SerializerType == null)
+            {
+                throw new ArgumentNullException("Serializer type is required", nameof(options.SerializerType));
+            }
+            if (options.ContractTypeSerializerType == null)
+            {
+                throw new ArgumentNullException("ContractTypeSerializer type is required", nameof(options.ContractTypeSerializerType));
+            }
+
+            services.AddSingleton(typeof(IInvocationSerializer), options.SerializerType);
+            services.AddSingleton(typeof(IContractTypeSerializer), options.ContractTypeSerializerType);
+
             services.AddSingleton<IInvocationRequestArgumentSerializer, InvocationRequestArgumentSerializer>();
-            services.AddSingleton<IContractTypeSerializer, AssemblyQualifiedNameHashContractTypeSerializer>();
             services.AddSingleton<IMethodBinder, MethodBinder>();
         }
     }
