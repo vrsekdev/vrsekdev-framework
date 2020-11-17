@@ -36,7 +36,7 @@ public interface IUserActionContract
 }
 ```
 
-Also, you it can be added onto class/interface, which then requires authentication for all methods declared inside that class/interface
+Also, `AuthorizeAttribute` can be added onto class/interface, which then requires authentication for all methods declared inside that class/interface
 
 ```csharp
 [Authorize]

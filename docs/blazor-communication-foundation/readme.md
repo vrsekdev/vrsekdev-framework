@@ -181,7 +181,7 @@ builder.Services.AddBCFClient(builder =>
 });
 ```
 
-By default, instance of `HttpClient` will by obtained from IServiceProvider by type `HttpClient`.
+By default, instance of `HttpClient` will be obtained from IServiceProvider by type `HttpClient`.
 
 ```csharp
 builder.Services.AddHttpClient("NoAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
