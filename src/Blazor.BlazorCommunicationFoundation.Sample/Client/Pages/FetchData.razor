@@ -6,6 +6,7 @@
 
 @inject HttpClient Http
 @inject IWeatherForecastContract WeatherForecastContract
+@inject IUserActionContract UserActionContract
 
 <h1>Weather forecast</h1>
 
@@ -17,7 +18,9 @@
 }
 else
 {
-    <button @onclick="HandleAddNew">Add</button>
+    <button @onclick="HandleAddNewAsync">Add</button>
+
+    <button @onclick="HandlePerformActionAsync">Perform action</button>
 
     <table class="table">
         <thead>
@@ -52,7 +55,7 @@ else
         //await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
 
-    protected async Task HandleAddNew()
+    protected async Task HandleAddNewAsync()
     {
         try
         {
@@ -65,5 +68,18 @@ else
         {
             exception.RedirectToLogin();
         }
+    }
+
+    protected async Task HandlePerformActionAsync()
+    {
+        try
+        {
+            await UserActionContract.PerformActionAsync();
+        }
+        catch (UnauthorizedException exception)
+        {
+            exception.RedirectToLogin();
+        }
+
     }
 }

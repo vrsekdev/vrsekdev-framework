@@ -14,7 +14,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             this.httpClient = httpClient;
         }
 
-        public HttpClient GetHttpClient()
+        public HttpClient GetHttpClient(Type contractType)
         {
             return httpClient;
         }

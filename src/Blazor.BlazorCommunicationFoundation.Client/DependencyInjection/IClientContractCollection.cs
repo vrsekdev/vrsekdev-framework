@@ -7,6 +7,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
 {
     public interface IClientContractCollection
     {
+        HashSet<Type> ContractTypes { get; }
+
         void AddContract<TContract>() where TContract : class;
     }
 }

@@ -6,7 +6,6 @@ using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.Options;
-using VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection
 {
@@ -22,12 +21,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
 
             services.AddBlazorCommunicationFoundation(options);
 
-            if (clientOptions.HttpClientResolverType == null)
-            {
-                throw new ArgumentNullException("HttpClientResolverType type is required", nameof(clientOptions.HttpClientResolverType));
-            }
-
-            services.AddTransient(typeof(IHttpClientResolver), clientOptions.HttpClientResolverType);
+            services.AddTransient<IHttpClientResolver, GlobalHttpClientResolver>();
             services.AddTransient<RemoteMethodExecutor>();
         }
     }

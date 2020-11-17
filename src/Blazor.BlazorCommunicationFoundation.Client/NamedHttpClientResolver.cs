@@ -2,25 +2,28 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
     public class NamedHttpClientResolver : IHttpClientResolver
     {
-        private readonly NamedHttpClientNameContainer httpClientNameContainer;
+        private readonly IContractScopeProvider contractScopeProvider;
         private readonly IHttpClientFactory httpClientFactory;
 
         public NamedHttpClientResolver(
-            NamedHttpClientNameContainer httpClientNameContainer,
+            IContractScopeProvider contractScopeProvider,
             IHttpClientFactory httpClientFactory)
         {
-            this.httpClientNameContainer = httpClientNameContainer;
+            this.contractScopeProvider = contractScopeProvider;
             this.httpClientFactory = httpClientFactory;
         }
 
-        public HttpClient GetHttpClient()
+        public HttpClient GetHttpClient(Type contractType)
         {
-            return httpClientFactory.CreateClient(httpClientNameContainer.HttpClientName);
+            IContractScope scope = contractScopeProvider.GetScope(contractType);
+
+            return httpClientFactory.CreateClient((string)scope.HttpClientArgs);
         }
     }
 }

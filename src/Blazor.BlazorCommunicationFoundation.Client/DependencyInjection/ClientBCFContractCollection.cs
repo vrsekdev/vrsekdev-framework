@@ -11,17 +11,28 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
     {
         private readonly IServiceCollection services;
 
-        public ClientBCFContractCollection(IServiceCollection services)
+        public ClientBCFContractCollection(
+            IServiceCollection services)
         {
             this.services = services;
         }
 
+        public HashSet<Type> ContractTypes { get; } = new HashSet<Type>();
+
         public void AddContract<TContract>() where TContract : class
         {
-            Type contractProxy = RuntimeProxyBuilder.BuildRuntimeType(typeof(TContract));
+            Type contractType = typeof(TContract);
+            if (ContractTypes.Contains(contractType))
+            {
+                throw new ArgumentException($"Contract `{contractType.Name}` has already been registered.");
+            }
+
+            ContractTypes.Add(contractType);
+
+            Type contractProxy = RuntimeProxyBuilder.BuildRuntimeType(contractType);
 
             services.AddTransient<RuntimeProxy<TContract>>();
-            services.AddTransient(typeof(TContract), contractProxy);
+            services.AddTransient(contractType, contractProxy);
         }
     }
 }

@@ -7,6 +7,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
     public interface IHttpClientResolver
     {
-        HttpClient GetHttpClient();
+        HttpClient GetHttpClient(Type contractType);
     }
 }

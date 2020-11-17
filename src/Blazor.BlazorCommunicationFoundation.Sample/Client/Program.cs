@@ -18,11 +18,13 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddHttpClient("Blazor.BlazorCommunicationFoundation.Sample.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+            builder.Services.AddHttpClient("WithAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
                 .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>().ConfigureHandler(returnUrl: "/authentication/login"));
 
+            builder.Services.AddHttpClient("NoAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
             // Supply HttpClient instances that include access tokens when making requests to the server project
-            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("Blazor.BlazorCommunicationFoundation.Sample.ServerAPI"));
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("NoAuth"));
 
             builder.Services.AddApiAuthorization();
 
@@ -32,6 +34,12 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
 #if DEBUG
                 builder.UseSerializer<JsonInvocationSerializer>();
 #endif
+                builder.CreateScope(scope =>
+                {
+                    scope.UseNamedHttpClient("WithAuth");
+                    scope.Contracts.AddContract<IUserActionContract>();
+                });
+
                 builder.Contracts.AddContract<IWeatherForecastContract>();
             });
 

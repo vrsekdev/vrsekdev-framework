@@ -8,8 +8,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
 {
     public class ClientBCFOptions : BCFOptions
     {
-        public IClientContractCollection Contracts { get; internal set; }
-
         public Type HttpClientResolverType { get; internal set; } = typeof(DefaultHttpClientResolver);
     }
 }
