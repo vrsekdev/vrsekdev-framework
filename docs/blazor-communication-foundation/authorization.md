@@ -4,6 +4,13 @@ Authentication package for Blazor Communication Foundation includes both authori
 
 Blazor Communication Foundation uses underlying authentication between client and server, so you need to make sure, that the authentication is already working before you try to implement authentication for Blazor Communication Foundation. For more information about authentication and authorization, see [official documentation](https://docs.microsoft.com/en-us/aspnet/core/security/authorization/introduction?view=aspnetcore-5.0).
 
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Handling unathorized users](#handling-unathorized-users)
+  - [Role-based authorization](#role-based-authorization)
+  - [Claims-based authorization](#claims-based-authorization)
+  - [Policy-based authorization](#policy-based-authorization)
+
 ## Installation
 
 Into your client application, install package
