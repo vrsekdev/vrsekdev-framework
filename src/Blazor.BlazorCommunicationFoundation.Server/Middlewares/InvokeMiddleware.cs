@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Infrastructure;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
@@ -51,7 +52,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
             {
                 contractImplementation = contractImplementationResolver.Resolve(invocationRequest.BindingInfo.TypeIdentifier);
             }
-            catch (ContractNotRegisteredException e)
+            catch (ContractNotRegisteredException)
             {
                 httpContext.Response.StatusCode = 455; // Custom http status code
                 return;

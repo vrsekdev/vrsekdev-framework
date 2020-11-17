@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.2.60" />
     <PackageReference Include="Microsoft.AspNetCore.Metadata" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blazor.BlazorCommunicationFoundation.Abstractions\Blazor.BlazorCommunicationFoundation.Abstractions.csproj" />
+    <ProjectReference Include="..\Blazor.BlazorCommunicationFoundation.Serializers.MessagePack\Blazor.BlazorCommunicationFoundation.Serializers.MessagePack.csproj" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)..\..\include\includes.props" Condition="Exists('$(SolutionDir)..\..\include\includes.props')" />

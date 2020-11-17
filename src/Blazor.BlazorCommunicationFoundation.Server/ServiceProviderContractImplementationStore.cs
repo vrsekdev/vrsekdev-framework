@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {

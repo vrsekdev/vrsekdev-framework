@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
 {

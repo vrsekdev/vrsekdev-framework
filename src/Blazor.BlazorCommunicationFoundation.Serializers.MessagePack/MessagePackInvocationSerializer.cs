@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
 {
-    internal class MessagePackInvocationSerializer : IInvocationSerializer
+    public class MessagePackInvocationSerializer : IInvocationSerializer
     {
         private MessagePackSerializerOptions options = ContractlessStandardResolver.Options;
 
