@@ -11,6 +11,6 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Shared
 
         Task<WeatherForecast[]> GetAsync(WeatherForecastGetFilter filter);
 
-        Task<int> AddAsync(WeatherForecast weatherForecast);
+        Task AddAsync(WeatherForecast weatherForecast);
     }
 }

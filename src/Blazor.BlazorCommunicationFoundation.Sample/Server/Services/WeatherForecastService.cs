@@ -15,7 +15,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Services
         };
 
         [Authorize]
-        public Task<int> AddAsync(WeatherForecast weatherForecast)
+        public Task AddAsync(WeatherForecast weatherForecast)
         {
             return Task.FromResult(0);
         }

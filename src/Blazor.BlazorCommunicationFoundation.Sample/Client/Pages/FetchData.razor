@@ -56,7 +56,7 @@ else
     {
         try
         {
-            int value = await WeatherForecastContract.AddAsync(new WeatherForecast
+            await WeatherForecastContract.AddAsync(new WeatherForecast
             {
                 TemperatureC = 50
             });
