@@ -19,7 +19,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddHttpClient("WithAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-                .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>().ConfigureHandler(returnUrl: "/authentication/login"));
+                .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>().ConfigureHandler(loginUrl: "/authentication/login"));
 
             builder.Services.AddHttpClient("NoAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 

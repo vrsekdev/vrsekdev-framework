@@ -31,15 +31,16 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
         {
             this.accessTokenProvider = accessTokenProvider;
             this.navigationManager = navigationManager;
-
-            //bcfEndpointUri = new Uri(navigationManager.BaseUri, "/bcf/invoke");
         }
 
         /// <inheritdoc />
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var now = DateTimeOffset.Now;
-            bool isBase = request.RequestUri.LocalPath.StartsWith("/bcf/invoke");
+            bool isBase = Uri.Compare(bcfEndpointUri, request.RequestUri, 
+                UriComponents.Path, 
+                UriFormat.SafeUnescaped, 
+                StringComparison.OrdinalIgnoreCase) == 0;
 
             if (isBase)
             {
@@ -71,15 +72,15 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
 
         public BlazorCommunicationFoundationHandler ConfigureHandler(
             string bcfEndpointUrl = null,
-            string returnUrl = null)
+            string loginUrl = null)
         {
             bcfEndpointUri = new Uri(bcfEndpointUrl ?? Path.Combine(navigationManager.BaseUri, "/bcf/invoke"));
 
-            if (returnUrl != null)
+            if (loginUrl != null)
             {
                 tokenOptions = new AccessTokenRequestOptions
                 {
-                    ReturnUrl = returnUrl
+                    ReturnUrl = loginUrl
                 };
             }
 
