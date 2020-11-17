@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Blazor.BlazorCommunicationFoundation.Serializers.Json\Blazor.BlazorCommunicationFoundation.Serializers.Json.csproj" />
     <ProjectReference Include="..\..\Blazor.BlazorCommunicationFoundation.Server\Blazor.BlazorCommunicationFoundation.Server.csproj" />
     <ProjectReference Include="..\Client\Blazor.BlazorCommunicationFoundation.Sample.Client.csproj" />
     <ProjectReference Include="..\Shared\Blazor.BlazorCommunicationFoundation.Sample.Shared.csproj" />

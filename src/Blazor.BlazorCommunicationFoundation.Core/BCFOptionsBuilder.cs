@@ -16,7 +16,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Core
         public BCFOptions Build()
         {
             BCFOptions options = new BCFOptions();
-            options.SerializerType ??= serializerType;
+            options.SerializerType = serializerType ?? options.SerializerType;
 
             return options;
         }

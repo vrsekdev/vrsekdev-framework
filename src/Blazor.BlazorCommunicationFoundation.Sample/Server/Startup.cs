@@ -17,6 +17,7 @@ using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 using Blazor.BlazorCommunicationFoundation.Sample.Shared;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Services;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json;
 
 namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 {
@@ -48,6 +49,10 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 
             services.AddBCFServer(builder =>
             {
+#if DEBUG
+                builder.UseSerializer<JsonInvocationSerializer>();
+#endif
+
                 builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
             });
 

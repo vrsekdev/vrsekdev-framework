@@ -20,7 +20,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options
         ServerBCFOptions IOptionsBuilder<ServerBCFOptions>.Build()
         {
             ServerBCFOptions serverOptions = new ServerBCFOptions();
-            serverOptions.Contracts ??= Contracts;
+            serverOptions.Contracts = Contracts;
 
             return serverOptions;
         }

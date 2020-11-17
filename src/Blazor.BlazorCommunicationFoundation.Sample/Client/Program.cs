@@ -1,18 +1,13 @@
 using System;
 using System.Net.Http;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection;
 using Blazor.BlazorCommunicationFoundation.Sample.Shared;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Core.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Handlers;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json;
 
 namespace Blazor.BlazorCommunicationFoundation.Sample.Client
 {
@@ -32,7 +27,12 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
             builder.Services.AddApiAuthorization();
 
             builder.Services.AddBFCAuthentication();
-            builder.Services.AddBCFClient();
+            builder.Services.AddBCFClient(builder =>
+            {
+#if DEBUG
+                builder.UseSerializer<JsonInvocationSerializer>();
+#endif
+            });
             builder.Services.AddBCFContract<IWeatherForecastContract>();
 
             await builder.Build().RunAsync();
