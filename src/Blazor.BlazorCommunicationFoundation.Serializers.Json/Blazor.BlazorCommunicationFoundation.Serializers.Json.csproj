@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.6.0</Version>
+    <Version>0.6.1</Version>
     <Authors>Daniel Vršek</Authors>
     <Product>VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json</Product>
     <Description>Library providing communication between Blazor WebAsembly and ASP.NET Server using typed contracts defined through C# interfaces</Description>
