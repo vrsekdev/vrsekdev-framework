@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection
 {
-    public interface IClientContractCollection
+    public interface IClientContractCollection : IContractCollection
     {
-        HashSet<Type> ContractTypes { get; }
-
         void AddContract<TContract>() where TContract : class;
+
+        void AddContract(Type contractType);
     }
 }

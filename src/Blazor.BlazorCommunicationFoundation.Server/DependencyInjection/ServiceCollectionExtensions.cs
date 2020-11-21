@@ -31,7 +31,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
             services.AddSingleton<IContractBinder>(provider =>
             {
                 ContractBinder contractBinder = new ContractBinder(provider.GetRequiredService<IContractBindingSerializer>());
-                foreach (Type contractType in serverOptions.Contracts.ContractsTypes)
+                foreach (Type contractType in serverOptions.Contracts.ContractTypes)
                 {
                     MethodInfo[] contractMethods = contractType.GetMethods();
                     foreach (MethodInfo contractMethod in contractMethods)

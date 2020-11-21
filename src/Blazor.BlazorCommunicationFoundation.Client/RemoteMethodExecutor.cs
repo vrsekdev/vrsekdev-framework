@@ -88,6 +88,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                 case HttpStatusCode.OK:
                 case HttpStatusCode.NoContent:
                     return;
+                case (HttpStatusCode)455: // Custom http status code
+                    throw new Exception($"Contract `{contractType.Name}` is not registered.");
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }

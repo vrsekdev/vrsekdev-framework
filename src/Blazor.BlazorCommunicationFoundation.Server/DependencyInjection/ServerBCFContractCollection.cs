@@ -10,7 +10,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
     {
         private readonly IServiceCollection services;
 
-        public HashSet<Type> ContractsTypes { get; } = new HashSet<Type>();
+        internal HashSet<Type> ContractsTypes { get; } = new HashSet<Type>();
+
+        public IEnumerable<Type> ContractTypes => ContractsTypes;
 
         public int Count => services.Count;
 

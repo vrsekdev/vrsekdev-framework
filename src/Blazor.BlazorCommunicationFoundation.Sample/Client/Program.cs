@@ -37,7 +37,8 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
                 builder.CreateScope(scope =>
                 {
                     scope.UseNamedHttpClient("WithAuth");
-                    scope.Contracts.AddContract<IUserActionContract>();
+
+                    scope.Contracts.AddContractsByAttribute(typeof(IUserActionContract).Assembly, areaName: "WithAuth");
                 });
 
                 builder.Contracts.AddContract<IWeatherForecastContract>();

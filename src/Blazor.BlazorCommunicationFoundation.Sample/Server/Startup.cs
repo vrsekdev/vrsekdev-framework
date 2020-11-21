@@ -47,7 +47,8 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
                 builder.UseSerializer<JsonInvocationSerializer>();
 #endif
                 builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
-                builder.Contracts.AddTransient<IUserActionContract, UserActionService>();
+
+                builder.Contracts.AddContractsByAttribute(typeof(UserActionService).Assembly, serviceLifetime: ServiceLifetime.Transient);
             });
 
             services.AddControllersWithViews();
