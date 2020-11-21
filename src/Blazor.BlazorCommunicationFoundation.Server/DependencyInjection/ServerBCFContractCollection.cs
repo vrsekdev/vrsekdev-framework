@@ -10,7 +10,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
     {
         private readonly IServiceCollection services;
 
-        public HashSet<Type> Contracts { get; } = new HashSet<Type>();
+        public HashSet<Type> ContractsTypes { get; } = new HashSet<Type>();
 
         public int Count => services.Count;
 
@@ -30,7 +30,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
         public void Insert(int index, ServiceDescriptor item)
         {
-            Contracts.Add(item.ServiceType);
+            ContractsTypes.Add(item.ServiceType);
             services.Insert(index, item);
         }
 
@@ -41,13 +41,13 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
         public void Add(ServiceDescriptor item)
         {
-            Contracts.Add(item.ServiceType);
+            ContractsTypes.Add(item.ServiceType);
             services.Add(item);
         }
 
         public void Clear()
         {
-            Contracts.Clear();
+            ContractsTypes.Clear();
             services.Clear();
         }
 
@@ -63,7 +63,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
         public bool Remove(ServiceDescriptor item)
         {
-            Contracts.Remove(item.ServiceType);
+            ContractsTypes.Remove(item.ServiceType);
             return services.Remove(item);
         }
 

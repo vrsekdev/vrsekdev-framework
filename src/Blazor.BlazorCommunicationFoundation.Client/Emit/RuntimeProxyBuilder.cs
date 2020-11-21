@@ -101,7 +101,7 @@ namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit
             LocalBuilder argsLocal = methodGenerator.DeclareLocal(typeof(object[]));
             methodGenerator.Emit(OpCodes.Ldarg_0);
             methodGenerator.Emit(OpCodes.Ldfld, proxyField);
-            methodGenerator.Emit(OpCodes.Ldstr, interceptedMethod.Name);
+            methodGenerator.Emit(OpCodes.Ldtoken, interceptedMethod);
             methodGenerator.Emit(OpCodes.Ldc_I4, parameters.Length);
             methodGenerator.Emit(OpCodes.Newarr, typeof(object));
             methodGenerator.Emit(OpCodes.Stloc, argsLocal);

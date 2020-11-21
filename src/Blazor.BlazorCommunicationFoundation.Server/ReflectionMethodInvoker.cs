@@ -25,11 +25,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
                 .Invoke(this, new object[] { result });
         }
 
-        private MethodInfo BindMethod(Type implementationType, RequestBindingInfo bindingInfo)
-        {
-            return implementationType.GetMethod(bindingInfo.MethodName);
-        }
-
         private async Task<object> ConvertTask<T>(Task<T> task)
         {
             return await task;

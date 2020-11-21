@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
@@ -13,18 +14,20 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
         {
             if (options.SerializerType == null)
             {
-                throw new ArgumentNullException("Serializer type is required", nameof(options.SerializerType));
+                throw new ArgumentNullException("Type is required", nameof(options.SerializerType));
             }
             if (options.ContractTypeSerializerType == null)
             {
-                throw new ArgumentNullException("ContractTypeSerializer type is required", nameof(options.ContractTypeSerializerType));
+                throw new ArgumentNullException("Type is required", nameof(options.ContractTypeSerializerType));
+            }
+            if (options.ContractBinderSerializerType == null)
+            {
+                throw new ArgumentNullException($"Type is required", nameof(options.ContractBinderSerializerType));
             }
 
             services.AddSingleton(typeof(IInvocationSerializer), options.SerializerType);
             services.AddSingleton(typeof(IContractTypeSerializer), options.ContractTypeSerializerType);
-
-            services.AddSingleton<IInvocationRequestArgumentSerializer, InvocationRequestArgumentSerializer>();
-            services.AddSingleton<IMethodBinder, MethodBinder>();
+            services.AddSingleton(typeof(IContractBindingSerializer), options.ContractBinderSerializerType);
         }
     }
 }

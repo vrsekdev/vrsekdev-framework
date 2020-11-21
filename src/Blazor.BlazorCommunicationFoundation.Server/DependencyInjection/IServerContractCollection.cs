@@ -7,6 +7,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 {
     public interface IServerContractCollection : IServiceCollection
     {
-        HashSet<Type> Contracts { get; }
+        HashSet<Type> ContractsTypes { get; }
     }
 }

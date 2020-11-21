@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using System;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Infrastructure;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Infrastructure;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
@@ -15,22 +13,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
     public class InvokeMiddleware
     {
         private readonly RequestDelegate next;
-        private readonly IInvocationRequestArgumentSerializer argumentSerializer;
         private readonly IInvocationSerializer invocationSerializer;
-        private readonly IMethodBinder methodBinder;
+        private readonly IContractBinder contractBinder;
         private readonly IMethodInvoker methodInvoker;
 
         public InvokeMiddleware(
             RequestDelegate next,
-            IInvocationRequestArgumentSerializer argumentSerializer,
             IInvocationSerializer invocationSerializer,
-            IMethodBinder methodBinder,
+            IContractBinder contractBinder,
             IMethodInvoker methodInvoker)
         {
             this.next = next;
-            this.argumentSerializer = argumentSerializer;
             this.invocationSerializer = invocationSerializer;
-            this.methodBinder = methodBinder;
+            this.contractBinder = contractBinder;
             this.methodInvoker = methodInvoker;
         }
 
@@ -47,18 +42,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
 
             InvocationRequest invocationRequest = await invocationSerializer.DeserializeAsync<InvocationRequest>(httpContext.Request.Body);
 
-            object contractImplementation;
+            Type contractType;
             try
             {
-                contractImplementation = contractImplementationResolver.Resolve(invocationRequest.BindingInfo.TypeIdentifier);
+                contractType = contractBinder.BindContractType(invocationRequest.BindingInfo.BindingIdentifier);
             }
             catch (ContractNotRegisteredException)
             {
                 httpContext.Response.StatusCode = 455; // Custom http status code
                 return;
             }
+            object contractImplementation = contractImplementationResolver.Resolve(contractType);
 
-            MethodInfo methodInfo = methodBinder.BindMethod(contractImplementation.GetType(), invocationRequest.BindingInfo.MethodName, invocationRequest.Arguments.Select(x => x.BindingInfo).ToArray());
+            MethodInfo methodInfo = contractBinder.BindContractMethod(invocationRequest.BindingInfo.BindingIdentifier);
 
             AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(contractImplementation, methodInfo);
             if (!await authorizationHandler.AuthorizeAsync(httpContext, authorizationContext))
@@ -66,8 +62,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
                 return;
             }
 
-            object[] arguments = argumentSerializer.DeserializeArguments(methodInfo.GetParameters(), invocationRequest.Arguments);
-            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, arguments);
+            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, invocationRequest.Arguments);
             if (result == null)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;

@@ -44,24 +44,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
 
         ClientBCFOptions IOptionsBuilder<ClientBCFOptions>.Build()
         {
-            ServiceProviderContractScopeProvider contractScopeProvider = new ServiceProviderContractScopeProvider();
-            services.AddSingleton<IContractScopeProvider>(contractScopeProvider);
-
             IContractScope globalScope = globalScopeBuilder.Build();
-            foreach (IContractScope scope in childScopeBuilders.Select(X => X.Build()).Union(new[] { globalScope }))
-            {
-                foreach (Type contractType in scope.ContractTypes)
-                {
-                    contractScopeProvider.AddScope(contractType, scope);
-                    if (!services.Any(x => x.ImplementationType == scope.HttpClientResolverType))
-                    {
-                        services.AddTransient(scope.HttpClientResolverType);
-                    }
-                }
-            }
 
             ClientBCFOptions serverOptions = new ClientBCFOptions();
             serverOptions.HttpClientResolverType = globalScope.HttpClientResolverType ?? serverOptions.HttpClientResolverType;
+            serverOptions.Scopes = childScopeBuilders.Select(X => X.Build()).Union(new[] { globalScope }).ToArray();
 
             return serverOptions;
         }

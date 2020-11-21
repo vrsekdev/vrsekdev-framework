@@ -8,6 +8,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation
     {
         public RequestBindingInfo BindingInfo { get; set; }
 
-        public InvocationRequestArgument[] Arguments { get; set; }
+        public object[] Arguments { get; set; }
     }
 }

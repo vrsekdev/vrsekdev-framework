@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
@@ -19,15 +21,26 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
             BCFOptions options = builder.Build();
             ServerBCFOptions serverOptions = ((IServerOptionsBuilder)builder).Build();
 
-            services.AddSingleton<IContractImplementationStore, ServiceProviderContractImplementationStore>(
-                serviceProvider => new ServiceProviderContractImplementationStore(serverOptions.Contracts.Contracts, serviceProvider.GetRequiredService<IContractTypeSerializer>()));
-
             services.AddBlazorCommunicationFoundation(options);
 
             services.AddSingleton<IMethodInvoker, ReflectionMethodInvoker>();
             services.AddTransient<IAuthorizationContextProvider, AuthorizationContextProvider>();
             services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();
             services.AddTransient<IContractImplementationResolver, ServiceProviderContractImplementationResolver>();
+
+            services.AddSingleton<IContractBinder>(provider =>
+            {
+                ContractBinder contractBinder = new ContractBinder(provider.GetRequiredService<IContractBindingSerializer>());
+                foreach (Type contractType in serverOptions.Contracts.ContractsTypes)
+                {
+                    MethodInfo[] contractMethods = contractType.GetMethods();
+                    foreach (MethodInfo contractMethod in contractMethods)
+                    {
+                        contractBinder.AddMethodBinding(contractType, contractMethod);
+                    }
+                }
+                return contractBinder;
+            });
         }
     }
 }

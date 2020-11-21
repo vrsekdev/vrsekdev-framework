@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using VrsekDev.Blazor.BlazorCommunicationFoundation;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {
@@ -17,9 +16,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             this.remoteMethodExecutor = remoteMethodExecutor;
         }
 
-        public object InvokeRemoteMethod(string methodName, object[] args)
+        public object InvokeRemoteMethod(RuntimeMethodHandle methodHandle, object[] args)
         {
-            if (!remoteMethodExecutor.TryInvokeRemoteMethod<TContract>(methodName, args, out object result))
+            MethodInfo methodInfo = (MethodInfo)MethodBase.GetMethodFromHandle(methodHandle);
+            if (!remoteMethodExecutor.TryInvokeRemoteMethod<TContract>(methodInfo, args, out object result))
             {
                 throw new Exception();
             }

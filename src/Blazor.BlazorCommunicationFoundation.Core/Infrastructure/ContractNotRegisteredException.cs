@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Infrastructure
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Infrastructure
 {
     public class ContractNotRegisteredException : Exception
     {
