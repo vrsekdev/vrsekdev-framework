@@ -15,8 +15,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Services
         [Authorize]
         public Task PerformActionAsync()
         {
-            throw new Exception("Test exception message");
-            //return Task.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 }

@@ -116,33 +116,28 @@ On server, you need to specify configuration for services. All extension methods
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 ...
 
-public void ConfigureServices(IServiceCollection services)
+services.AddBCFServer(builder =>
 {
-    services.AddBCFServer(builder =>
-    {
-        builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
-    });
-}
+    builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+});
+
+...
 ```
 
 Then add middleware after `UseAuthentication` and `UseAuthorization`, if you use authorization, and before `UseEndpoints`.
 ```csharp
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
+...
 
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseBlazorCommunicationFoundation();
+
+app.UseEndpoints(endpoints =>
 {
     ...
-
-    app.UseAuthentication();
-    app.UseAuthorization();
-
-    app.UseBlazorCommunicationFoundation();
-
-    app.UseEndpoints(endpoints =>
-    {
-        ...
-    });
-}
+});
 ```
 
 You can also register contract implementations by attribute `ContractImplementationAttribute` and `ContractAttribute`. Class implementing any contract has to have `ContractImplementationAttribute` and the contract has to have `ContractAttribute`. You can also specify `ServiceLifetime` with `serviceLifetime` argument or by specifying `Lifetime` on a `ContractImplementationAttribute` to use a lifetime for a specific contract implementation. Default lifetime is transient. 
@@ -341,7 +336,7 @@ By default, Blazor Communication Foundation uses MessagePack to serialize commun
 To have an insight into the communication, I recommend using JSON serializer for `DEBUG` using `#if` directive. See [Custom serializer](#custom-serializer).
 
 ### Request
-Request contains binding information with binding identifier and value of the arguments.
+Request contains binding information with binding identifier and name and value of the arguments. You can use query string to see what method on what contract is being called, but it has only informational value for the developer. Internally, `BindingIdentifier` is used. 
 ![request](images/json_request.jpg)
 
 ### Response

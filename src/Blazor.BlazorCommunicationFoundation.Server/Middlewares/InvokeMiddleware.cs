@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
                 return;
             }
 
-            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, invocationRequest.Arguments);
+            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, invocationRequest.Arguments.Values.ToArray());
             if (result == null)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;

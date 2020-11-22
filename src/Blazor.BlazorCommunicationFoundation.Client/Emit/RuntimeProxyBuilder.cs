@@ -9,10 +9,13 @@ namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit
 {
     internal static class RuntimeProxyBuilder
     {
+        private readonly static ConstructorInfo kvpConstructor;
         private readonly static Lazy<ModuleBuilder> module;
 
         static RuntimeProxyBuilder()
         {
+            kvpConstructor = typeof(KeyValuePair<string, object>).GetConstructors().Single(x => x.GetParameters().Length == 2);
+
             module = new Lazy<ModuleBuilder>(() =>
             {
                 var assemblyName = new AssemblyName("ContractRuntimeTypeAssembly");
@@ -98,23 +101,25 @@ namespace VrsekDev.Blazor.Mobx.Proxies.RuntimeProxy.Emit
                  parameters.Select(x => x.ParameterType).ToArray()); // same signature as base method
 
             ILGenerator methodGenerator = methodBuilder.GetILGenerator();
-            LocalBuilder argsLocal = methodGenerator.DeclareLocal(typeof(object[]));
+            LocalBuilder argsLocal = methodGenerator.DeclareLocal(typeof(KeyValuePair<string, object>[]));
             methodGenerator.Emit(OpCodes.Ldarg_0);
             methodGenerator.Emit(OpCodes.Ldfld, proxyField);
             methodGenerator.Emit(OpCodes.Ldtoken, interceptedMethod);
             methodGenerator.Emit(OpCodes.Ldc_I4, parameters.Length);
-            methodGenerator.Emit(OpCodes.Newarr, typeof(object));
+            methodGenerator.Emit(OpCodes.Newarr, typeof(KeyValuePair<string, object>));
             methodGenerator.Emit(OpCodes.Stloc, argsLocal);
             for (int i = 0; i < parameters.Length; i++)
             {
                 methodGenerator.Emit(OpCodes.Ldloc, argsLocal);
                 methodGenerator.Emit(OpCodes.Ldc_I4, i);
+                methodGenerator.Emit(OpCodes.Ldstr, parameters[i].Name);
                 methodGenerator.Emit(OpCodes.Ldarg, i + 1);
                 if (parameters[i].ParameterType.IsValueType)
                 {
                     methodGenerator.Emit(OpCodes.Box, parameters[i].ParameterType);
                 }
-                methodGenerator.Emit(OpCodes.Stelem_Ref);
+                methodGenerator.Emit(OpCodes.Newobj, kvpConstructor);
+                methodGenerator.Emit(OpCodes.Stelem, typeof(KeyValuePair<string, object>));
             }
             methodGenerator.Emit(OpCodes.Ldloc, argsLocal);
             methodGenerator.Emit(OpCodes.Callvirt, interceptorMethod);

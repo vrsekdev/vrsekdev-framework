@@ -16,7 +16,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             this.remoteMethodExecutor = remoteMethodExecutor;
         }
 
-        public object InvokeRemoteMethod(RuntimeMethodHandle methodHandle, object[] args)
+        public object InvokeRemoteMethod(RuntimeMethodHandle methodHandle, KeyValuePair<string, object>[] args)
         {
             MethodInfo methodInfo = (MethodInfo)MethodBase.GetMethodFromHandle(methodHandle);
             if (!remoteMethodExecutor.TryInvokeRemoteMethod<TContract>(methodInfo, args, out object result))

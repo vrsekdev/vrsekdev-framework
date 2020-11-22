@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -27,7 +28,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             this.contractBindingSerializer = contractBindingSerializer;
         }
 
-        public bool TryInvokeRemoteMethod<TContract>(MethodInfo contractMethod, object[] args, out object result)
+        public bool TryInvokeRemoteMethod<TContract>(MethodInfo contractMethod, KeyValuePair<string, object>[] args, out object result)
             where TContract : class
         {
             if (!bindingIdentifierCache.TryGetValue(contractMethod, out string bindingIdentifier))
@@ -43,7 +44,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                 {
                     BindingIdentifier = bindingIdentifier,
                 },
-                Arguments = args
+                Arguments = args.ToDictionary(x => x.Key, x => x.Value)
             });
             requestStream.Position = 0;
 
