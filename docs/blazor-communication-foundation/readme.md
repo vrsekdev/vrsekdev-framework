@@ -15,6 +15,7 @@ For a sample usage with authorization, you can refer to the [sample project](htt
   - [Custom serializer](#custom-serializer)
   - [Custom HttpClient](#custom-httpclient)
   - [Scopes](#scopes)
+- [Exception handling](#exception-handling)
 - [Debugging](#debugging)
   - [Request](#request)
   - [Response](#response)
@@ -123,7 +124,7 @@ services.AddBCFServer(builder =>
 ...
 ```
 
-Then add middleware after `UseAuthentication` and `UseAuthorization`
+Then add middleware after `UseAuthentication` and `UseAuthorization` and before `UseEndpoints`.
 ```csharp
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
 ...
@@ -293,6 +294,33 @@ builder.Services.AddBCFClient(builder =>
     // IWeatherForecastContract will use HttpClient registered from factory
     builder.Contracts.AddContract<IWeatherForecastContract>();
 });
+```
+
+## Exception handling
+
+When a status code `500 Internal Server Error` occurs, contents of the response will be dumped into console as string. This is compliant with developer exception page of .NET Core 3+, see [Handle errors in ASP.NET Core web APIs](https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-5.0).
+
+![exception_detailed](images/exception_detailed.jpg)
+
+If you want to customize exception message, you can use a custom middleware placed after `app.UseDeveloperExceptionPage()` and before the `app.UseBlazorCommunicationFoundation()` and send the desired output as a body of the error response with status code `500 Internal Server Error`.
+
+You can use the prepared `ExceptionHandlerMiddlewareBase` that will handle only exceptions that occured while handling BCF requests. Example usage can be found in sample server: `BCFExceptionHandlerMiddleware`.
+
+```csharp
+namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Middlewares
+{
+    public class BCFExceptionHandlerMiddleware : ExceptionHandlerMiddlewareBase
+    {
+        public BCFExceptionHandlerMiddleware(RequestDelegate next) : base(next)
+        {
+        }
+
+        protected override string SerializeException(Exception e)
+        {
+            return e.ToString();
+        }
+    }
+}
 ```
 
 ## Debugging

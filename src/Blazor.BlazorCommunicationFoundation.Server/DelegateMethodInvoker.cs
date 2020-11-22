@@ -15,7 +15,16 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 
         public Task<object> InvokeAsync(MethodInfo methodInfo, object instance, object[] arguments)
         {
-            Task taskResult = (Task)methodInfo.Invoke(instance, arguments);
+            Task taskResult;
+            try
+            {
+                taskResult = (Task)methodInfo.Invoke(instance, arguments);
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
+
             if (taskResult.GetType() == typeof(Task))
             {
                 // no return value

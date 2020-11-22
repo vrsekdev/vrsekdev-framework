@@ -80,6 +80,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                     return default;
                 case (HttpStatusCode)455: // Custom http status code
                     throw new Exception($"Contract `{contractType.Name}` is not registered.");
+                case HttpStatusCode.InternalServerError:
+                    string exceptionDetails = await response.Content.ReadAsStringAsync();
+                    throw new Exception("Internal server error occured." + (!String.IsNullOrEmpty(exceptionDetails) ? " Details: " + exceptionDetails : ""));
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }
@@ -97,6 +100,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
                     return;
                 case (HttpStatusCode)455: // Custom http status code
                     throw new Exception($"Contract `{contractType.Name}` is not registered.");
+                case HttpStatusCode.InternalServerError:
+                    string exceptionDetails = await response.Content.ReadAsStringAsync();
+                    throw new Exception("Internal server error occured." + (!String.IsNullOrEmpty(exceptionDetails) ? " Details: " + exceptionDetails : ""));
                 default:
                     throw new Exception("Invalid response from server. Status code: " + response.StatusCode);
             }

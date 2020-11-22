@@ -12,6 +12,7 @@ using Blazor.BlazorCommunicationFoundation.Sample.Shared;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Services;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json;
+using Blazor.BlazorCommunicationFoundation.Sample.Server.Middlewares;
 
 namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 {
@@ -61,6 +62,8 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseMiddleware<BCFExceptionHandlerMiddleware>();
+
                 app.UseDatabaseErrorPage();
                 app.UseWebAssemblyDebugging();
             }
