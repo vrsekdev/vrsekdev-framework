@@ -23,7 +23,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
             services.AddBlazorCommunicationFoundation(options);
 
-            services.AddSingleton<IMethodInvoker, ReflectionMethodInvoker>();
+            services.AddSingleton<IMethodInvoker, DelegateMethodInvoker>();
             services.AddTransient<IAuthorizationContextProvider, AuthorizationContextProvider>();
             services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();
             services.AddTransient<IContractImplementationResolver, ServiceProviderContractImplementationResolver>();

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
-    internal class ReflectionMethodInvoker : IMethodInvoker
+    internal class DelegateMethodInvoker : IMethodInvoker
     {
-        private static MethodInfo convertTaskMethod = typeof(ReflectionMethodInvoker).GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic);
+        private static MethodInfo convertTaskMethod = typeof(DelegateMethodInvoker).GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic);
 
         private static Dictionary<Type, Func<Task, Task<object>>> delegateCache = new Dictionary<Type, Func<Task, Task<object>>>();
 
