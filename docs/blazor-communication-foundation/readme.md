@@ -133,7 +133,7 @@ app.UseBlazorCommunicationFoundation();
 ...
 ```
 
-You can also register contract implementations by attribute `ContractImplementationAttribute` and `ContractAttribute`. Class implementing any contract has to have `ContractImplementationAttribute` and the contract has to have `ContractAttribute`. You can also specify `ServiceLifetime` with `serviceLifetime` argument. Default lifetime is transient. 
+You can also register contract implementations by attribute `ContractImplementationAttribute` and `ContractAttribute`. Class implementing any contract has to have `ContractImplementationAttribute` and the contract has to have `ContractAttribute`. You can also specify `ServiceLifetime` with `serviceLifetime` argument or by specifying `Lifetime` on a `ContractImplementationAttribute` to use a lifetime for a specific contract implementation. Default lifetime is transient. 
 
 The following code will register all contract implementations from assembly containing `UserActionService` with scoped lifetime.
 ```csharp
