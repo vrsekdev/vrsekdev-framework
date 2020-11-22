@@ -59,13 +59,48 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Shared
 ```
 
 ### Client
-Then you can add client configuration into client's Main method.
+Add client configuration into client's Main method.
 ```csharp
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection;
 ...
 
 builder.Services.AddBCFClient(builder =>
 {
+    builder.Contracts.AddContract<IWeatherForecastContract>();
+});
+
+...
+```
+
+You can also register contracts by attribute `ContractAttribute`. Following code will register all contracts from assembly containing `IUserActionContract`.
+```csharp
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection;
+...
+
+builder.Services.AddBCFClient(builder =>
+{
+    scope.Contracts.AddContractsByAttribute(typeof(IUserActionContract).Assembly);
+});
+
+...
+```
+
+By specifying `Area` into `ContractAttribute`, you can then register some contracts into one scope and different ones into a different scope. 
+
+The following code will register all contracts from assembly containing `IUserActionContract` and specified Area `WithAuth`.
+```csharp
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjection;
+...
+
+builder.Services.AddBCFClient(builder =>
+{
+    builder.CreateScope(scope =>
+    {
+        scope.UseNamedHttpClient("WithAuth");
+
+        scope.Contracts.AddContractsByAttribute(typeof(IUserActionContract).Assembly, areaName: "WithAuth");
+    });
+
     builder.Contracts.AddContract<IWeatherForecastContract>();
 });
 
@@ -94,6 +129,40 @@ using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
 ...
 
 app.UseBlazorCommunicationFoundation();
+
+...
+```
+
+You can also register contract implementations by attribute `ContractImplementationAttribute` and `ContractAttribute`. Class implementing any contract has to have `ContractImplementationAttribute` and the contract has to have `ContractAttribute`. You can also specify `ServiceLifetime` with `serviceLifetime` argument. Default lifetime is transient. 
+
+The following code will register all contract implementations from assembly containing `UserActionService` with scoped lifetime.
+```csharp
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
+...
+
+services.AddBCFServer(builder =>
+{
+    builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+
+    builder.Contracts.AddContractsByAttribute(typeof(UserActionService).Assembly, serviceLifetime: ServiceLifetime.Scoped);
+});
+
+...
+```
+
+By specifying argument `areaName`, you can filter services by the value of `Area` on `ContractAttribute` of implemented contract. 
+
+The following code will register all contract implementations that implement contract with `Area` of value `WithAuth`.
+```csharp
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
+...
+
+services.AddBCFServer(builder =>
+{
+    builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+
+    builder.Contracts.AddContractsByAttribute(typeof(UserActionService).Assembly, areaName: "WithAuth", serviceLifetime: ServiceLifetime.Transient);
+});
 
 ...
 ```
@@ -201,7 +270,7 @@ builder.Services.AddBCFClient(builder =>
 
 ### Scopes
 
-You can create scopes for contracts that enable you to combine multiple types of `IHttpClientResolver`. All contracts registered inside the scope will have the defined `HttpClient`.
+You can create scopes for contracts that enable you to combine multiple types of `IHttpClientResolver`. All contracts registered inside the scope will have the defined `HttpClient`. You can also register contracts by attribute, see [Configuration](#configuration).
 ```csharp
 builder.Services.AddHttpClient("WithAuth", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
     .AddHttpMessageHandler(sp => sp.GetRequiredService<BlazorCommunicationFoundationHandler>());
