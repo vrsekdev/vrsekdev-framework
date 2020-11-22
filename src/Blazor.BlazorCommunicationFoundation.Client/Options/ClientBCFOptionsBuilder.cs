@@ -46,11 +46,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
         {
             IContractScope globalScope = globalScopeBuilder.Build();
 
-            ClientBCFOptions serverOptions = new ClientBCFOptions();
-            serverOptions.HttpClientResolverType = globalScope.HttpClientResolverType ?? serverOptions.HttpClientResolverType;
-            serverOptions.Scopes = childScopeBuilders.Select(X => X.Build()).Union(new[] { globalScope }).ToArray();
+            ClientBCFOptions clientOptions = new ClientBCFOptions();
+            clientOptions.HttpClientResolverType = globalScope.HttpClientResolverType ?? clientOptions.HttpClientResolverType;
+            clientOptions.Scopes = childScopeBuilders.Select(X => X.Build()).Union(new[] { globalScope }).ToArray();
 
-            return serverOptions;
+            return clientOptions;
         }
     }
 }
