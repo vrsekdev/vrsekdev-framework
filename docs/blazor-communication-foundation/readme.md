@@ -116,22 +116,33 @@ On server, you need to specify configuration for services. All extension methods
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 ...
 
-services.AddBCFServer(builder =>
+public void ConfigureServices(IServiceCollection services)
 {
-    builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
-});
-
-...
+    services.AddBCFServer(builder =>
+    {
+        builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
+    });
+}
 ```
 
-Then add middleware after `UseAuthentication` and `UseAuthorization` and before `UseEndpoints`.
+Then add middleware after `UseAuthentication` and `UseAuthorization`, if you use authorization, and before `UseEndpoints`.
 ```csharp
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
-...
 
-app.UseBlazorCommunicationFoundation();
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    ...
 
-...
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.UseBlazorCommunicationFoundation();
+
+    app.UseEndpoints(endpoints =>
+    {
+        ...
+    });
+}
 ```
 
 You can also register contract implementations by attribute `ContractImplementationAttribute` and `ContractAttribute`. Class implementing any contract has to have `ContractImplementationAttribute` and the contract has to have `ContractAttribute`. You can also specify `ServiceLifetime` with `serviceLifetime` argument or by specifying `Lifetime` on a `ContractImplementationAttribute` to use a lifetime for a specific contract implementation. Default lifetime is transient. 
