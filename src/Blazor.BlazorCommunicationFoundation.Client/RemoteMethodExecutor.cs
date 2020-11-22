@@ -16,6 +16,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
         private readonly IInvocationSerializer invocationSerializer;
         private readonly IContractBindingSerializer contractBindingSerializer;
 
+        private readonly Dictionary<MethodInfo, string> bindingIdentifierCache = new Dictionary<MethodInfo, string>();
+
         public RemoteMethodExecutor(IHttpClientResolver httpClientResolver,
             IInvocationSerializer invocationSerializer,
             IContractBindingSerializer contractBindingSerializer)
@@ -28,13 +30,18 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
         public bool TryInvokeRemoteMethod<TContract>(MethodInfo contractMethod, object[] args, out object result)
             where TContract : class
         {
+            if (!bindingIdentifierCache.TryGetValue(contractMethod, out string bindingIdentifier))
+            {
+                bindingIdentifier = contractBindingSerializer.GenerateIdentifier(typeof(TContract), contractMethod);
+                bindingIdentifierCache.Add(contractMethod, bindingIdentifier);
+            }
+
             MemoryStream requestStream = new MemoryStream();
             invocationSerializer.Serialize(requestStream, new InvocationRequest
             {
                 BindingInfo = new RequestBindingInfo
                 {
-                    // TODO: Cache binding identifier
-                    BindingIdentifier = contractBindingSerializer.GenerateIdentifier(typeof(TContract), contractMethod),
+                    BindingIdentifier = bindingIdentifier,
                 },
                 Arguments = args
             });
