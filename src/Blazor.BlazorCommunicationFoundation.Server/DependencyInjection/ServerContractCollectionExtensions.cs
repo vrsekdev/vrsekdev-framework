@@ -21,6 +21,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
             foreach (Type implementationType in implementationTypes)
             {
+                ServiceLifetime implementationTypeLifetime = implementationType.GetCustomAttribute<ContractImplementationAttribute>().Lifetime ?? serviceLifetime;
                 IEnumerable<Type> contractTypes = implementationType.GetInterfaces().Where(x => x.GetCustomAttribute<ContractAttribute>() != null);
                 if (!contractTypes.Any())
                 {
@@ -35,7 +36,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 
                 foreach (Type contractType in contractTypes)
                 {
-                    contractCollection.Add(new ServiceDescriptor(contractType, implementationType, serviceLifetime));
+                    contractCollection.Add(new ServiceDescriptor(contractType, implementationType, implementationTypeLifetime));
                 }
             }
         }
