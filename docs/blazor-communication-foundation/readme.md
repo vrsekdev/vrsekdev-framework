@@ -233,9 +233,9 @@ By default, Blazor Communication Foundation uses MessagePack to serialize commun
 To have an insight into the communication, I recommend using JSON serializer for `DEBUG` using `#if` directive. See [Custom serializer](#custom-serializer).
 
 ### Request
-Request contains binding information for contract type and method and value of the parameters. Currently, parameter values are not readable, but there will be implemented a human-readable value soon.
+Request contains binding information with binding identifier and value of the arguments.
 ![request](images/json_request.jpg)
 
 ### Response
-Response contains only serialized values
+Response contains only serialized values by the selected serializer.
 ![response](images/json_response.jpg)
