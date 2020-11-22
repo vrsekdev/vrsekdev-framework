@@ -4,30 +4,38 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VrsekDev.Blazor.BlazorCommunicationFoundation;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 {
     internal class ReflectionMethodInvoker : IMethodInvoker
     {
+        private static MethodInfo convertTaskMethod = typeof(ReflectionMethodInvoker).GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static Dictionary<Type, Func<Task, Task<object>>> delegateCache = new Dictionary<Type, Func<Task, Task<object>>>();
+
         public Task<object> InvokeAsync(MethodInfo methodInfo, object instance, object[] arguments)
         {
-            object result = methodInfo.Invoke(instance, arguments);
-            if (result.GetType() == typeof(Task))
+            Task taskResult = (Task)methodInfo.Invoke(instance, arguments);
+            if (taskResult.GetType() == typeof(Task))
             {
                 // no return value
-                return ConvertTaskNoResult((Task)result);
+                return ConvertTaskNoResult(taskResult);
             }
 
-            return (Task<object>)GetType().GetMethod(nameof(ConvertTask), BindingFlags.Instance | BindingFlags.NonPublic)
-                .MakeGenericMethod(result.GetType().GetGenericArguments()[0])
-                .Invoke(this, new object[] { result });
+            Type resultType = taskResult.GetType().GetGenericArguments()[0];
+            if (!delegateCache.TryGetValue(resultType, out var cachedDelegate))
+            {
+                MethodInfo delegateMethod = convertTaskMethod.MakeGenericMethod(resultType);
+                cachedDelegate = (Func<Task, Task<object>>)Delegate.CreateDelegate(typeof(Func<Task, Task<object>>), this, delegateMethod);
+                delegateCache.Add(resultType, cachedDelegate);
+            }
+
+            return cachedDelegate(taskResult);
         }
 
-        private async Task<object> ConvertTask<T>(Task<T> task)
+        private async Task<object> ConvertTask<T>(Task task)
         {
-            return await task;
+            return await (Task<T>)task;
         }
 
         private async Task<object> ConvertTaskNoResult(Task task)
