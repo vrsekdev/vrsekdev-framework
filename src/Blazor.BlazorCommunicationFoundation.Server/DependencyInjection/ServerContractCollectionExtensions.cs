@@ -11,13 +11,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
 {
     public static class ServerContractCollectionExtensions
     {
+        private static Dictionary<Assembly, IEnumerable<Type>> contractImplementationsCache = new Dictionary<Assembly, IEnumerable<Type>>();
+
         /// <summary>
         /// Search for classes with <see cref="ContractImplementationAttribute"/>
         /// that implement contracts with <see cref="ContractAttribute"/> with <paramref name="areaName"/> (optional)
         /// </summary>
         public static void AddContractsByAttribute(this IServerContractCollection contractCollection, Assembly assembly, ServiceLifetime serviceLifetime = ServiceLifetime.Transient, string areaName = null)
         {
-            IEnumerable<Type> implementationTypes = assembly.GetTypes().Where(x => x.GetCustomAttribute<ContractImplementationAttribute>() != null);
+            if (!contractImplementationsCache.TryGetValue(assembly, out IEnumerable<Type> implementationTypes))
+            {
+                implementationTypes = assembly.GetTypes().Where(x => x.GetCustomAttribute<ContractImplementationAttribute>() != null);
+                contractImplementationsCache.Add(assembly, implementationTypes);
+            }
 
             foreach (Type implementationType in implementationTypes)
             {
