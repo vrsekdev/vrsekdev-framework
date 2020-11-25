@@ -43,11 +43,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
             return MessagePackSerializer.Deserialize(type, value, options);
         }
 
-        public void SerializeArguments(Stream stream, ArgumentDictionary arguments, Dictionary<string, Type> argumentMapping)
-        {
-            MessagePackSerializer.Serialize(stream, arguments, options.WithResolver(new ArgumentDictionaryFormatterResolver(argumentMapping)));
-        }
-
         public async Task<ArgumentDictionary> DeserializeArgumentsAsync(Stream stream, Dictionary<string, Type> argumentMapping)
         {
             return await MessagePackSerializer.DeserializeAsync<ArgumentDictionary>(stream, options.WithResolver(new ArgumentDictionaryFormatterResolver(argumentMapping)));

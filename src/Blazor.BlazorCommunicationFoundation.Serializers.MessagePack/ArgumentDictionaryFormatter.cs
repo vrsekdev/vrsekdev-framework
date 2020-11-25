@@ -13,7 +13,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
 {
     internal class ArgumentDictionaryFormatter : IMessagePackFormatter<ArgumentDictionary>
     {
-        private static Dictionary<Type, (SerializeDelegate, DeserializeDelegate)> deserializeCallCache = new Dictionary<Type, (SerializeDelegate, DeserializeDelegate)>();
+        private static Dictionary<Type, DeserializeDelegate> deserializeCallCache = new Dictionary<Type, DeserializeDelegate>();
 
         private readonly Dictionary<string, Type> argumentMapping;
 
@@ -25,29 +25,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
 
         public void Serialize(ref MessagePackWriter writer, ArgumentDictionary arguments, MessagePackSerializerOptions options)
         {
-            if (arguments == null)
-            {
-                writer.WriteNil();
-                return;
-            }
-
-            writer.WriteArrayHeader(arguments.Count * 2);
-
-            foreach (var argument in argumentMapping)
-            {
-                writer.WriteString(Encoding.UTF8.GetBytes(argument.Key));
-
-                Type argumentType = argument.Value;
-                object value = arguments[argument.Key];
-
-                if (value == null)
-                {
-                    writer.WriteNil();
-                    continue;
-                }
-
-                Serialize(argumentType, ref writer, value, options);
-            }
+            // Serialization is done through common messagepack serialize to ensure compatability
+            throw new NotImplementedException();
         }
 
         public ArgumentDictionary Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
@@ -57,59 +36,34 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
                 return null;
             }
 
-            ArgumentDictionary value = new ArgumentDictionary();
+            ArgumentDictionary arguments = new ArgumentDictionary();
 
-            int count = reader.ReadArrayHeader();
-            for (int i = 0; i < count / 2; i++)
+            var len = reader.ReadMapHeader();
+
+            options.Security.DepthStep(ref reader);
+            try
             {
-                string argumentName = reader.ReadString();
-                Type argumentType = argumentMapping[argumentName];
-
-                options.Security.DepthStep(ref reader);
-                try
+                for (int i = 0; i < len; i++)
                 {
-                    if (reader.TryReadNil())
-                    {
-                        value.Add(argumentName, null);
-                        continue;
-                    }
+                    string argumentName = reader.ReadString();
+                    Type argumentType = argumentMapping[argumentName];
 
-                    object argumentValue = Deserialize(argumentType, ref reader, options);
-                    value.Add(argumentName, argumentValue);
-                }
-                finally
-                {
-                    reader.Depth--;
+                    object value = Deserialize(argumentType, ref reader, options);
+
+                    arguments.Add(argumentName, value);
                 }
             }
-
-            return value;
-        }
-
-        private static void Serialize(Type type, ref MessagePackWriter writer, object value, MessagePackSerializerOptions options)
-        {
-            if (!deserializeCallCache.TryGetValue(type, out (SerializeDelegate Serialize, DeserializeDelegate) delegates) || delegates.Serialize == null)
+            finally
             {
-                MethodInfo method = typeof(ArgumentDictionaryFormatter).GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
-                    .Single(x => x.Name == nameof(Serialize) && x.ContainsGenericParameters)
-                    .MakeGenericMethod(type);
-
-                var writerParam = Expression.Parameter(typeof(MessagePackWriter).MakeByRefType(), "writer");
-                var valueParam = Expression.Parameter(typeof(object), "value");
-                var optionsParam = Expression.Parameter(typeof(MessagePackSerializerOptions), "options");
-                var call = Expression.Call(method, writerParam, valueParam, optionsParam);
-                var expression = Expression.Lambda<SerializeDelegate>(call, writerParam, valueParam, optionsParam);
-                delegates.Serialize = expression.Compile();
-
-                deserializeCallCache[type] = delegates;
+                reader.Depth--;
             }
 
-            delegates.Serialize(ref writer, value, options);
+            return arguments;
         }
 
         private static object Deserialize(Type type, ref MessagePackReader reader, MessagePackSerializerOptions options)
         {
-            if (!deserializeCallCache.TryGetValue(type, out (SerializeDelegate, DeserializeDelegate Deserialize) delegates) || delegates.Deserialize == null)
+            if (!deserializeCallCache.TryGetValue(type, out DeserializeDelegate deserialize))
             {
                 MethodInfo method = typeof(ArgumentDictionaryFormatter).GetMethods(BindingFlags.NonPublic | BindingFlags.Static)
                     .Single(x => x.Name == nameof(Deserialize) && x.ContainsGenericParameters)
@@ -119,24 +73,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
                 var optionsParam = Expression.Parameter(typeof(MessagePackSerializerOptions), "options");
                 var call = Expression.Call(method, readerParam, optionsParam);
                 var expression = Expression.Lambda<DeserializeDelegate>(call, readerParam, optionsParam);
-                delegates.Deserialize = expression.Compile();
+                deserialize = expression.Compile();
 
-                deserializeCallCache[type] = delegates;
+                deserializeCallCache.Add(type, deserialize);
             }
 
-            return delegates.Deserialize(ref reader, options);
-        }
-
-
-        private static void Serialize<T>(ref MessagePackWriter writer, object value, MessagePackSerializerOptions options)
-        {
-            IMessagePackFormatter<T> formatter = options.Resolver.GetFormatter<T>();
-            if (formatter == null)
-            {
-                formatter = ContractlessStandardResolver.Instance.GetFormatter<T>();
-            }
-
-            formatter.Serialize(ref writer, (T)value, options);
+            return deserialize(ref reader, options);
         }
 
         private static object Deserialize<T>(ref MessagePackReader reader, MessagePackSerializerOptions options)
@@ -150,7 +92,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
             return formatter.Deserialize(ref reader, options);
         }
 
-        delegate void SerializeDelegate(ref MessagePackWriter writer, object value, MessagePackSerializerOptions options);
         delegate object DeserializeDelegate(ref MessagePackReader reader, MessagePackSerializerOptions options);
     }
 }
