@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Infrastructure;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Metadata;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
@@ -41,21 +44,29 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
                 return;
             }
 
-            InvocationRequest invocationRequest = await invocationSerializer.DeserializeAsync<InvocationRequest>(httpContext.Request.Body);
+            string bindingIdentifier = GetBindingIdentifierFromQuery(httpContext.Request.QueryString.Value);
+            if (bindingIdentifier == null)
+            {
+                httpContext.Response.StatusCode = CustomStatusCodes.BindingIdentifierNotFound; // Custom http status code
+                return;
+            }
 
             Type contractType;
             try
             {
-                contractType = contractBinder.BindContractType(invocationRequest.BindingInfo.BindingIdentifier);
+                contractType = contractBinder.BindContractType(bindingIdentifier);
             }
             catch (ContractNotRegisteredException)
             {
-                httpContext.Response.StatusCode = 455; // Custom http status code
+                httpContext.Response.StatusCode = CustomStatusCodes.ContractNotRegistered; // Custom http status code
                 return;
             }
             object contractImplementation = contractImplementationResolver.Resolve(contractType);
 
-            MethodInfo methodInfo = contractBinder.BindContractMethod(invocationRequest.BindingInfo.BindingIdentifier);
+            MethodInfo methodInfo = contractBinder.BindContractMethod(bindingIdentifier);
+
+            Dictionary<string, Type> argumentMapping = methodInfo.GetParameters().ToDictionary(x => x.Name, x => x.ParameterType);
+            ArgumentDictionary arguments = await invocationSerializer.DeserializeArgumentsAsync(httpContext.Request.Body, argumentMapping);
 
             AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(contractImplementation, methodInfo);
             if (!await authorizationHandler.AuthorizeAsync(httpContext, authorizationContext))
@@ -63,7 +74,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
                 return;
             }
 
-            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, invocationRequest.Arguments.Values.ToArray());
+            var result = await methodInvoker.InvokeAsync(methodInfo, contractImplementation, arguments.Values.ToArray());
             if (result == null)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
@@ -72,6 +83,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares
 
             httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
             await invocationSerializer.SerializeAsync(httpContext.Response.Body, result.GetType(), result);
+        }
+
+        private static string GetBindingIdentifierFromQuery(string queryString)
+        {
+            return HttpUtility.ParseQueryString(queryString)[RequestMetadata.BindingIdentifier];
         }
     }
 }

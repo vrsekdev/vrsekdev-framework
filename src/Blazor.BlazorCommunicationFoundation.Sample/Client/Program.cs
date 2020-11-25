@@ -32,7 +32,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Client
             builder.Services.AddBCFClient(builder =>
             {
 #if DEBUG
-                builder.UseSerializer<JsonInvocationSerializer>();
+                //builder.UseSerializer<JsonInvocationSerializer>();
 #endif
                 builder.CreateScope(scope =>
                 {

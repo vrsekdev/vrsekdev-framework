@@ -51,7 +51,10 @@ else
     protected override async Task OnInitializedAsync()
     {
 
-        forecasts = await WeatherForecastContract.GetAsync();
+        forecasts = await WeatherForecastContract.GetAsync(new WeatherForecastGetFilter
+        {
+            Count = 10
+        });
         //await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
 
