@@ -12,8 +12,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions
 
         Task SerializeAsync(Stream stream, Type type, object instance);
 
-        void SerializeArguments(Stream stream, ArgumentDictionary arguments, Dictionary<string, Type> argumentMapping);
-
         byte[] Serialize(Type type, object instance);
 
         Task<T> DeserializeAsync<T>(Stream stream);

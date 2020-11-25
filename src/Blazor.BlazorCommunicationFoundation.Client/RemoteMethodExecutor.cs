@@ -41,8 +41,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             MemoryStream requestStream = new MemoryStream();
 
             ArgumentDictionary arguments = new ArgumentDictionary(args.ToDictionary(x => x.Key, x => x.Value));
-            Dictionary<string, Type> argumentMapping = contractMethod.GetParameters().ToDictionary(x => x.Name, x => x.ParameterType);
-            invocationSerializer.SerializeArguments(requestStream, arguments, argumentMapping);
+            invocationSerializer.Serialize(requestStream, arguments);
             requestStream.Position = 0;
 
             StreamContent requestContent = new StreamContent(requestStream);

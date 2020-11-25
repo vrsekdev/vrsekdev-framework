@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -37,6 +38,14 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json
         public async Task<object> DeserializeAsync(Type type, Stream stream)
         {
             return await JsonSerializer.DeserializeAsync(stream, type);
+        }
+
+        public async Task<ArgumentDictionary> DeserializeArgumentsAsync(Stream stream, Dictionary<string, Type> argumentMapping)
+        {
+            JsonSerializerOptions options = new JsonSerializerOptions();
+            options.Converters.Add(new ArgumentDictionaryJsonConverter(argumentMapping));
+
+            return await JsonSerializer.DeserializeAsync<ArgumentDictionary>(stream, options);
         }
     }
 }
