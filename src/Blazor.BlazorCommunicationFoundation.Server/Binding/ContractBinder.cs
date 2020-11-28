@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -12,7 +13,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding
     {
         private readonly IContractBindingSerializer bindingSerializer;
 
-        private Dictionary<string, (Type, MethodInfo)> bindings = new Dictionary<string, (Type, MethodInfo)>();
+        private Dictionary<string, ContractMethodBinding> bindings = new Dictionary<string, ContractMethodBinding>();
 
         public ContractBinder(IContractBindingSerializer bindingSerializer)
         {
@@ -21,29 +22,34 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding
 
         public Type BindContractType(string bindingIdentifier)
         {
-            if (!bindings.TryGetValue(bindingIdentifier, out (Type, MethodInfo) binding))
+            if (!bindings.TryGetValue(bindingIdentifier, out ContractMethodBinding binding))
             {
                 throw new ContractNotRegisteredException(bindingIdentifier);
             }
 
-            return binding.Item1;
+            return binding.ContractType;
         }
 
         public MethodInfo BindContractMethod(string bindingIdentifier)
         {
-            if (!bindings.TryGetValue(bindingIdentifier, out (Type, MethodInfo) binding))
+            if (!bindings.TryGetValue(bindingIdentifier, out ContractMethodBinding binding))
             {
                 throw new ContractNotRegisteredException(bindingIdentifier);
             }
 
-            return binding.Item2;
+            return binding.ContractMethodInfo;
         }
 
         internal void AddMethodBinding(Type contractType, MethodInfo methodInfo)
         {
             string bindingIdentifier = bindingSerializer.GenerateIdentifier(contractType, methodInfo);
 
-            bindings[bindingIdentifier] = (contractType, methodInfo);
+            bindings[bindingIdentifier] = new ContractMethodBinding(contractType, methodInfo);
+        }
+
+        IReadOnlyDictionary<string, ContractMethodBinding> IContractBinder.GetBindings()
+        {
+            return new ReadOnlyDictionary<string, ContractMethodBinding>(bindings);
         }
     }
 }

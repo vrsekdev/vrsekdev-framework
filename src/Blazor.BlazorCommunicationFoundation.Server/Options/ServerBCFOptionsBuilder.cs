@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 
@@ -23,6 +24,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options
             serverOptions.Contracts = Contracts;
 
             return serverOptions;
+        }
+
+        IServiceCollection IServerOptionsBuilder.GetServiceCollection()
+        {
+            return services;
         }
     }
 }

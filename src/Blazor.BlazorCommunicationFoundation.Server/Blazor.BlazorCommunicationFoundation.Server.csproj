@@ -24,6 +24,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\LICENSE" Link="LICENSE">
       <PackagePath></PackagePath>
       <Pack>True</Pack>

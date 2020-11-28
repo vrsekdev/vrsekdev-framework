@@ -11,5 +11,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding
 
         MethodInfo BindContractMethod(string bindingIdentifier);
 
+        internal IReadOnlyDictionary<string, ContractMethodBinding> GetBindings();
     }
 }

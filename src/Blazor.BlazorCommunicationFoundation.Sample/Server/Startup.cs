@@ -13,6 +13,8 @@ using Blazor.BlazorCommunicationFoundation.Sample.Server.Services;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json;
 using Blazor.BlazorCommunicationFoundation.Sample.Server.Middlewares;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer;
 
 namespace Blazor.BlazorCommunicationFoundation.Sample.Server
 {
@@ -42,11 +44,14 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
+            services.AddSwaggerGen();
+
             services.AddBCFServer(builder =>
             {
 #if DEBUG
                 builder.UseSerializer<JsonInvocationSerializer>();
 #endif
+                builder.AddApiExplorer();
                 builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();
 
                 builder.Contracts.AddContractsByAttribute(typeof(UserActionService).Assembly, serviceLifetime: ServiceLifetime.Transient);
@@ -83,8 +88,18 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            
             app.UseBlazorCommunicationFoundation();
+
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
 
             app.UseEndpoints(endpoints =>
             {
