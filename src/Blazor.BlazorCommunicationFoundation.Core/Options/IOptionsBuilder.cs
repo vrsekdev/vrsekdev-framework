@@ -7,9 +7,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Options
 {
     public interface IOptionsBuilder<TOptions>
     {
-        void UseSerializer<T>() where T : IInvocationSerializer => UseSerializer(typeof(T));
+        void AddSerializer<T>() where T : IInvocationSerializer => AddSerializer(typeof(T));
 
-        void UseSerializer(Type type);
+        void AddSerializer(Type type);
 
         TOptions Build();
     }

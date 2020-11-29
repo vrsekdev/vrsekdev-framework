@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Binding;
@@ -12,9 +14,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
     {
         public static void AddBlazorCommunicationFoundation(this IServiceCollection services, BCFOptions options)
         {
-            if (options.SerializerType == null)
+            if (options.InvocationSerializerTypes == null)
             {
-                throw new ArgumentNullException("Type is required", nameof(options.SerializerType));
+                throw new ArgumentNullException("Type is required", nameof(options.InvocationSerializerTypes));
             }
             if (options.ContractTypeSerializerType == null)
             {
@@ -25,7 +27,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
                 throw new ArgumentNullException($"Type is required", nameof(options.ContractBinderSerializerType));
             }
 
-            services.AddSingleton(typeof(IInvocationSerializer), options.SerializerType);
+            services.TryAddEnumerable(options.InvocationSerializerTypes.Select(type => new ServiceDescriptor(typeof(IInvocationSerializer), type, ServiceLifetime.Singleton)));
             services.AddSingleton(typeof(IContractTypeBindingSerializer), options.ContractTypeSerializerType);
             services.AddSingleton(typeof(IContractMethodBindingSerializer), options.ContractBinderSerializerType);
         }

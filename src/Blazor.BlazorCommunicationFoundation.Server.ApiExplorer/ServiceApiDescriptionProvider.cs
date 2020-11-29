@@ -1,27 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Binding;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer.Emit;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer.Types;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
 {
     public class ServiceApiDescriptionProvider : IApiDescriptionProvider
     {
+        private readonly IEnumerable<IInvocationSerializer> invocationSerializers;
         private readonly IContractBinder contractBinder;
 
-        public ServiceApiDescriptionProvider(IContractBinder contractBinder)
+        public ServiceApiDescriptionProvider(
+            IEnumerable<IInvocationSerializer> invocationSerializers,
+            IContractBinder contractBinder)
         {
+            this.invocationSerializers = invocationSerializers;
             this.contractBinder = contractBinder;
         }
 
@@ -36,7 +36,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
 
                 ApiDescription apiDescription = new ApiDescription
                 {
-                    //GroupName = contractType.Name,
                     HttpMethod = "POST",
                     RelativePath = binding.Key,
                 };
@@ -68,16 +67,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
             return actionDescriptor;
         }
 
-        private ParameterDescriptor GetParameterDescriptor(ParameterInfo parameterInfo)
-        {
-            return new ControllerParameterDescriptor
-            {
-                Name = parameterInfo.Name,
-                ParameterInfo = parameterInfo,
-                ParameterType = parameterInfo.ParameterType
-            };
-        }
-
         private void PutParameterDescriptions(MethodInfo methodInfo, IList<ApiParameterDescription> apiParameters)
         {
             if (!methodInfo.GetParameters().Any())
@@ -98,10 +87,13 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
 
         private void PutSupportedRequestFormats(IList<ApiRequestFormat> supportedRequestFormats)
         {
-            supportedRequestFormats.Add(new ApiRequestFormat
+            foreach (IInvocationSerializer serializer in invocationSerializers)
             {
-                MediaType = "application/json"
-            });
+                supportedRequestFormats.Add(new ApiRequestFormat
+                {
+                    MediaType = serializer.MediaType
+                });
+            }
         }
 
         private void PutSupportedResponseType(MethodInfo methodInfo, IList<ApiResponseType> supportedResponseTypes)
@@ -116,19 +108,21 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
             }
 
             Type returnType = methodInfo.ReturnType.GetGenericArguments()[0];
-            supportedResponseTypes.Add(new ApiResponseType
+            ApiResponseType apiResponseType = new ApiResponseType
             {
                 Type = returnType,
                 StatusCode = 200,
-                ModelMetadata = new ResponseTypeMetadata(returnType),
-                ApiResponseFormats =
+                ModelMetadata = new ResponseTypeMetadata(returnType)
+            };
+            foreach (IInvocationSerializer serializer in invocationSerializers)
+            {
+                apiResponseType.ApiResponseFormats.Add(new ApiResponseFormat
                 {
-                    new ApiResponseFormat
-                    {
-                        MediaType = "application/json"
-                    }
-                }
-            });
+                    MediaType = serializer.MediaType
+                });
+            }
+
+            supportedResponseTypes.Add(apiResponseType);
         }
     }
 }

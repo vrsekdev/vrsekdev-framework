@@ -6,17 +6,24 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Options
 {
     public class BCFOptionsBuilder : IOptionsBuilder<BCFOptions>
     {
-        private Type serializerType;
+        private ICollection<Type> serializerTypes = new HashSet<Type>();
 
-        public void UseSerializer(Type type)
+        public void AddSerializer(Type type)
         {
-            serializerType = type;
+            serializerTypes.Add(type);
         }
 
         public BCFOptions Build()
         {
             BCFOptions options = new BCFOptions();
-            options.SerializerType = serializerType ?? options.SerializerType;
+
+            foreach (var serializerType in serializerTypes)
+            {
+                if (!options.InvocationSerializerTypes.Contains(serializerType))
+                {
+                    options.InvocationSerializerTypes.Add(serializerType);
+                }
+            }
 
             return options;
         }

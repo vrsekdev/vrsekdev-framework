@@ -49,7 +49,7 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             services.AddBCFServer(builder =>
             {
 #if DEBUG
-                builder.UseSerializer<JsonInvocationSerializer>();
+                builder.AddSerializer<JsonInvocationSerializer>();
 #endif
                 builder.AddApiExplorer();
                 builder.Contracts.AddTransient<IWeatherForecastContract, WeatherForecastService>();

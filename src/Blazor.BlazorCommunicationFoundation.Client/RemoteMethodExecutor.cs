@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +41,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             requestStream.Position = 0;
 
             StreamContent requestContent = new StreamContent(requestStream);
+            requestContent.Headers.ContentType = new MediaTypeHeaderValue(invocationSerializer.MediaType);
 
             Type returnType;
             if (contractMethod.ReturnType == typeof(Task))

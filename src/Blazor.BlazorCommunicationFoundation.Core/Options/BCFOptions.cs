@@ -8,7 +8,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Options
 {
     public class BCFOptions
     {
-        public Type SerializerType { get; internal set; } = typeof(MessagePackInvocationSerializer);
+        public ICollection<Type> InvocationSerializerTypes { get; } = new HashSet<Type>
+        {
+            typeof(MessagePackInvocationSerializer)
+        };
 
         public Type ContractTypeSerializerType { get; internal set; } = typeof(SimpleNameContractTypeSerializer);
 

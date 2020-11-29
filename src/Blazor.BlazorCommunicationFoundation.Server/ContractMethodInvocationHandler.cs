@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,39 +19,56 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
         private readonly IContractImplementationResolver contractImplementationResolver;
         private readonly IAuthorizationContextProvider authorizationContextProvider;
         private readonly IAuthorizationHandler authorizationHandler;
-        private readonly IInvocationSerializer invocationSerializer;
         private readonly IMethodInvoker methodInvoker;
+
+        private readonly Dictionary<string, IInvocationSerializer> invocationSerializers;
 
         public ContractMethodInvocationHandler(
             IContractImplementationResolver contractImplementationResolver,
             IAuthorizationContextProvider authorizationContextProvider,
             IAuthorizationHandler authorizationHandler,
-            IInvocationSerializer invocationSerializer,
+            IEnumerable<IInvocationSerializer> invocationSerializers,
             IMethodInvoker methodInvoker)
         {
             this.contractImplementationResolver = contractImplementationResolver;
             this.authorizationContextProvider = authorizationContextProvider;
             this.authorizationHandler = authorizationHandler;
-            this.invocationSerializer = invocationSerializer;
             this.methodInvoker = methodInvoker;
+
+            this.invocationSerializers = invocationSerializers.ToDictionary(x => x.MediaType);
         }
 
         public async Task Invoke(HttpContext httpContext, ContractMethodBinding binding)
         {
-            object contractImplementation = contractImplementationResolver.Resolve(binding.ContractType);
+            IInvocationSerializer requestSerializer = null;
+            if (httpContext.Request.ContentType == null && httpContext.Request.ContentLength != 0
+                && !invocationSerializers.TryGetValue(httpContext.Request.ContentType, out requestSerializer))
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                return;
+            }
 
-            Dictionary<string, Type> argumentMapping = binding.ContractMethodInfo.GetParameters().ToDictionary(x => x.Name, x => x.ParameterType);
+            IInvocationSerializer responseSerializer = null;
+            StringValues acceptHeader = httpContext.Request.Headers["Accept"];
+            if (!acceptHeader.Any(value => invocationSerializers.TryGetValue(value, out responseSerializer))
+                || responseSerializer == null)
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                return;
+            }
 
             ArgumentDictionary arguments;
+            Dictionary<string, Type> argumentMapping = binding.ContractMethodInfo.GetParameters().ToDictionary(x => x.Name, x => x.ParameterType);
             if (httpContext.Request.ContentLength != 0)
             {
-                arguments = await invocationSerializer.DeserializeArgumentsAsync(httpContext.Request.Body, argumentMapping);
+                arguments = await requestSerializer.DeserializeArgumentsAsync(httpContext.Request.Body, argumentMapping);
             }
             else
             {
                 arguments = new ArgumentDictionary();
             }
 
+            object contractImplementation = contractImplementationResolver.Resolve(binding.ContractType);
             AuthorizationContext authorizationContext = await authorizationContextProvider.GetAuthorizationContextAsync(contractImplementation, binding.ContractMethodInfo);
             if (!await authorizationHandler.AuthorizeAsync(httpContext, authorizationContext))
             {
@@ -64,9 +82,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
                 return;
             }
 
-            httpContext.Response.ContentType = invocationSerializer.MediaType;
+            httpContext.Response.ContentType = responseSerializer.MediaType;
             httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-            await invocationSerializer.SerializeAsync(httpContext.Response.Body, result.GetType(), result);
+            await responseSerializer.SerializeAsync(httpContext.Response.Body, result.GetType(), result);
         }
     }
 }

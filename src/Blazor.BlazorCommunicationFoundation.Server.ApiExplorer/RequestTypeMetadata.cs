@@ -20,6 +20,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
 
         public override BindingSource BindingSource => BindingSource.Body;
 
-        public override string DisplayName => "Arguments_";
+        public override string DisplayName => "Arguments";
     }
 }
