@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Infrastructure;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Infrastructure;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection

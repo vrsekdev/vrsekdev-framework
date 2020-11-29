@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.DependencyInjection;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Options
 {
     public interface IServerOptionsBuilder : IOptionsBuilder<ServerBCFOptions>
     {

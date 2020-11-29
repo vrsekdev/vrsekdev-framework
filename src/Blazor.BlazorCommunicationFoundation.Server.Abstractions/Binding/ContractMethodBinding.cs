@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Binding
 {
     public class ContractMethodBinding
     {
-        public ContractMethodBinding(Type contractType, MethodInfo contractMethodInfo)
+        public ContractMethodBinding(
+            Type contractType, 
+            MethodInfo contractMethodInfo)
         {
             ContractType = contractType;
             ContractMethodInfo = contractMethodInfo;

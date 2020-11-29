@@ -16,28 +16,23 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
     {
         private readonly IHttpClientResolver httpClientResolver;
         private readonly IInvocationSerializer invocationSerializer;
-        private readonly IContractBindingSerializer contractBindingSerializer;
-
-        private readonly Dictionary<MethodInfo, string> bindingIdentifierCache = new Dictionary<MethodInfo, string>();
+        private readonly IContractTypeBindingSerializer contractTypeBindingSerializer;
+        private readonly IContractMethodBindingSerializer contractMethodBindingSerializer;
 
         public RemoteMethodExecutor(IHttpClientResolver httpClientResolver,
             IInvocationSerializer invocationSerializer,
-            IContractBindingSerializer contractBindingSerializer)
+            IContractTypeBindingSerializer contractTypeBindingSerializer,
+            IContractMethodBindingSerializer contractMethodBindingSerializer)
         {
             this.httpClientResolver = httpClientResolver;
             this.invocationSerializer = invocationSerializer;
-            this.contractBindingSerializer = contractBindingSerializer;
+            this.contractTypeBindingSerializer = contractTypeBindingSerializer;
+            this.contractMethodBindingSerializer = contractMethodBindingSerializer;
         }
 
         public bool TryInvokeRemoteMethod<TContract>(MethodInfo contractMethod, KeyValuePair<string, object>[] args, out object result)
             where TContract : class
         {
-            if (!bindingIdentifierCache.TryGetValue(contractMethod, out string bindingIdentifier))
-            {
-                bindingIdentifier = contractBindingSerializer.GenerateIdentifier(typeof(TContract), contractMethod);
-                bindingIdentifierCache.Add(contractMethod, bindingIdentifier);
-            }
-
             MemoryStream requestStream = new MemoryStream();
 
             ArgumentDictionary arguments = new ArgumentDictionary(args.ToDictionary(x => x.Key, x => x.Value));
@@ -49,23 +44,23 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             Type returnType;
             if (contractMethod.ReturnType == typeof(Task))
             {
-                result = GetResultNoReturnTypeAsync(typeof(TContract), contractMethod.Name, bindingIdentifier, requestContent);
+                result = GetResultNoReturnTypeAsync(typeof(TContract), contractMethod, requestContent);
             }
             else
             {
                 returnType = contractMethod.ReturnType.GetGenericArguments()[0];
                 result = GetType().GetMethod(nameof(GetResultAsync), BindingFlags.Instance | BindingFlags.NonPublic)
                             .MakeGenericMethod(returnType)
-                            .Invoke(this, new object[] { typeof(TContract), contractMethod.Name, bindingIdentifier, requestContent });
+                            .Invoke(this, new object[] { typeof(TContract), contractMethod, requestContent });
             }
 
             return true;
         }
 
-        private async Task<T> GetResultAsync<T>(Type contractType, string methodName, string bindingIdentifier, StreamContent requestContent)
+        private async Task<T> GetResultAsync<T>(Type contractType, MethodInfo contactMethod, StreamContent requestContent)
         {
             HttpClient httpClient = httpClientResolver.GetHttpClient(contractType);
-            var response = await httpClient.PostAsync(CreateRequestPath(contractType.Name, methodName, bindingIdentifier), requestContent);
+            var response = await httpClient.PostAsync(CreateRequestPath(contractType, contactMethod), requestContent);
 
             Stream responseStream;
             switch (response.StatusCode)
@@ -85,10 +80,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             }
         }
 
-        private async Task GetResultNoReturnTypeAsync(Type contractType, string methodName, string bindingIdentifier, StreamContent requestContent)
+        private async Task GetResultNoReturnTypeAsync(Type contractType, MethodInfo contractMethod, StreamContent requestContent)
         {
             HttpClient httpClient = httpClientResolver.GetHttpClient(contractType);
-            using var response = await httpClient.PostAsync(CreateRequestPath(contractType.Name, methodName, bindingIdentifier), requestContent);
+            using var response = await httpClient.PostAsync(CreateRequestPath(contractType, contractMethod), requestContent);
 
             switch (response.StatusCode)
             {
@@ -105,9 +100,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             }
         }
 
-        private string CreateRequestPath(string contract, string method, string bindingIdentifier)
+        private string CreateRequestPath(Type contractType, MethodInfo contractMethod)
         {
-            return $"/bcf/invoke?contract={contract}&method={method}&{RequestMetadata.BindingIdentifier}={bindingIdentifier}";
+            string typeIdentifier = contractTypeBindingSerializer.GenerateIdentifier(contractType);
+            string methodIdentifier = contractMethodBindingSerializer.GenerateIdentifier(contractMethod);
+
+            return $"/{typeIdentifier}/{methodIdentifier}";
         }
     }
 }

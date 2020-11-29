@@ -26,8 +26,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
             }
 
             services.AddSingleton(typeof(IInvocationSerializer), options.SerializerType);
-            services.AddSingleton(typeof(IContractTypeSerializer), options.ContractTypeSerializerType);
-            services.AddSingleton(typeof(IContractBindingSerializer), options.ContractBinderSerializerType);
+            services.AddSingleton(typeof(IContractTypeBindingSerializer), options.ContractTypeSerializerType);
+            services.AddSingleton(typeof(IContractMethodBindingSerializer), options.ContractBinderSerializerType);
         }
     }
 }

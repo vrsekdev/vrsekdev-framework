@@ -13,6 +13,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.MessagePack
     {
         private MessagePackSerializerOptions options = ContractlessStandardResolver.Options;
 
+        public string MediaType => "application/msgpack";
+
         public Task SerializeAsync(Stream stream, Type type, object instance)
         {
             return MessagePackSerializer.SerializeAsync(type, stream, instance, options);

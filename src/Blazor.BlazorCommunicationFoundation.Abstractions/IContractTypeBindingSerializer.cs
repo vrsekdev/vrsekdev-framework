@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions
 {
-    public interface IContractTypeSerializer
+    public interface IContractTypeBindingSerializer
     {
         string GenerateIdentifier(Type type);
     }

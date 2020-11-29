@@ -5,8 +5,8 @@ using System.Text;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions
 {
-    public interface IContractBindingSerializer
+    public interface IContractMethodBindingSerializer
     {
-        string GenerateIdentifier(Type contractType, MethodInfo methodInfo);
+        string GenerateIdentifier(MethodInfo methodInfo);
     }
 }

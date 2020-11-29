@@ -19,12 +19,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json
 
         public override ArgumentDictionary Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            ArgumentDictionary arguments = new ArgumentDictionary();
+
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonException($"JsonTokenType was of type {reader.TokenType}, only objects are supported");
             }
-
-            ArgumentDictionary arguments = new ArgumentDictionary();
 
             while (reader.Read())
             {

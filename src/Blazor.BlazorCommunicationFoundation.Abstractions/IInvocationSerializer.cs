@@ -8,6 +8,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions
 {
     public interface IInvocationSerializer
     {
+        string MediaType { get; }
+
         void Serialize<T>(Stream stream, T instance);
 
         Task SerializeAsync(Stream stream, Type type, object instance);

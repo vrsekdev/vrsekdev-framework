@@ -10,8 +10,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Options
     {
         public Type SerializerType { get; internal set; } = typeof(MessagePackInvocationSerializer);
 
-        public Type ContractTypeSerializerType { get; internal set; } = typeof(AssemblyQualifiedNameContractTypeSerializer);
+        public Type ContractTypeSerializerType { get; internal set; } = typeof(SimpleNameContractTypeSerializer);
 
-        public Type ContractBinderSerializerType { get; internal set; } = typeof(SignatureHashContractBindingSerializer); 
+        public Type ContractBinderSerializerType { get; internal set; } = typeof(MethodSignatureContractMethodBindingSerializer); 
     }
 }

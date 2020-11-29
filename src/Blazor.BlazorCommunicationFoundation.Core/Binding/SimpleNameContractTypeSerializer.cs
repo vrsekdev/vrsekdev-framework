@@ -5,11 +5,11 @@ using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Binding
 {
-    public class AssemblyQualifiedNameContractTypeSerializer : IContractTypeBindingSerializer
+    public class SimpleNameContractTypeSerializer : IContractTypeBindingSerializer
     {
         public string GenerateIdentifier(Type type)
         {
-            return type.AssemblyQualifiedName;
+            return type.Name;
         }
     }
 }

@@ -6,6 +6,8 @@ using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Binding;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
@@ -27,10 +29,13 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
             services.AddTransient<IAuthorizationContextProvider, AuthorizationContextProvider>();
             services.AddTransient<IAuthorizationHandler, AuthorizationHandler>();
             services.AddTransient<IContractImplementationResolver, ServiceProviderContractImplementationResolver>();
+            services.AddTransient<ContractMethodInvocationHandler>();
 
             services.AddSingleton<IContractBinder>(provider =>
             {
-                ContractBinder contractBinder = new ContractBinder(provider.GetRequiredService<IContractBindingSerializer>());
+                ContractBinder contractBinder = new ContractBinder(
+                    provider.GetRequiredService<IContractTypeBindingSerializer>(), 
+                    provider.GetRequiredService<IContractMethodBindingSerializer>());
                 foreach (Type contractType in serverOptions.Contracts.ContractTypes)
                 {
                     MethodInfo[] contractMethods = contractType.GetMethods();

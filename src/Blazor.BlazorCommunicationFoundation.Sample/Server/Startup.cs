@@ -89,8 +89,6 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             app.UseAuthentication();
             app.UseAuthorization();
             
-            app.UseBlazorCommunicationFoundation();
-
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
@@ -98,11 +96,13 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                //c.RoutePrefix = "/swagger";
             });
 
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapBlazorCommunicationFoundation();
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
