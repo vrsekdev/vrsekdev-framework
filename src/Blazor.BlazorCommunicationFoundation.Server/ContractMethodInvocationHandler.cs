@@ -40,8 +40,14 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 
         public async Task Invoke(HttpContext httpContext, ContractMethodBinding binding)
         {
+            if (httpContext.Request.ContentType == null && httpContext.Request.ContentLength != 0)
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+                return;
+            }
+
             IInvocationSerializer requestSerializer = null;
-            if (httpContext.Request.ContentType == null && httpContext.Request.ContentLength != 0
+            if (httpContext.Request.ContentType != null 
                 && !invocationSerializers.TryGetValue(httpContext.Request.ContentType, out requestSerializer))
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
@@ -50,8 +56,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
 
             IInvocationSerializer responseSerializer = null;
             StringValues acceptHeader = httpContext.Request.Headers["Accept"];
-            if (!acceptHeader.Any(value => invocationSerializers.TryGetValue(value, out responseSerializer))
-                || responseSerializer == null)
+            if (acceptHeader.Count == 0 || (acceptHeader.Count == 1 && acceptHeader[0] == "*/*"))
+            {
+                // Use request serializer or use the first one resolved
+                responseSerializer = requestSerializer ?? invocationSerializers.Values.First();
+            }
+            else if (!acceptHeader.Any(value => invocationSerializers.TryGetValue(value, out responseSerializer)))
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
                 return;
@@ -81,10 +91,17 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server
                 httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
                 return;
             }
-
-            httpContext.Response.ContentType = responseSerializer.MediaType;
-            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
-            await responseSerializer.SerializeAsync(httpContext.Response.Body, result.GetType(), result);
+            else if (responseSerializer != null)
+            {
+                httpContext.Response.ContentType = responseSerializer.MediaType;
+                httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+                await responseSerializer.SerializeAsync(httpContext.Response.Body, result.GetType(), result);
+            }
+            else
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
+                return;
+            }
         }
     }
 }

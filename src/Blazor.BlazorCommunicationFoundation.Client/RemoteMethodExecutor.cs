@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Metadata;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
@@ -43,26 +44,33 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             StreamContent requestContent = new StreamContent(requestStream);
             requestContent.Headers.ContentType = new MediaTypeHeaderValue(invocationSerializer.MediaType);
 
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, CreateRequestPath(typeof(TContract), contractMethod))
+            {
+                Content = requestContent
+            };
+            requestMessage.Headers.Accept.Clear();
+            requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(invocationSerializer.MediaType));
+
             Type returnType;
             if (contractMethod.ReturnType == typeof(Task))
             {
-                result = GetResultNoReturnTypeAsync(typeof(TContract), contractMethod, requestContent);
+                result = GetResultNoReturnTypeAsync(typeof(TContract), requestMessage);
             }
             else
             {
                 returnType = contractMethod.ReturnType.GetGenericArguments()[0];
                 result = GetType().GetMethod(nameof(GetResultAsync), BindingFlags.Instance | BindingFlags.NonPublic)
                             .MakeGenericMethod(returnType)
-                            .Invoke(this, new object[] { typeof(TContract), contractMethod, requestContent });
+                            .Invoke(this, new object[] { typeof(TContract), requestMessage });
             }
 
             return true;
         }
 
-        private async Task<T> GetResultAsync<T>(Type contractType, MethodInfo contactMethod, StreamContent requestContent)
+        private async Task<T> GetResultAsync<T>(Type contractType, HttpRequestMessage requestMessage)
         {
             HttpClient httpClient = httpClientResolver.GetHttpClient(contractType);
-            var response = await httpClient.PostAsync(CreateRequestPath(contractType, contactMethod), requestContent);
+            using var response = await httpClient.SendAsync(requestMessage);
 
             Stream responseStream;
             switch (response.StatusCode)
@@ -82,10 +90,10 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             }
         }
 
-        private async Task GetResultNoReturnTypeAsync(Type contractType, MethodInfo contractMethod, StreamContent requestContent)
+        private async Task GetResultNoReturnTypeAsync(Type contractType, HttpRequestMessage requestMessage)
         {
             HttpClient httpClient = httpClientResolver.GetHttpClient(contractType);
-            using var response = await httpClient.PostAsync(CreateRequestPath(contractType, contractMethod), requestContent);
+            using var response = await httpClient.SendAsync(requestMessage);
 
             switch (response.StatusCode)
             {
@@ -107,7 +115,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
             string typeIdentifier = contractTypeBindingSerializer.GenerateIdentifier(contractType);
             string methodIdentifier = contractMethodBindingSerializer.GenerateIdentifier(contractMethod);
 
-            return $"/{typeIdentifier}/{methodIdentifier}";
+            return BindingHelper.CreateRequestPath(typeIdentifier, methodIdentifier);
         }
     }
 }
