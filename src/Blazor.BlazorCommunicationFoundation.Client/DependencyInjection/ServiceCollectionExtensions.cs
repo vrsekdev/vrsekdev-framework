@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
@@ -28,10 +30,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
             ServiceProviderContractScopeProvider contractScopeProvider = new ServiceProviderContractScopeProvider();
             services.AddSingleton<IContractScopeProvider>(contractScopeProvider);
 
+            HashSet<Type> contractTypes = new HashSet<Type>();
             foreach (IContractScope scope in clientOptions.Scopes)
             {
                 foreach (Type contractType in scope.ContractTypes)
                 {
+                    contractTypes.Add(contractType);
                     contractScopeProvider.AddScope(contractType, scope);
                     if (!services.Any(x => x.ImplementationType == scope.HttpClientResolverType))
                     {
@@ -39,6 +43,20 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
                     }
                 }
             }
+
+            services.AddSingleton<IContractRequestPathHolder>(provider =>
+            {
+                var typeBindingSerializer = provider.GetRequiredService<IContractTypeBindingSerializer>();
+                var methodBindingSerializer = provider.GetRequiredService<IContractMethodBindingSerializer>();
+
+                ContractRequestPathHolder contractRequestPathHolder = new ContractRequestPathHolder(typeBindingSerializer, methodBindingSerializer);
+                foreach (var contractType in contractTypes)
+                {
+                    contractRequestPathHolder.AddBindings(contractType);
+                }
+
+                return contractRequestPathHolder;
+            });
         }
     }
 }

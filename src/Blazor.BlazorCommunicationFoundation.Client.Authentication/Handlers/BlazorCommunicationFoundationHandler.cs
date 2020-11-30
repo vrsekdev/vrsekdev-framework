@@ -11,24 +11,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Infrastructure;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Binding;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Handlers
 {
     public class BlazorCommunicationFoundationHandler : DelegatingHandler
     {
+        private readonly IContractRequestPathHolder contractRequestPathHolder;
         private readonly IAccessTokenProvider accessTokenProvider;
         private readonly NavigationManager navigationManager;
 
         private AuthenticationHeaderValue cachedHeader;
         private AccessTokenRequestOptions tokenOptions;
         private AccessToken lastToken;
-        private string redirectUrl;
-        private Uri bcfEndpointUri;
 
         public BlazorCommunicationFoundationHandler(
+            IContractRequestPathHolder contractRequestPathHolder,
             IAccessTokenProvider accessTokenProvider,
             NavigationManager navigationManager)
         {
+            this.contractRequestPathHolder = contractRequestPathHolder;
             this.accessTokenProvider = accessTokenProvider;
             this.navigationManager = navigationManager;
         }
@@ -37,12 +39,9 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var now = DateTimeOffset.Now;
-            bool isBase = Uri.Compare(bcfEndpointUri, request.RequestUri, 
-                UriComponents.Path, 
-                UriFormat.SafeUnescaped, 
-                StringComparison.OrdinalIgnoreCase) == 0;
 
-            if (isBase)
+            bool isFamiliar = contractRequestPathHolder.IsPathFamiliar(request.RequestUri.LocalPath);
+            if (isFamiliar)
             {
                 if (lastToken == null || now >= lastToken.Expires.AddMinutes(-5))
                 {
@@ -53,7 +52,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
                     if (tokenResult.TryGetToken(out var token))
                     {
                         lastToken = token;
-                        redirectUrl = tokenResult.RedirectUrl;
                         cachedHeader = new AuthenticationHeaderValue("Bearer", lastToken.Value);
                     }
                 }
@@ -62,7 +60,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
             }
 
             HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
-            if (isBase && response.StatusCode == HttpStatusCode.Unauthorized)
+            if (isFamiliar && response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 throw new UnauthorizedException(navigationManager, tokenOptions.ReturnUrl);
             }
@@ -71,11 +69,8 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
         }
 
         public BlazorCommunicationFoundationHandler ConfigureHandler(
-            string bcfEndpointUrl = null,
             string loginUrl = null)
         {
-            bcfEndpointUri = new Uri(bcfEndpointUrl ?? Path.Combine(navigationManager.BaseUri, "/bcf/invoke"));
-
             if (loginUrl != null)
             {
                 tokenOptions = new AccessTokenRequestOptions
