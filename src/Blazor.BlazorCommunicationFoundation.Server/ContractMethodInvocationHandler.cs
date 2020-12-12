@@ -8,8 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Binding;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Security;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server

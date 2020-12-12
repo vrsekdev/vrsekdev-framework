@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Binding
 {

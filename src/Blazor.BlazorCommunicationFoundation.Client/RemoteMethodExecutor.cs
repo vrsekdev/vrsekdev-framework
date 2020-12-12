@@ -9,8 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Binding;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Metadata;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client
 {

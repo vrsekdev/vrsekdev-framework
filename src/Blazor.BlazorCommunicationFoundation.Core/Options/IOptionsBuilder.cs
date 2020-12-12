@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Options
 {
     public interface IOptionsBuilder<TOptions>
     {
-        void AddSerializer<T>() where T : IInvocationSerializer => AddSerializer(typeof(T));
+        void UseTypeBindingSerializer<T>() where T : IContractTypeBindingSerializer;
 
-        void AddSerializer(Type type);
+        void UseMethodBindingSerializer<T>() where T : IContractMethodBindingSerializer;
 
         TOptions Build();
     }

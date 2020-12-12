@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 
@@ -14,22 +15,29 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection
     {
         public static void AddBlazorCommunicationFoundation(this IServiceCollection services, BCFOptions options)
         {
-            if (options.InvocationSerializerTypes == null)
+            if (options.TypeBindingSerializerType == null)
             {
-                throw new ArgumentNullException("Type is required", nameof(options.InvocationSerializerTypes));
+                throw new ArgumentNullException("Type is required", nameof(options.TypeBindingSerializerType));
             }
-            if (options.ContractTypeSerializerType == null)
+            if (options.MethodBindingSerializerType == null)
             {
-                throw new ArgumentNullException("Type is required", nameof(options.ContractTypeSerializerType));
-            }
-            if (options.ContractBinderSerializerType == null)
-            {
-                throw new ArgumentNullException($"Type is required", nameof(options.ContractBinderSerializerType));
+                throw new ArgumentNullException($"Type is required", nameof(options.MethodBindingSerializerType));
             }
 
-            services.TryAddEnumerable(options.InvocationSerializerTypes.Select(type => new ServiceDescriptor(typeof(IInvocationSerializer), type, ServiceLifetime.Singleton)));
-            services.AddSingleton(typeof(IContractTypeBindingSerializer), options.ContractTypeSerializerType);
-            services.AddSingleton(typeof(IContractMethodBindingSerializer), options.ContractBinderSerializerType);
+            services.AddSingleton(typeof(IContractTypeBindingSerializer), options.TypeBindingSerializerType);
+            services.AddSingleton(typeof(IContractMethodBindingSerializer), options.MethodBindingSerializerType);
+
+            services.AddSingleton<IContractBinder>(provider =>
+            {
+                ContractBinder contractBinder = new ContractBinder(
+                    provider.GetRequiredService<IContractTypeBindingSerializer>(),
+                    provider.GetRequiredService<IContractMethodBindingSerializer>());
+                foreach (Type contractType in options.ContractTypes)
+                {
+                    contractBinder.AddContractBinding(contractType);
+                }
+                return contractBinder;
+            });
         }
     }
 }

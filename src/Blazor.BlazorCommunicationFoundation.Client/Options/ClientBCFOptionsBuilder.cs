@@ -8,13 +8,14 @@ using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
 {
-    public class ClientBCFOptionsBuilder : BCFOptionsBuilder, IClientOptionsBuilder
+    public class ClientBCFOptionsBuilder : BCFOptionsBuilderBase, IClientOptionsBuilder
     {
         private readonly IServiceCollection services;
 
         private readonly ClientBCFScopeBuilder globalScopeBuilder;
-
         private readonly List<ClientBCFScopeBuilder> childScopeBuilders = new List<ClientBCFScopeBuilder>();
+
+        private Type invocationSerializerType = null;
 
         public ClientBCFOptionsBuilder(IServiceCollection services)
         {
@@ -24,6 +25,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
         }
 
         public IClientContractCollection Contracts => globalScopeBuilder.Contracts;
+
+        public void UseSerializer(Type type)
+        {
+            invocationSerializerType = type;
+        }
 
         public void CreateScope(Action<IClientScopeBuilder> scopeBuilderAction)
         {
@@ -44,13 +50,21 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options
 
         ClientBCFOptions IOptionsBuilder<ClientBCFOptions>.Build()
         {
+            ClientBCFOptions clientOptions = new ClientBCFOptions();
+            Build(clientOptions);
+
             IContractScope globalScope = globalScopeBuilder.Build();
 
-            ClientBCFOptions clientOptions = new ClientBCFOptions();
+            clientOptions.InvocationSerializerType = invocationSerializerType ?? clientOptions.InvocationSerializerType;
             clientOptions.HttpClientResolverType = globalScope.HttpClientResolverType ?? clientOptions.HttpClientResolverType;
             clientOptions.Scopes = childScopeBuilders.Select(X => X.Build()).Union(new[] { globalScope }).ToArray();
 
             return clientOptions;
+        }
+
+        public override BCFOptions Build()
+        {
+            return Build();
         }
     }
 }

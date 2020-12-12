@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Options;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.DependencyInjection;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Options;
@@ -14,16 +13,19 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddBCFClient(this IServiceCollection services, Action<IClientOptionsBuilder> builderAction = null)
+        public static void AddBCFClient(this IServiceCollection services, Action<IClientOptionsBuilder> builderAction)
         {
-            ClientBCFOptionsBuilder builder = new ClientBCFOptionsBuilder(services);
-            builderAction ??= builder => { };
+            IClientOptionsBuilder builder = new ClientBCFOptionsBuilder(services);
             builderAction(builder);
-            BCFOptions options = builder.Build();
-            ClientBCFOptions clientOptions = ((IClientOptionsBuilder)builder).Build();
+            ClientBCFOptions clientOptions = builder.Build();
 
-            services.AddBlazorCommunicationFoundation(options);
+            services.AddBlazorCommunicationFoundation(clientOptions);
 
+            if (clientOptions.InvocationSerializerType == null)
+            {
+                throw new ArgumentNullException("Type is required", nameof(clientOptions.InvocationSerializerType));
+            }
+            services.AddSingleton(typeof(IInvocationSerializer), clientOptions.InvocationSerializerType);
             services.AddTransient<IHttpClientResolver, GlobalHttpClientResolver>();
             services.AddTransient<RemoteMethodExecutor>();
 
@@ -43,20 +45,6 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.DependencyInjecti
                     }
                 }
             }
-
-            services.AddSingleton<IContractRequestPathHolder>(provider =>
-            {
-                var typeBindingSerializer = provider.GetRequiredService<IContractTypeBindingSerializer>();
-                var methodBindingSerializer = provider.GetRequiredService<IContractMethodBindingSerializer>();
-
-                ContractRequestPathHolder contractRequestPathHolder = new ContractRequestPathHolder(typeBindingSerializer, methodBindingSerializer);
-                foreach (var contractType in contractTypes)
-                {
-                    contractRequestPathHolder.AddBindings(contractType);
-                }
-
-                return contractRequestPathHolder;
-            });
         }
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,14 +9,14 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Infrastructure;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Binding;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Handlers
 {
     public class BlazorCommunicationFoundationHandler : DelegatingHandler
     {
-        private readonly IContractRequestPathHolder contractRequestPathHolder;
+        private readonly IContractBinder contractBinder;
         private readonly IAccessTokenProvider accessTokenProvider;
         private readonly NavigationManager navigationManager;
 
@@ -26,11 +25,11 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
         private AccessToken lastToken;
 
         public BlazorCommunicationFoundationHandler(
-            IContractRequestPathHolder contractRequestPathHolder,
+            IContractBinder contractBinder,
             IAccessTokenProvider accessTokenProvider,
             NavigationManager navigationManager)
         {
-            this.contractRequestPathHolder = contractRequestPathHolder;
+            this.contractBinder = contractBinder;
             this.accessTokenProvider = accessTokenProvider;
             this.navigationManager = navigationManager;
         }
@@ -40,12 +39,12 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Client.Authentication.Ha
         {
             var now = DateTimeOffset.Now;
 
-            bool isFamiliar = contractRequestPathHolder.IsPathFamiliar(request.RequestUri.LocalPath);
+            bool isFamiliar = contractBinder.IsPathFamiliar(request.RequestUri.LocalPath);
             if (isFamiliar)
             {
                 if (lastToken == null || now >= lastToken.Expires.AddMinutes(-5))
                 {
-                    var tokenResult = tokenOptions != null ? 
+                    var tokenResult = tokenOptions != null ?
                         await accessTokenProvider.RequestAccessToken(tokenOptions) :
                         await accessTokenProvider.RequestAccessToken();
 

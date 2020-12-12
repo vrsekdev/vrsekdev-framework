@@ -4,8 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Binding;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Binding;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection
 {

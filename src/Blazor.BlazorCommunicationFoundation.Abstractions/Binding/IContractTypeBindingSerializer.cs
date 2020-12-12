@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions
+namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding
 {
     public interface IContractTypeBindingSerializer
     {

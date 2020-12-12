@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions;
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions.Binding;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Abstractions.Binding;
 using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer.Types;
 
 namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
