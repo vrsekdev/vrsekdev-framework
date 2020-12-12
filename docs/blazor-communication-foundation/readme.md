@@ -16,6 +16,7 @@ For a sample usage with authorization, you can refer to the [sample project](htt
   - [Custom HttpClient](#custom-httpclient)
   - [Scopes](#scopes)
 - [Exception handling](#exception-handling)
+- [Swagger integration](#swagger-integration)
 - [Debugging](#debugging)
   - [Request](#request)
   - [Response](#response)
@@ -124,18 +125,17 @@ services.AddBCFServer(builder =>
 ...
 ```
 
-Then add middleware after `UseAuthentication` and `UseAuthorization`, if you use authorization, and before `UseEndpoints`.
+Then register endpoints through method `MapBlazorCommunicationFoundation()`. This will register all contracts to a unique endpoint. **You can then use any OpenAPI generator and export your definitions into other applications that do not use `.NET`, like mobile `Java` applications or any other platform that supports HTTP requests.**
 ```csharp
-using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Middlewares;
+using VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjection;
 ...
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseBlazorCommunicationFoundation();
-
 app.UseEndpoints(endpoints =>
 {
+    endpoints.MapBlazorCommunicationFoundation();
     ...
 });
 ```
@@ -209,6 +209,9 @@ To use JSON serializer, you need to install new package into your server and cli
 Install-Package VrsekDev.Blazor.BlazorCommunicationFoundation.Serializers.Json
 ```
 
+**Server can handle multiple types of serializers and uses HTTP headers Accept and ContentType.**
+That means, that you can have multiple clients using different serializers with one server.
+
 Into your server configuration, add this new line
 
 ```csharp
@@ -219,7 +222,7 @@ services.AddBCFServer(builder =>
 {
     ...
 
-    builder.UseSerializer<JsonInvocationSerializer>();
+    builder.AddSerializer<JsonInvocationSerializer>();
     
     ...
 });
@@ -328,6 +331,12 @@ namespace Blazor.BlazorCommunicationFoundation.Sample.Server.Middlewares
     }
 }
 ```
+
+## Swagger integration
+
+BCF is fully integrated into Swagger through API Explorer, so any library for API gerenating from API Explorer would work.
+
+![swagger-integration](images/swagger-integration.png)
 
 ## Debugging
 
