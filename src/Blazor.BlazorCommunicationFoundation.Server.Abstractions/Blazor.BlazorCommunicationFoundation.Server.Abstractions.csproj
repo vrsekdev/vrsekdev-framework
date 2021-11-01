@@ -1,22 +1,49 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyName>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions</AssemblyName>
-    <RootNamespace>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<AssemblyName>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions</AssemblyName>
+		<RootNamespace>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>VrsekDev.Blazor.BlazorCommunicationFoundation.Server</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+	<PropertyGroup>
+		<Version>0.6.3</Version>
+		<Authors>Daniel Vršek</Authors>
+		<Product>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.Abstractions</Product>
+		<Description>Library providing communication between Blazor WebAsembly and ASP.NET Server using typed contracts defined through C# interfaces</Description>
+		<Copyright>Daniel Vršek</Copyright>
+		<RepositoryUrl>https://github.com/vrsekdev/vrsekdev-framework/tree/master/docs/blazor-communication-foundation</RepositoryUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageProjectUrl>https://github.com/vrsekdev/vrsekdev-framework</PackageProjectUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Blazor.BlazorCommunicationFoundation.Core\Blazor.BlazorCommunicationFoundation.Core.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE" Link="LICENSE">
+			<PackagePath></PackagePath>
+			<Pack>True</Pack>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>VrsekDev.Blazor.BlazorCommunicationFoundation.Server</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Blazor.BlazorCommunicationFoundation.Core\Blazor.BlazorCommunicationFoundation.Core.csproj" />
+	</ItemGroup>
+
+	<Import Project="$(SolutionDir)..\..\include\includes.props" Condition="Exists('$(SolutionDir)..\..\include\includes.props')" />
+	<Import Project="$(SolutionDir)..\..\include\settings.props" Condition="Exists('$(SolutionDir)..\..\include\settings.props')" />
 
 </Project>

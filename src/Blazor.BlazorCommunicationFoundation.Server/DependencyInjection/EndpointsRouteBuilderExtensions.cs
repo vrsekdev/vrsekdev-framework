@@ -19,7 +19,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.DependencyInjecti
             {
                 endpoints.MapPost(binding.Key, httpContext =>
                 {
-                    var invocationHandler = serviceProvider.GetRequiredService<ContractMethodInvocationHandler>();
+                    var invocationHandler = httpContext.RequestServices.GetRequiredService<ContractMethodInvocationHandler>();
 
                     return invocationHandler.Invoke(httpContext, binding.Value);
                 });

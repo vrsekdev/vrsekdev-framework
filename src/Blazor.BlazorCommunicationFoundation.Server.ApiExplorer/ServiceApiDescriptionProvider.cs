@@ -87,7 +87,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
 
         private void PutSupportedRequestFormats(IList<ApiRequestFormat> supportedRequestFormats)
         {
-            foreach (IInvocationSerializer serializer in invocationSerializers)
+            foreach (IInvocationSerializer serializer in invocationSerializers.Reverse())
             {
                 supportedRequestFormats.Add(new ApiRequestFormat
                 {
@@ -114,7 +114,7 @@ namespace VrsekDev.Blazor.BlazorCommunicationFoundation.Server.ApiExplorer
                 StatusCode = 200,
                 ModelMetadata = new ResponseTypeMetadata(returnType)
             };
-            foreach (IInvocationSerializer serializer in invocationSerializers)
+            foreach (IInvocationSerializer serializer in invocationSerializers.Reverse())
             {
                 apiResponseType.ApiResponseFormats.Add(new ApiResponseFormat
                 {
